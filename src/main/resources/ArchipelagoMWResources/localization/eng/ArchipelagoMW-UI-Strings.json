@@ -1,0 +1,16 @@
+{
+  "ArchipelagoMW:MainMenu": {
+    "TEXT": [
+      "Archipelago"
+    ]
+  },
+  "ArchipelagoMW:RewardMenu": {
+    "TEXT": [
+      "Return",
+      "Help From Afar",
+      "Cards from afar",
+      "Pick a Card!",
+      "Cards From "
+    ]
+  }
+}
