@@ -77,4 +77,8 @@ $RECYCLE.BIN/
 
 # Spriter files
 *.autosave.scml
-/repo/
+repo/
+
+# Slay the Spire Files
+sendToDevs/
+steam_appid.txt
