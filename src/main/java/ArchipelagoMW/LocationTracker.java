@@ -73,12 +73,16 @@ public class LocationTracker {
             Field isBoss = RewardItem.class.getDeclaredField("isBoss");
             isBoss.setAccessible(true);
             if ((boolean)isBoss.get(reward)) {
+                if(rareCardLocations.isEmpty())
+                    return "";
                 APClient.apClient.checkLocation(rareCardLocations.remove(0));
                 return "Rare Card Draw " + (3 - rareCardLocations.size());
             }
         } catch (NoSuchFieldException | IllegalAccessException ignored) {}
         cardDraw = !cardDraw;
         if(cardDraw) {
+            if(cardDrawLocations.isEmpty())
+                return "";
             APClient.apClient.checkLocation(cardDrawLocations.remove(0));
             return "Card Draw " + (15 - cardDrawLocations.size());
         }
@@ -89,6 +93,8 @@ public class LocationTracker {
      * sends the next relic location to AP
      */
     static public String sendRelic() {
+        if(relicLocations.isEmpty())
+            return "";
         APClient.apClient.checkLocation(relicLocations.remove(0));
         return "Relic " + (10 - relicLocations.size());
     }
@@ -97,8 +103,25 @@ public class LocationTracker {
      * sends the next boss relic location to AP
      */
     static public String sendBossRelic() {
+        if(bossRelicLocations.isEmpty())
+            return "";
         APClient.apClient.checkLocation(bossRelicLocations.remove(0));
         return "Boss Relic " + (3 - bossRelicLocations.size());
     }
 
+    public static void forfeit() {
+        APClient ap = APClient.apClient;
+        for (Integer location : cardDrawLocations) {
+            ap.checkLocation(location);
+        }
+        for (Integer location : rareCardLocations) {
+            ap.checkLocation(location);
+        }
+        for (Integer location : relicLocations) {
+            ap.checkLocation(location);
+        }
+        for (Integer location : bossRelicLocations) {
+            ap.checkLocation(location);
+        }
+    }
 }
