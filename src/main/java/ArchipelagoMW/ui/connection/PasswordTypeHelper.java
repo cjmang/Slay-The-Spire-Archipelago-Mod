@@ -8,9 +8,9 @@ import com.megacrit.cardcrawl.helpers.input.InputHelper;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class SlotNameTypeHelper implements InputProcessor {
+public class PasswordTypeHelper implements InputProcessor {
 
-    private static final Logger logger = LogManager.getLogger(SlotNameTypeHelper.class.getName());
+    private static final Logger logger = LogManager.getLogger(PasswordTypeHelper.class.getName());
 
     @Override
     public boolean keyDown(int i) {
@@ -34,19 +34,19 @@ public class SlotNameTypeHelper implements InputProcessor {
                 String pasteText = clipBoard.getContents();
                 String sterilized = sterilizeString(pasteText);
                 if (!sterilized.isEmpty()) {
-                    ConnectionPanel.slotNameField = sterilized;
+                    ConnectionPanel.passwordField = sterilized;
                     return true;
                 }
             }
 
             //was backspace pressed?
-            if (Gdx.input.isKeyPressed(Input.Keys.BACKSPACE) && !ConnectionPanel.slotNameField.equals("")) {
-                ConnectionPanel.slotNameField = ConnectionPanel.slotNameField.substring(0, ConnectionPanel.slotNameField.length() - 1);
+            if (Gdx.input.isKeyPressed(Input.Keys.BACKSPACE) && !ConnectionPanel.passwordField.equals("")) {
+                ConnectionPanel.passwordField = ConnectionPanel.passwordField.substring(0, ConnectionPanel.passwordField.length() - 1);
             }
 
             //if tab switch to slot name
             if (Gdx.input.isKeyJustPressed(Input.Keys.TAB)) {
-                ConnectionPanel.selected = ConnectionPanel.field.address;
+                ConnectionPanel.selected = ConnectionPanel.field.password;
                 Gdx.input.setInputProcessor(new AddressTypeHelper());
             }
 
@@ -57,7 +57,7 @@ public class SlotNameTypeHelper implements InputProcessor {
             //add the character we typed to the field.
             String converted = getValidCharacter(charStr);
             if (converted != null) {
-                ConnectionPanel.slotNameField += converted;
+                ConnectionPanel.passwordField += converted;
             }
         }
         return true;

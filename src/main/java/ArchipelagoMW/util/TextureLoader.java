@@ -29,7 +29,7 @@ public class TextureLoader {
                 loadTexture(textureString);
             } catch (GdxRuntimeException e) {
                 logger.error("Could not find texture: " + textureString);
-                return getTexture("ArchipelagoMW/images/ui/missing_texture.png");
+                return getTexture("ArchipelagoMWResources/images/ui/missing_texture.png");
             }
         }
         return textures.get(textureString);

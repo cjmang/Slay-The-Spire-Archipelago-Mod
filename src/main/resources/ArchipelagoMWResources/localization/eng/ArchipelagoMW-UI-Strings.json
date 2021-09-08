@@ -12,5 +12,16 @@
       "Pick a Card!",
       "Cards From "
     ]
+  },
+  "ArchipelagoMW:ConnectionMenu": {
+    "TEXT": [
+      "Archipelago",
+      "Connection Info",
+      "Address:",
+      "Slot Name:",
+      "Connect",
+      "Connecting to AP...",
+      "Password:"
+    ]
   }
 }

@@ -1,11 +1,11 @@
 package ArchipelagoMW;
 
-import com.megacrit.cardcrawl.dungeons.AbstractDungeon;
 import com.megacrit.cardcrawl.rewards.RewardItem;
-import com.megacrit.cardcrawl.rooms.MonsterRoomBoss;
+import gg.archipelago.APClient.parts.NetworkItem;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class LocationTracker {
 
@@ -18,6 +18,8 @@ public class LocationTracker {
     private static ArrayList<Integer> bossRelicLocations;
 
     public static boolean cardDraw;
+
+    public static HashMap<Integer, NetworkItem> scoutedLocations = new HashMap<>();
 
     public static void reset() {
         cardDrawLocations = new ArrayList<Integer>() {{
@@ -75,16 +77,25 @@ public class LocationTracker {
             if ((boolean)isBoss.get(reward)) {
                 if(rareCardLocations.isEmpty())
                     return "";
-                APClient.apClient.checkLocation(rareCardLocations.remove(0));
-                return "Rare Card Draw " + (3 - rareCardLocations.size());
+                int locationID = rareCardLocations.remove(0);
+                APClient.apClient.checkLocation(locationID);
+                NetworkItem item = scoutedLocations.get(locationID);
+                if(item == null)
+                    return "Rare Card Draw "+ (3 - rareCardLocations.size());
+                return item.itemName + " [] NL " + item.playerName + " [] NL Rare Card Draw";
             }
         } catch (NoSuchFieldException | IllegalAccessException ignored) {}
         cardDraw = !cardDraw;
         if(cardDraw) {
             if(cardDrawLocations.isEmpty())
                 return "";
-            APClient.apClient.checkLocation(cardDrawLocations.remove(0));
-            return "Card Draw " + (15 - cardDrawLocations.size());
+            int locationID = cardDrawLocations.remove(0);
+            APClient.apClient.checkLocation(locationID);
+            NetworkItem item = scoutedLocations.get(locationID);
+            APClient.apClient.scoutLocations(new ArrayList<Integer>() {{add(cardDrawLocations.get(0));}});
+            if(item == null)
+                return "Card Draw "+ (15 - cardDrawLocations.size());
+            return item.itemName + " [] NL " + item.playerName + " [] NL Card Draw";
         }
         return "";
     }
@@ -95,8 +106,14 @@ public class LocationTracker {
     static public String sendRelic() {
         if(relicLocations.isEmpty())
             return "";
-        APClient.apClient.checkLocation(relicLocations.remove(0));
-        return "Relic " + (10 - relicLocations.size());
+
+        int locationID = relicLocations.remove(0);
+        APClient.apClient.checkLocation(locationID);
+        NetworkItem item = scoutedLocations.get(locationID);
+        APClient.apClient.scoutLocations(new ArrayList<Integer>() {{add(relicLocations.get(0));}});
+        if(item == null)
+            return "Relic " + (10 - relicLocations.size());
+        return item.itemName + " [] NL " + item.playerName + " [] NL Relic";
     }
 
     /**
@@ -105,8 +122,13 @@ public class LocationTracker {
     static public String sendBossRelic() {
         if(bossRelicLocations.isEmpty())
             return "";
-        APClient.apClient.checkLocation(bossRelicLocations.remove(0));
-        return "Boss Relic " + (3 - bossRelicLocations.size());
+        int locationID = bossRelicLocations.remove(0);
+        APClient.apClient.checkLocation(locationID);
+        NetworkItem item = scoutedLocations.get(locationID);
+        APClient.apClient.scoutLocations(new ArrayList<Integer>() {{add(bossRelicLocations.get(0));}});
+        if(item == null)
+            return "Boss Relic " + (3 - bossRelicLocations.size());
+        return item.itemName + " [] NL " + item.playerName + " [] NL Boss Relic";
     }
 
     public static void forfeit() {
@@ -123,5 +145,22 @@ public class LocationTracker {
         for (Integer location : bossRelicLocations) {
             ap.checkLocation(location);
         }
+    }
+
+    public static void scoutFirstLocations() {
+        ArrayList<Integer> locations = new ArrayList<Integer>() {{
+            add(cardDrawLocations.get(0));
+            add(relicLocations.get(0));
+            add(rareCardLocations.get(0));
+            add(bossRelicLocations.get(0));
+        }};
+        APClient.apClient.scoutLocations(locations);
+    }
+
+    public static void addToScoutedLocations(ArrayList<NetworkItem> networkItems) {
+        for (NetworkItem item : networkItems) {
+            scoutedLocations.put(item.locationID, item);
+        }
+
     }
 }

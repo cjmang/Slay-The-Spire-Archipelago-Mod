@@ -1,9 +1,12 @@
 package ArchipelagoMW.patches;
 
 import ArchipelagoMW.LocationTracker;
+import com.evacipated.cardcrawl.modthespire.lib.SpireField;
 import com.evacipated.cardcrawl.modthespire.lib.SpireInsertPatch;
 import com.evacipated.cardcrawl.modthespire.lib.SpirePatch;
+import com.megacrit.cardcrawl.relics.AbstractRelic;
 import com.megacrit.cardcrawl.rewards.RewardItem;
+import com.megacrit.cardcrawl.screens.CardRewardScreen;
 import com.megacrit.cardcrawl.screens.CombatRewardScreen;
 
 import java.util.ArrayList;
@@ -20,19 +23,17 @@ public class CombatRewardScreenPatch {
             ArrayList<RewardItem> toAdd = new ArrayList<>();
             while(rewardItemIterator.hasNext()) {
                 RewardItem reward = rewardItemIterator.next();
-                if(reward.type == RewardItem.RewardType.CARD) {
-                    String locationName = LocationTracker.sendCardDraw(reward);
-                    if(!locationName.isEmpty()) {
-                        rewardItemIterator.remove();
-                        RewardItem rewardItem = new RewardItem(1);
-                        rewardItem.goldAmt = 0;
-                        rewardItem.text = locationName;
-                        rewardItem.type = RewardItemPatch.RewardType.ARCHIPELAGO_LOCATION;
-                        toAdd.add(rewardItem);
-                    }
+                String locationName = "";
+                switch (reward.type) {
+                    case CARD:
+                        locationName = LocationTracker.sendCardDraw(reward);
+                        break;
+                    case RELIC:
+                        locationName = LocationTracker.sendRelic();
+                        break;
                 }
-                if(reward.type == RewardItem.RewardType.RELIC) {
-                    String locationName = LocationTracker.sendRelic();
+
+                if(!locationName.isEmpty()) {
                     rewardItemIterator.remove();
                     RewardItem rewardItem = new RewardItem(1);
                     rewardItem.goldAmt = 0;

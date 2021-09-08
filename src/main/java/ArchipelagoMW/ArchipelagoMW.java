@@ -37,20 +37,17 @@ public class ArchipelagoMW implements
     private static final String DESCRIPTION = "An Archipelago multiworld mod.";
 
     //Mod Badge - A small icon that appears in the mod settings menu next to your mod.
-    public static final String BADGE_IMAGE = "ArchipelagoMW/images/Badge.png";
+    public static final String BADGE_IMAGE = "ArchipelagoMWResources/images/Badge.png";
     public static BossRelicRewardScreen bossRelicRewardScreen;
 
     // Archipelago Client Varaiables
     public static String address;
     public static String slotName;
+    public static String password;
 
     public static Texture AP_ICON;
 
     // =============== MAKE IMAGE PATHS =================
-
-    public static String makeEventPath(String resourcePath) {
-        return getModID() + "Resources/images/events/" + resourcePath;
-    }
 
     public static String makeUIPath(String resourcePath) {
         return getModID() + "Resources/images/ui/" + resourcePath;
@@ -123,9 +120,10 @@ public class ArchipelagoMW implements
         logger.info("========================= /Archipelago Multi-World Initialized. Hello Multi-World./ =========================");
     }
 
-    public static void setConnectionInfo(String addressField, String slotNameField) {
+    public static void setConnectionInfo(String addressField, String slotNameField, String passwordField) {
         address = addressField;
         slotName = slotNameField;
+        password = passwordField;
     }
 
     // =============== POST-INITIALIZE =================
@@ -145,8 +143,8 @@ public class ArchipelagoMW implements
         //bossRelicRewardScreen = new BossRelicRewardScreen();
         
         BaseMod.registerModBadge(badgeTexture, MODNAME, AUTHOR, DESCRIPTION, settingsPanel);
-        Settings.isInfo = true;
-        Settings.isDebug = true;
+        //Settings.isInfo = true;
+        //Settings.isDebug = true;
 
         
         // =============== EVENTS =================
@@ -184,34 +182,6 @@ public class ArchipelagoMW implements
     public void receiveEditStrings() {
         logger.info("You seeing this?");
         logger.info("Beginning to edit strings for mod with ID: " + getModID());
-        
-        // CardStrings
-        BaseMod.loadCustomStringsFile(CardStrings.class,
-                getModID() + "Resources/localization/eng/ArchipelagoMW-Card-Strings.json");
-        
-        // PowerStrings
-        BaseMod.loadCustomStringsFile(PowerStrings.class,
-                getModID() + "Resources/localization/eng/ArchipelagoMW-Power-Strings.json");
-        
-        // RelicStrings
-        BaseMod.loadCustomStringsFile(RelicStrings.class,
-                getModID() + "Resources/localization/eng/ArchipelagoMW-Relic-Strings.json");
-        
-        // Event Strings
-        BaseMod.loadCustomStringsFile(EventStrings.class,
-                getModID() + "Resources/localization/eng/ArchipelagoMW-Event-Strings.json");
-        
-        // PotionStrings
-        BaseMod.loadCustomStringsFile(PotionStrings.class,
-                getModID() + "Resources/localization/eng/ArchipelagoMW-Potion-Strings.json");
-        
-        // CharacterStrings
-        BaseMod.loadCustomStringsFile(CharacterStrings.class,
-                getModID() + "Resources/localization/eng/ArchipelagoMW-Character-Strings.json");
-        
-        // OrbStrings
-        BaseMod.loadCustomStringsFile(OrbStrings.class,
-                getModID() + "Resources/localization/eng/ArchipelagoMW-Orb-Strings.json");
 
         // UIStrings
         BaseMod.loadCustomStringsFile(UIStrings.class,

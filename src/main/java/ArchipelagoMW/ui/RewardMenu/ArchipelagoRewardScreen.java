@@ -24,7 +24,6 @@ import com.megacrit.cardcrawl.rooms.AbstractRoom;
 import com.megacrit.cardcrawl.rooms.MonsterRoom;
 import com.megacrit.cardcrawl.rooms.MonsterRoomBoss;
 import com.megacrit.cardcrawl.rooms.MonsterRoomElite;
-import com.megacrit.cardcrawl.screens.CardRewardScreen;
 import com.megacrit.cardcrawl.screens.mainMenu.ScrollBar;
 import com.megacrit.cardcrawl.screens.mainMenu.ScrollBarListener;
 import com.megacrit.cardcrawl.ui.buttons.CancelButton;
@@ -64,7 +63,7 @@ public class ArchipelagoRewardScreen {
     private static boolean grabbedScreen;
     private static float grabStartY;
 
-    private static AbstractDungeon.CurrentScreen previous;
+    private static int baseSeed;
 
     public static int index = 0;
     public static boolean apReward = false;
@@ -81,11 +80,13 @@ public class ArchipelagoRewardScreen {
     public static class CancelButtonUpdatePatch {
 
         @SpireInsertPatch(rloc = 97 - 53)
-        public static void Insert() {
+        public static SpireReturn Insert() {
             if (AbstractDungeon.screen == Enum.ARCHIPELAGO_REWARD) {
                 logger.info("close current screen");
-                AbstractDungeon.closeCurrentScreen();
+                close();
+                return SpireReturn.Return();
             }
+            return SpireReturn.Continue();
         }
     }
 
@@ -123,38 +124,6 @@ public class ArchipelagoRewardScreen {
         }
     }
 
-    @SpirePatch(clz = CardRewardScreen.class, method = "takeReward")
-    public static class CardRewardScreenPatch {
-
-        @SpirePrefixPatch()
-        public static SpireReturn<Integer> Prefix(CardRewardScreen __instance, RewardItem ___rItem) {
-            if (___rItem != null) {
-                if (AbstractDungeon.previousScreen == Enum.ARCHIPELAGO_REWARD) {
-                    rewards.remove(___rItem);
-                    positionRewards();
-                    AbstractDungeon.dynamicBanner.appear();
-                    AbstractDungeon.overlayMenu.cancelButton.show(TEXT[0]);
-                    return SpireReturn.Return(null);
-                }
-            }
-
-            return SpireReturn.Continue();
-        }
-    }
-
-    @SpirePatch(clz = RewardItem.class, method = "claimReward")
-    public static class ScrollUpdate {
-
-        @SpireInsertPatch(rloc = 356 - 290)
-        public static void Insert(RewardItem __instance, ArrayList<AbstractCard> ___cards) {
-            if (AbstractDungeon.screen == Enum.ARCHIPELAGO_REWARD) {
-                AbstractDungeon.cardRewardScreen.open(___cards, __instance, TEXT[4]);
-                AbstractDungeon.previousScreen = Enum.ARCHIPELAGO_REWARD;
-            }
-        }
-
-    }
-
     @SpirePatch(clz=AbstractDungeon.class, method="rollRarity",paramtypez = {Random.class})
     public static class RarityRollPatch {
 
@@ -175,6 +144,10 @@ public class ArchipelagoRewardScreen {
             }
             return SpireReturn.Continue();
         }
+    }
+
+    public ArchipelagoRewardScreen () {
+        baseSeed = APClient.apClient.getRoomInfo().seedName.hashCode();
     }
 
     public static void reopen() {
@@ -211,8 +184,7 @@ public class ArchipelagoRewardScreen {
         DataPackage dataPackage = APClient.apClient.getDataPackage();
         ArrayList<NetworkItem> items = APClient.apClient.getItemManager().getReceivedItems();
         for (int i = index; i < items.size(); ++i) {
-            NetworkItem item = items.get(i);
-            addReward(item.itemID, dataPackage.getLocation(item.locationID), APClient.apClient.getRoomInfo().getPlayer(APClient.apClient.getTeam(), item.playerID).alias);
+            addReward(items.get(i));
         }
     }
 
@@ -222,7 +194,7 @@ public class ArchipelagoRewardScreen {
                 || AbstractDungeon.getCurrRoom() instanceof MonsterRoomElite
             )
             && AbstractDungeon.getCurrRoom().isBattleOver) {
-            logger.info("Setting previous screen to combat_reward due to boss battle room.");
+            logger.info("Setting previous screen to combat_reward due to combat room.");
             AbstractDungeon.previousScreen = AbstractDungeon.CurrentScreen.COMBAT_REWARD;
         }
         logger.info("returning to room " + AbstractDungeon.previousScreen);
@@ -425,7 +397,10 @@ public class ArchipelagoRewardScreen {
         positionRewards();
     }
 
-    public static void addReward(int itemID, String location, String player) {
+    public static void addReward(NetworkItem networkItem) {
+        int itemID = networkItem.itemID;
+        String location = networkItem.locationName;
+        String player = networkItem.playerName;
         switch (itemID) {
             case 8000: // Card Draw
                 apReward = true;
@@ -435,7 +410,7 @@ public class ArchipelagoRewardScreen {
                 reward.goldAmt = 0;
                 reward.type = RewardItem.RewardType.CARD;
                 reward.cards = cards;
-
+                RewardItemPatch.CustomFields.apReward.set(reward,true);
                 reward.text = "Card Draw [] NL " +player + " [] NL " + location;
                 addReward(reward);
                 break;
@@ -447,6 +422,7 @@ public class ArchipelagoRewardScreen {
                 reward.goldAmt = 0;
                 reward.type = RewardItem.RewardType.CARD;
                 reward.cards = rareCards;
+                RewardItemPatch.CustomFields.apReward.set(reward,true);
                 try {
                     Field f = RewardItem.class.getDeclaredField("isBoss");
                     f.setAccessible(true);
@@ -460,6 +436,7 @@ public class ArchipelagoRewardScreen {
                 AbstractRelic relic = AbstractDungeon.returnRandomRelic(getRandomRelicTier());
                 reward = new RewardItem(relic);
                 reward.text = "Relic [] NL "+player + " [] NL " + location;
+                RewardItemPatch.CustomFields.apReward.set(reward,true);
                 addReward(reward);
                 break;
             case 8003: // Boss Relic
@@ -471,7 +448,8 @@ public class ArchipelagoRewardScreen {
                 reward = new RewardItem(1);
                 reward.goldAmt = 0;
                 reward.type = RewardItemPatch.RewardType.BOSS_RELIC;
-                RewardItemPatch.BossRelics.bossRelics.set(reward, bossRelics);
+                RewardItemPatch.CustomFields.bossRelics.set(reward, bossRelics);
+                RewardItemPatch.CustomFields.apReward.set(reward,true);
                 reward.text = "Boss Relic [] NL " + player + " [] NL " + location;
                 addReward(reward);
                 //ArchipelagoMW.bossRelicRewardScreen.open(bossRelics);
@@ -479,9 +457,8 @@ public class ArchipelagoRewardScreen {
         }
     }
 
-    public static AbstractCard.CardRarity rollRarity() {
+    public static AbstractCard.CardRarity rollRarity(Random rng) {
         int roll = AbstractDungeon.cardRng.random(99);
-        roll += AbstractDungeon.cardBlizzRandomizer;
         final int rareRate = 3;
         if (roll < rareRate) {
             return AbstractCard.CardRarity.RARE;

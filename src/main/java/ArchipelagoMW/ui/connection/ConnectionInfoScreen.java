@@ -11,6 +11,7 @@ import com.megacrit.cardcrawl.core.Settings;
 import com.megacrit.cardcrawl.helpers.FontHelper;
 import com.megacrit.cardcrawl.helpers.input.InputHelper;
 import com.megacrit.cardcrawl.helpers.input.ScrollInputProcessor;
+import com.megacrit.cardcrawl.localization.UIStrings;
 import com.megacrit.cardcrawl.screens.charSelect.CharacterSelectScreen;
 import com.megacrit.cardcrawl.screens.mainMenu.MainMenuScreen;
 import com.megacrit.cardcrawl.screens.mainMenu.MenuCancelButton;
@@ -22,12 +23,15 @@ public class ConnectionInfoScreen {
 
     private static final Logger logger = LogManager.getLogger(ConnectionInfoScreen.class.getName()); // This is our logger! It prints stuff out in the console.
 
+    private static final UIStrings uiStrings;
+    public static final String[] TEXT;
+
     public static class Enum {
         @SpireEnum
         public static MainMenuScreen.CurScreen CONNECTION_INFO;
     }
 
-    public GridSelectConfirmButton confirmButton = new GridSelectConfirmButton("Connect");
+    public GridSelectConfirmButton confirmButton = new GridSelectConfirmButton(TEXT[4]);
     public MenuCancelButton backButton = new MenuCancelButton();
 
     public static String address;
@@ -77,9 +81,9 @@ public class ConnectionInfoScreen {
         if(confirmButton.hb.clicked || Gdx.input.isKeyJustPressed(Input.Keys.ENTER)) {
             Gdx.input.setInputProcessor(new ScrollInputProcessor());
             confirmButton.hb.clicked = false;
-            ConnectionPanel.connectionResultText = "Connecting to AP...";
-            ArchipelagoMW.setConnectionInfo(ConnectionPanel.addressField,ConnectionPanel.slotNameField);
-            APClient.newConnection(ConnectionPanel.addressField, ConnectionPanel.slotNameField);
+            ConnectionPanel.connectionResultText = TEXT[5];
+            ArchipelagoMW.setConnectionInfo(ConnectionPanel.addressField,ConnectionPanel.slotNameField, ConnectionPanel.passwordField);
+            APClient.newConnection(ConnectionPanel.addressField, ConnectionPanel.slotNameField, ConnectionPanel.passwordField);
         }
 
         //pass the update to our address panel.
@@ -89,7 +93,7 @@ public class ConnectionInfoScreen {
 
     //this will be called to render our screen
     public void render(SpriteBatch sb) {
-        FontHelper.renderFontCentered(sb, FontHelper.SCP_cardTitleFont_small, "Archipelago",
+        FontHelper.renderFontCentered(sb, FontHelper.SCP_cardTitleFont_small, TEXT[0],
                 Settings.WIDTH / 2.0f,
                 Settings.HEIGHT - 70.0f * Settings.yScale,
                 Settings.GOLD_COLOR);
@@ -97,6 +101,11 @@ public class ConnectionInfoScreen {
         this.addressPanel.render(sb);
         this.backButton.render(sb);
         this.confirmButton.render(sb);
+    }
+
+    static {
+        uiStrings = CardCrawlGame.languagePack.getUIString(ArchipelagoMW.getModID()+":ConnectionMenu");
+        TEXT = uiStrings.TEXT;
     }
 
 }

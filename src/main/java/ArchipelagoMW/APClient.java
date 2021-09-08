@@ -2,14 +2,11 @@ package ArchipelagoMW;
 
 import ArchipelagoMW.ui.RewardMenu.ArchipelagoRewardScreen;
 import ArchipelagoMW.ui.connection.ConnectionPanel;
-import com.megacrit.cardcrawl.cards.AbstractCard;
 import com.megacrit.cardcrawl.characters.AbstractPlayer;
 import com.megacrit.cardcrawl.core.CardCrawlGame;
 import com.megacrit.cardcrawl.core.Settings;
 import com.megacrit.cardcrawl.dungeons.AbstractDungeon;
 import com.megacrit.cardcrawl.helpers.SeedHelper;
-import com.megacrit.cardcrawl.relics.deprecated.DerpRock;
-import com.megacrit.cardcrawl.rewards.RewardItem;
 import com.megacrit.cardcrawl.screens.mainMenu.MainMenuScreen;
 import gg.archipelago.APClient.Print.APPrint;
 import gg.archipelago.APClient.events.ConnectionAttemptEvent;
@@ -28,11 +25,12 @@ public class APClient extends gg.archipelago.APClient.APClient {
 
     public static APClient apClient;
 
-    public static void newConnection(String address, String slotName) {
+    public static void newConnection(String address, String slotName, String password) {
         if(apClient != null) {
             apClient.close();
         }
         apClient = new APClient("", 0);
+        apClient.setPassword(password);
         apClient.setName(slotName);
         apClient.connect(address);
     }
@@ -57,6 +55,7 @@ public class APClient extends gg.archipelago.APClient.APClient {
                 break;
             case InvalidPassword:
                 msg = "Invalid Password";
+                ConnectionPanel.showPassword = true;
                 break;
             case IncompatibleVersion:
                 msg = "Server Rejected our connection due to an incompatible communication protocol.";
@@ -128,6 +127,8 @@ public class APClient extends gg.archipelago.APClient.APClient {
             ArchipelagoRewardScreen.rewards.clear();
             ArchipelagoRewardScreen.index = 0;
 
+            LocationTracker.scoutFirstLocations();
+
         }
         catch (Exception e) {
             e.printStackTrace();
@@ -166,10 +167,15 @@ public class APClient extends gg.archipelago.APClient.APClient {
     }
 
     @Override
-    public void onReceiveItem(int itemID, String location, String player) {
+    public void onReceiveItem(NetworkItem networkItem) {
         //ignore received items that happen while we are not yet loaded
         if (AbstractDungeon.isPlayerInDungeon())
-            ArchipelagoRewardScreen.addReward(itemID, location,player);
+            ArchipelagoRewardScreen.addReward(networkItem);
+    }
+
+    @Override
+    public void onLocationInfo(ArrayList<NetworkItem> networkItems) {
+        LocationTracker.addToScoutedLocations(networkItems);
     }
 
     @Override

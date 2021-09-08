@@ -4,6 +4,7 @@ package ArchipelagoMW.patches;
 import ArchipelagoMW.APClient;
 import ArchipelagoMW.ArchipelagoMW;
 import ArchipelagoMW.ui.RewardMenu.ArchipelagoRewardScreen;
+import ArchipelagoMW.ui.connection.ConnectionPanel;
 import ArchipelagoMW.util.TextureLoader;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
@@ -117,7 +118,7 @@ public class TopPanelPatch {
         if(clickedAPButton) {
             // if we are disconnected and we click the ap button try new connection.
             if(!APClient.apClient.isConnected()) {
-                APClient.newConnection(ArchipelagoMW.address,ArchipelagoMW.slotName);
+                APClient.newConnection(ArchipelagoMW.address,ArchipelagoMW.slotName, ConnectionPanel.passwordField);
             }
 
             if(AbstractDungeon.screen == ArchipelagoRewardScreen.Enum.ARCHIPELAGO_REWARD) {

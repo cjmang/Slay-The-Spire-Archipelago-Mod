@@ -5,6 +5,7 @@ import ArchipelagoMW.ui.RewardMenu.ArchipelagoRewardScreen;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.evacipated.cardcrawl.modthespire.lib.*;
+import com.megacrit.cardcrawl.cards.AbstractCard;
 import com.megacrit.cardcrawl.core.Settings;
 import com.megacrit.cardcrawl.dungeons.AbstractDungeon;
 import com.megacrit.cardcrawl.helpers.FontHelper;
@@ -32,8 +33,9 @@ public class RewardItemPatch {
     }
 
     @SpirePatch(clz = RewardItem.class, method = SpirePatch.CLASS)
-    public static class BossRelics {
+    public static class CustomFields {
         public static SpireField<ArrayList<AbstractRelic>> bossRelics = new SpireField<>(() -> null);
+        public static SpireField<Boolean> apReward = new SpireField<>(() -> false);
     }
 
     @SpirePatch(clz= RewardItem.class,method="render")
@@ -54,7 +56,7 @@ public class RewardItemPatch {
         public static void Insert(RewardItem __instance, SpriteBatch sb, String ___text, float ___REWARD_TEXT_X, float ___y, Color color) {
             if(___text.contains("[] NL")) {
                 //float lineHeight = FontHelper.getSmartWidth(FontHelper.cardDescFont_N, ___text, 1000.0F * Settings.scale, 30.0F);
-                FontHelper.renderSmartText(sb, FontHelper.cardDescFont_N, ___text, ___REWARD_TEXT_X, ___y + 35.5F * Settings.scale , 1000.0F * Settings.scale, 28F, color);
+                FontHelper.renderSmartText(sb, FontHelper.cardDescFont_N, ___text, ___REWARD_TEXT_X, ___y + 35.5F * Settings.scale , 1000.0F * Settings.scale, 26.0F * Settings.scale, color);
             }
             else {
                 FontHelper.renderSmartText(sb, FontHelper.cardDescFont_N, ___text, ___REWARD_TEXT_X, ___y + 5.0F * Settings.scale, 1000.0F * Settings.scale, 0.0F, color);
@@ -79,7 +81,7 @@ public class RewardItemPatch {
         public static SpireReturn<Boolean> PrefixPatch(RewardItem __instance){
             if(__instance.type == RewardType.BOSS_RELIC) {
                 //logger.info("boss Relic list: " + BossRelics.bossRelics.get(__instance));
-                AbstractDungeon.bossRelicScreen.open(BossRelics.bossRelics.get(__instance));
+                AbstractDungeon.bossRelicScreen.open(CustomFields.bossRelics.get(__instance));
                 return SpireReturn.Return(true);
             }
             if(__instance.type == RewardType.ARCHIPELAGO_LOCATION) {
@@ -90,5 +92,18 @@ public class RewardItemPatch {
             }
             return SpireReturn.Continue();
         }
+    }
+
+    @SpirePatch(clz = RewardItem.class, method = "claimReward")
+    public static class ScrollUpdate {
+
+        @SpireInsertPatch(rloc = 356 - 290)
+        public static void Insert(RewardItem __instance, ArrayList<AbstractCard> ___cards) {
+            if (AbstractDungeon.screen == ArchipelagoRewardScreen.Enum.ARCHIPELAGO_REWARD) {
+                AbstractDungeon.cardRewardScreen.open(___cards, __instance, ArchipelagoRewardScreen.TEXT[4]);
+                AbstractDungeon.previousScreen = ArchipelagoRewardScreen.Enum.ARCHIPELAGO_REWARD;
+            }
+        }
+
     }
 }
