@@ -6,7 +6,7 @@
     <groupId>gg.archipelago</groupId>
     <artifactId>ArchipelagoMW</artifactId> <!--Keep a note of this one: this is the ID used in the "auto add cards" method-->
     <name>Archipelago Multi-World</name>
-    <version>0.1.1</version>
+    <version>0.1.3</version>
     <description>Archipelago Multi-World Integration into Slay the Spire</description>
 
     <properties>
@@ -18,13 +18,6 @@
         <!--CHANGE THIS TO YOUR STEAM INSTALLATION-->
         <Steam.path>D:\SteamLibrary\steamapps</Steam.path>
     </properties>
-
-    <repositories>
-        <repository>
-            <id>repo</id>
-            <url>file://${basedir}/repo</url>
-        </repository>
-    </repositories>
 
     <dependencies>
         <dependency>
@@ -62,7 +55,7 @@
         <dependency>
             <groupId>gg.archipelago</groupId>
             <artifactId>APClient</artifactId>
-            <version>1.4.0</version>
+            <version>1.5.0</version>
         </dependency>
     </dependencies>
 
@@ -112,6 +105,28 @@
                         <goals>
                             <goal>run</goal>
                         </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-install-plugin</artifactId>
+                <version>2.5.1</version>
+                <configuration>
+                    <groupId>gg.archipelago</groupId>
+                    <artifactId>APClient</artifactId>
+                    <version>1.5.0</version>
+                    <packaging>jar</packaging>
+                    <file>${basedir}/dependencies/Archipelago.MultiClient.Java.jar</file>
+                    <generatePom>true</generatePom>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>install-jar-lib</id>
+                        <goals>
+                            <goal>install-file</goal>
+                        </goals>
+                        <phase>validate</phase>
                     </execution>
                 </executions>
             </plugin>

@@ -398,54 +398,54 @@ public class ArchipelagoRewardScreen {
     }
 
     public static void addReward(NetworkItem networkItem) {
-        int itemID = networkItem.itemID;
+        long itemID = networkItem.itemID;
         String location = networkItem.locationName;
         String player = networkItem.playerName;
-        switch (itemID) {
-            case 8000: // Card Draw
-                apReward = true;
-                ArrayList<AbstractCard> cards = AbstractDungeon.getRewardCards();
-                apReward = false;
-                RewardItem reward = new RewardItem(1);
-                reward.goldAmt = 0;
-                reward.type = RewardItem.RewardType.CARD;
-                reward.cards = cards;
-                RewardItemPatch.CustomFields.apReward.set(reward,true);
-                reward.text = "Card Draw [] NL " +player + " [] NL " + location;
-                addReward(reward);
-                break;
-            case 8001: // Rare Card Draw
-                apRareReward = true;
-                ArrayList<AbstractCard> rareCards = AbstractDungeon.getRewardCards();
-                apRareReward = false;
-                reward = new RewardItem(1);
-                reward.goldAmt = 0;
-                reward.type = RewardItem.RewardType.CARD;
-                reward.cards = rareCards;
-                RewardItemPatch.CustomFields.apReward.set(reward,true);
-                try {
-                    Field f = RewardItem.class.getDeclaredField("isBoss");
-                    f.setAccessible(true);
-                    f.set(reward,true);
-                } catch (Exception ignored) {}
+        if (itemID == 8000L) {
+            apReward = true;
+            ArrayList<AbstractCard> cards = AbstractDungeon.getRewardCards();
+            apReward = false;
+            RewardItem reward = new RewardItem(1);
+            reward.goldAmt = 0;
+            reward.type = RewardItem.RewardType.CARD;
+            reward.cards = cards;
+            RewardItemPatch.CustomFields.apReward.set(reward, true);
+            reward.text = "Card Draw [] NL " + player + " [] NL " + location;
+            addReward(reward);
+        }
+        else if (itemID == 8001L) {
+            apRareReward = true;
+            ArrayList<AbstractCard> rareCards = AbstractDungeon.getRewardCards();
+            apRareReward = false;
+            RewardItem reward = new RewardItem(1);
+            reward.goldAmt = 0;
+            reward.type = RewardItem.RewardType.CARD;
+            reward.cards = rareCards;
+            RewardItemPatch.CustomFields.apReward.set(reward, true);
+            try {
+                Field f = RewardItem.class.getDeclaredField("isBoss");
+                f.setAccessible(true);
+                f.set(reward, true);
+            } catch (Exception ignored) {
+            }
 
-                reward.text = "Rare Card Draw [] NL " + player + " [] NL " + location;
-                addReward(reward);
-                break;
-            case 8002: // Relic
+            reward.text = "Rare Card Draw [] NL " + player + " [] NL " + location;
+            addReward(reward);
+        }
+        else if (itemID == 8002L) { // Relic
                 AbstractRelic relic = AbstractDungeon.returnRandomRelic(getRandomRelicTier());
-                reward = new RewardItem(relic);
+                RewardItem reward = new RewardItem(relic);
                 reward.text = "Relic [] NL "+player + " [] NL " + location;
                 RewardItemPatch.CustomFields.apReward.set(reward,true);
                 addReward(reward);
-                break;
-            case 8003: // Boss Relic
+        }
+        else if (itemID == 8003L) { // Boss Relic
                 ArrayList<AbstractRelic> bossRelics = new ArrayList<AbstractRelic>() {{
                     add(AbstractDungeon.returnRandomRelic(AbstractRelic.RelicTier.BOSS));
                     add(AbstractDungeon.returnRandomRelic(AbstractRelic.RelicTier.BOSS));
                     add(AbstractDungeon.returnRandomRelic(AbstractRelic.RelicTier.BOSS));
                 }};
-                reward = new RewardItem(1);
+                RewardItem reward = new RewardItem(1);
                 reward.goldAmt = 0;
                 reward.type = RewardItemPatch.RewardType.BOSS_RELIC;
                 RewardItemPatch.CustomFields.bossRelics.set(reward, bossRelics);
@@ -453,7 +453,6 @@ public class ArchipelagoRewardScreen {
                 reward.text = "Boss Relic [] NL " + player + " [] NL " + location;
                 addReward(reward);
                 //ArchipelagoMW.bossRelicRewardScreen.open(bossRelics);
-                break;
         }
     }
 

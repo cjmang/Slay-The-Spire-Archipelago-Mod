@@ -9,60 +9,60 @@ import java.util.HashMap;
 
 public class LocationTracker {
 
-    private static ArrayList<Integer> cardDrawLocations;
+    private static ArrayList<Long> cardDrawLocations;
 
-    private static ArrayList<Integer> relicLocations;
+    private static ArrayList<Long> relicLocations;
 
-    private static ArrayList<Integer> rareCardLocations;
+    private static ArrayList<Long> rareCardLocations;
 
-    private static ArrayList<Integer> bossRelicLocations;
+    private static ArrayList<Long> bossRelicLocations;
 
     public static boolean cardDraw;
 
-    public static HashMap<Integer, NetworkItem> scoutedLocations = new HashMap<>();
+    public static HashMap<Long, NetworkItem> scoutedLocations = new HashMap<>();
 
     public static void reset() {
-        cardDrawLocations = new ArrayList<Integer>() {{
-            add(19001);
-            add(19002);
-            add(19003);
-            add(19004);
-            add(19005);
-            add(19006);
-            add(19007);
-            add(19008);
-            add(19009);
-            add(19010);
-            add(19011);
-            add(19012);
-            add(19013);
-            add(19014);
-            add(19015);
+        cardDrawLocations = new ArrayList<Long>() {{
+            add(19001L);
+            add(19002L);
+            add(19003L);
+            add(19004L);
+            add(19005L);
+            add(19006L);
+            add(19007L);
+            add(19008L);
+            add(19009L);
+            add(19010L);
+            add(19011L);
+            add(19012L);
+            add(19013L);
+            add(19014L);
+            add(19015L);
         }};
 
-        relicLocations = new ArrayList<Integer>() {{
-            add(20001);
-            add(20002);
-            add(20003);
-            add(20004);
-            add(20005);
-            add(20006);
-            add(20007);
-            add(20008);
-            add(20009);
-            add(20010);
+        relicLocations = new ArrayList<Long>() {{
+            add(20001L);
+            add(20002L);
+            add(20003L);
+            add(20004L);
+            add(20005L);
+            add(20006L);
+            add(20007L);
+            add(20008L);
+            add(20009L);
+            add(20010L);
         }};
 
-         rareCardLocations = new ArrayList<Integer>() {{
-            add(21001);
-            add(21002);
-            add(21003);
+         rareCardLocations = new ArrayList<Long>() {{
+            add(21001L);
+            add(21002L);
+            add(21003L);
         }};
 
-         bossRelicLocations = new ArrayList<Integer>() {{
-            add(22001);
-            add(22002);
-            add(22003);
+         bossRelicLocations = new ArrayList<Long>() {{
+            add(22001L);
+            add(22002L);
+            add(22003L);
         }};
     }
 
@@ -77,7 +77,7 @@ public class LocationTracker {
             if ((boolean)isBoss.get(reward)) {
                 if(rareCardLocations.isEmpty())
                     return "";
-                int locationID = rareCardLocations.remove(0);
+                long locationID = rareCardLocations.remove(0);
                 APClient.apClient.checkLocation(locationID);
                 NetworkItem item = scoutedLocations.get(locationID);
                 if(item == null)
@@ -89,10 +89,10 @@ public class LocationTracker {
         if(cardDraw) {
             if(cardDrawLocations.isEmpty())
                 return "";
-            int locationID = cardDrawLocations.remove(0);
+            long locationID = cardDrawLocations.remove(0);
             APClient.apClient.checkLocation(locationID);
             NetworkItem item = scoutedLocations.get(locationID);
-            APClient.apClient.scoutLocations(new ArrayList<Integer>() {{add(cardDrawLocations.get(0));}});
+            APClient.apClient.scoutLocations(new ArrayList<Long>() {{add(cardDrawLocations.get(0));}});
             if(item == null)
                 return "Card Draw "+ (15 - cardDrawLocations.size());
             return item.itemName + " [] NL " + item.playerName + " [] NL Card Draw";
@@ -107,10 +107,10 @@ public class LocationTracker {
         if(relicLocations.isEmpty())
             return "";
 
-        int locationID = relicLocations.remove(0);
+        long locationID = relicLocations.remove(0);
         APClient.apClient.checkLocation(locationID);
         NetworkItem item = scoutedLocations.get(locationID);
-        APClient.apClient.scoutLocations(new ArrayList<Integer>() {{add(relicLocations.get(0));}});
+        APClient.apClient.scoutLocations(new ArrayList<Long>() {{add(relicLocations.get(0));}});
         if(item == null)
             return "Relic " + (10 - relicLocations.size());
         return item.itemName + " [] NL " + item.playerName + " [] NL Relic";
@@ -122,10 +122,10 @@ public class LocationTracker {
     static public String sendBossRelic() {
         if(bossRelicLocations.isEmpty())
             return "";
-        int locationID = bossRelicLocations.remove(0);
+        long locationID = bossRelicLocations.remove(0);
         APClient.apClient.checkLocation(locationID);
         NetworkItem item = scoutedLocations.get(locationID);
-        APClient.apClient.scoutLocations(new ArrayList<Integer>() {{add(bossRelicLocations.get(0));}});
+        APClient.apClient.scoutLocations(new ArrayList<Long>() {{add(bossRelicLocations.get(0));}});
         if(item == null)
             return "Boss Relic " + (3 - bossRelicLocations.size());
         return item.itemName + " [] NL " + item.playerName + " [] NL Boss Relic";
@@ -133,22 +133,22 @@ public class LocationTracker {
 
     public static void forfeit() {
         APClient ap = APClient.apClient;
-        for (Integer location : cardDrawLocations) {
+        for (long location : cardDrawLocations) {
             ap.checkLocation(location);
         }
-        for (Integer location : rareCardLocations) {
+        for (long location : rareCardLocations) {
             ap.checkLocation(location);
         }
-        for (Integer location : relicLocations) {
+        for (long location : relicLocations) {
             ap.checkLocation(location);
         }
-        for (Integer location : bossRelicLocations) {
+        for (long location : bossRelicLocations) {
             ap.checkLocation(location);
         }
     }
 
     public static void scoutFirstLocations() {
-        ArrayList<Integer> locations = new ArrayList<Integer>() {{
+        ArrayList<Long> locations = new ArrayList<Long>() {{
             add(cardDrawLocations.get(0));
             add(relicLocations.get(0));
             add(rareCardLocations.get(0));

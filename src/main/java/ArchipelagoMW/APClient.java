@@ -32,6 +32,7 @@ public class APClient extends gg.archipelago.APClient.APClient {
         apClient = new APClient("", 0);
         apClient.setPassword(password);
         apClient.setName(slotName);
+        apClient.setItemsHandlingFlags(0b111);
         apClient.connect(address);
     }
 
@@ -176,6 +177,11 @@ public class APClient extends gg.archipelago.APClient.APClient {
     @Override
     public void onLocationInfo(ArrayList<NetworkItem> networkItems) {
         LocationTracker.addToScoutedLocations(networkItems);
+    }
+
+    @Override
+    public void onLocationChecked(long l) {
+
     }
 
     @Override
