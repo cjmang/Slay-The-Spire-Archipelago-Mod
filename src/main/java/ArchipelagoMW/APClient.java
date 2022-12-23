@@ -17,6 +17,7 @@ import gg.archipelago.APClient.parts.NetworkItem;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 
 public class APClient extends gg.archipelago.APClient.APClient {
@@ -33,7 +34,11 @@ public class APClient extends gg.archipelago.APClient.APClient {
         apClient.setPassword(password);
         apClient.setName(slotName);
         apClient.setItemsHandlingFlags(0b111);
-        apClient.connect(address);
+        try {
+            apClient.connect(address);
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
+        }
     }
 
     private APClient(String saveID, int slotID) {

@@ -92,7 +92,8 @@ public class LocationTracker {
             long locationID = cardDrawLocations.remove(0);
             APClient.apClient.checkLocation(locationID);
             NetworkItem item = scoutedLocations.get(locationID);
-            APClient.apClient.scoutLocations(new ArrayList<Long>() {{add(cardDrawLocations.get(0));}});
+            if(!cardDrawLocations.isEmpty())
+                APClient.apClient.scoutLocations(new ArrayList<Long>() {{add(cardDrawLocations.get(0));}});
             if(item == null)
                 return "Card Draw "+ (15 - cardDrawLocations.size());
             return item.itemName + " [] NL " + item.playerName + " [] NL Card Draw";
@@ -110,7 +111,8 @@ public class LocationTracker {
         long locationID = relicLocations.remove(0);
         APClient.apClient.checkLocation(locationID);
         NetworkItem item = scoutedLocations.get(locationID);
-        APClient.apClient.scoutLocations(new ArrayList<Long>() {{add(relicLocations.get(0));}});
+        if(!relicLocations.isEmpty())
+            APClient.apClient.scoutLocations(new ArrayList<Long>() {{add(relicLocations.get(0));}});
         if(item == null)
             return "Relic " + (10 - relicLocations.size());
         return item.itemName + " [] NL " + item.playerName + " [] NL Relic";
@@ -125,7 +127,8 @@ public class LocationTracker {
         long locationID = bossRelicLocations.remove(0);
         APClient.apClient.checkLocation(locationID);
         NetworkItem item = scoutedLocations.get(locationID);
-        APClient.apClient.scoutLocations(new ArrayList<Long>() {{add(bossRelicLocations.get(0));}});
+        if(!bossRelicLocations.isEmpty())
+            APClient.apClient.scoutLocations(new ArrayList<Long>() {{add(bossRelicLocations.get(0));}});
         if(item == null)
             return "Boss Relic " + (3 - bossRelicLocations.size());
         return item.itemName + " [] NL " + item.playerName + " [] NL Boss Relic";
