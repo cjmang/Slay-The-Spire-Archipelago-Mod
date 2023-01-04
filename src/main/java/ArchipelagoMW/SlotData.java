@@ -8,7 +8,7 @@ public class SlotData {
     public String seed;
 
     @SerializedName("character")
-    public int character;
+    public String character;
 
     @SerializedName("games")
     public int games;
