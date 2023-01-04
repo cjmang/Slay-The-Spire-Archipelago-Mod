@@ -12,8 +12,8 @@
     <properties>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
-        <SlayTheSpire.version>12-22-2020</SlayTheSpire.version>
-        <ModTheSpire.version>3.8.0</ModTheSpire.version>
+        <SlayTheSpire.version>12-18-2022</SlayTheSpire.version>
+        <ModTheSpire.version>3.30.0</ModTheSpire.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <!--CHANGE THIS TO YOUR STEAM INSTALLATION-->
         <Steam.path>D:\SteamLibrary\steamapps</Steam.path>
@@ -55,7 +55,7 @@
         <dependency>
             <groupId>gg.archipelago</groupId>
             <artifactId>APClient</artifactId>
-            <version>1.6</version>
+            <version>1.7</version>
         </dependency>
     </dependencies>
 
@@ -115,9 +115,9 @@
                 <configuration>
                     <groupId>gg.archipelago</groupId>
                     <artifactId>APClient</artifactId>
-                    <version>1.6</version>
+                    <version>1.7</version>
                     <packaging>jar</packaging>
-                    <file>${basedir}/dependencies/Archipelago.MultiClient.Java.jar</file>
+                    <file>${basedir}/dependencies/Archipelago.MultiClient.Java-1.7-all.jar</file>
                     <generatePom>true</generatePom>
                 </configuration>
                 <executions>
