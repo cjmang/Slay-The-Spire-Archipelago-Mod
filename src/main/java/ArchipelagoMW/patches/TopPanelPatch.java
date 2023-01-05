@@ -5,10 +5,8 @@ import ArchipelagoMW.APClient;
 import ArchipelagoMW.ArchipelagoMW;
 import ArchipelagoMW.ui.RewardMenu.ArchipelagoRewardScreen;
 import ArchipelagoMW.ui.connection.ConnectionPanel;
-import ArchipelagoMW.util.TextureLoader;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.MathUtils;
 import com.evacipated.cardcrawl.modthespire.lib.SpirePatch;
@@ -21,20 +19,17 @@ import com.megacrit.cardcrawl.helpers.FontHelper;
 import com.megacrit.cardcrawl.helpers.Hitbox;
 import com.megacrit.cardcrawl.helpers.MathHelper;
 import com.megacrit.cardcrawl.helpers.input.InputHelper;
-import com.megacrit.cardcrawl.rewards.RewardItem;
-import com.megacrit.cardcrawl.screens.CombatRewardScreen;
+import com.megacrit.cardcrawl.rooms.AbstractRoom;
 import com.megacrit.cardcrawl.ui.panels.TopPanel;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
-import static ArchipelagoMW.ArchipelagoMW.makeUIPath;
 
 public class TopPanelPatch {
 
     public static final Logger logger = LogManager.getLogger(TopPanelPatch.class.getName());
 
     static float ICON_W = 64.0F * Settings.scale;
-    static float ICON_Y = Settings.isMobile ? (float)Settings.HEIGHT - ICON_W - 12.0F * Settings.scale : (float)Settings.HEIGHT - ICON_W;// 62
+    static float ICON_Y = Settings.isMobile ? (float) Settings.HEIGHT - ICON_W - 12.0F * Settings.scale : (float) Settings.HEIGHT - ICON_W;// 62
     static float TOP_RIGHT_PAD_X = 10.0F * Settings.scale;
     static float AP_BUTTON_X = (float) Settings.WIDTH - (ICON_W + TOP_RIGHT_PAD_X) * 4.0F;
 
@@ -43,9 +38,10 @@ public class TopPanelPatch {
 
     public static Hitbox apButtonHB;
 
-    public TopPanelPatch() {}
+    public TopPanelPatch() {
+    }
 
-    @SpirePatch(clz= TopPanel.class, method = SpirePatch.CONSTRUCTOR)
+    @SpirePatch(clz = TopPanel.class, method = SpirePatch.CONSTRUCTOR)
     public static class createAPHitBox {
 
         @SpirePrefixPatch
@@ -65,13 +61,13 @@ public class TopPanelPatch {
 
         @SpirePostfixPatch
         public static void PostFix(TopPanel __instance) {
-            if(apButtonHB.justHovered) {
+            if (apButtonHB.justHovered) {
                 CardCrawlGame.sound.play("UI_HOVER");
             }
         }
     }
 
-    @SpirePatch(clz = TopPanel.class, method="renderTopRightIcons")
+    @SpirePatch(clz = TopPanel.class, method = "renderTopRightIcons")
     public static class renderAPIcon {
 
         @SpirePostfixPatch
@@ -82,22 +78,28 @@ public class TopPanelPatch {
 
 
     private static void renderAPIcon(SpriteBatch sb) {
-        if(APClient.apClient.isConnected()) {
-            sb.setColor(Color.WHITE);
+        //set the color of the icon based on our current state
+        if (APClient.apClient.isConnected()) {
+            //check if we are in a room where we want to disable the button
+            if (AbstractDungeon.getCurrRoom().phase != AbstractRoom.RoomPhase.COMPLETE || (AbstractDungeon.getCurrMapNode().y == -1 && AbstractDungeon.actNum != 1))
+                sb.setColor(Color.GRAY);
+            else
+                sb.setColor(Color.WHITE);
         } else {
             sb.setColor(Color.RED);
         }
-        sb.draw(ArchipelagoMW.AP_ICON, AP_BUTTON_X - 32.0F + 32.0F * Settings.scale, ICON_Y - 32.0F + 32.0F * Settings.scale, 32.0F, 32.0F, 64.0F, 64.0F, Settings.scale, Settings.scale, apIconAngle, 0, 0, 64, 64, false, false);// 1803
+
+        // if we are hovering we need to highlight and wiggle the button
         if (apButtonHB.hovered) {// 1820
             sb.setBlendFunction(770, 1);// 1821
             sb.setColor(new Color(1.0F, 1.0F, 1.0F, 0.25F));
             sb.draw(ArchipelagoMW.AP_ICON, AP_BUTTON_X - 32.0F + 32.0F * Settings.scale, ICON_Y - 32.0F + 32.0F * Settings.scale, 32.0F, 32.0F, 64.0F, 64.0F, Settings.scale, Settings.scale, apIconAngle, 0, 0, 64, 64, false, false);
             sb.setBlendFunction(770, 771);
         } else {
-            sb.setColor(Color.WHITE);
+            sb.draw(ArchipelagoMW.AP_ICON, AP_BUTTON_X - 32.0F + 32.0F * Settings.scale, ICON_Y - 32.0F + 32.0F * Settings.scale, 32.0F, 32.0F, 64.0F, 64.0F, Settings.scale, Settings.scale, apIconAngle, 0, 0, 64, 64, false, false);// 1803
+
         }
-        Color tmpColor = Color.WHITE.cpy();
-        FontHelper.renderFontRightTopAligned(sb, FontHelper.topPanelAmountFont, Integer.toString(ArchipelagoRewardScreen.rewards.size()), AP_BUTTON_X + 58.0F * Settings.scale, ICON_Y + 25.0F * Settings.scale, tmpColor);
+        FontHelper.renderFontRightTopAligned(sb, FontHelper.topPanelAmountFont, Integer.toString(ArchipelagoRewardScreen.rewardsQueued), AP_BUTTON_X + 58.0F * Settings.scale, ICON_Y + 25.0F * Settings.scale, Color.WHITE);
 
         apButtonHB.render(sb);
     }
@@ -107,25 +109,31 @@ public class TopPanelPatch {
         if (AbstractDungeon.screen == ArchipelagoRewardScreen.Enum.ARCHIPELAGO_REWARD) {
             rotateTimer += Gdx.graphics.getDeltaTime() * 4.0F;
             apIconAngle = MathHelper.angleLerpSnap(apIconAngle, MathUtils.sin(rotateTimer) * 15.0F);
-        }
-        else if (apButtonHB.hovered) {
+        } else if (apButtonHB.hovered) {
             apIconAngle = MathHelper.angleLerpSnap(apIconAngle, 15.0F);
         } else {
             apIconAngle = MathHelper.angleLerpSnap(apIconAngle, 0.0F);
         }
 
         boolean clickedAPButton = apButtonHB.hovered && InputHelper.justClickedLeft;
-        if(clickedAPButton) {
+        if (clickedAPButton) {
             // if we are disconnected and we click the ap button try new connection.
-            if(!APClient.apClient.isConnected()) {
-                APClient.newConnection(ArchipelagoMW.address,ArchipelagoMW.slotName, ConnectionPanel.passwordField);
+            if (!APClient.apClient.isConnected()) {
+                APClient.newConnection(ArchipelagoMW.address, ArchipelagoMW.slotName, ConnectionPanel.passwordField);
             }
+            //ArchipelagoMW.logger.info("room phase: " + AbstractDungeon.getCurrRoom().phase.toString());
 
-            if(AbstractDungeon.screen == ArchipelagoRewardScreen.Enum.ARCHIPELAGO_REWARD) {
+            if (AbstractDungeon.screen == ArchipelagoRewardScreen.Enum.ARCHIPELAGO_REWARD) {
                 ArchipelagoRewardScreen.close();
             } else {
-                ArchipelagoRewardScreen.open();
+                if (AbstractDungeon.getCurrRoom().phase == AbstractRoom.RoomPhase.COMPLETE) {
+                    if (AbstractDungeon.getCurrMapNode().y == -1 && AbstractDungeon.actNum != 1) {
+                        return;
+                    }
+                    ArchipelagoRewardScreen.open();
+                }
             }
         }
     }
 }
+

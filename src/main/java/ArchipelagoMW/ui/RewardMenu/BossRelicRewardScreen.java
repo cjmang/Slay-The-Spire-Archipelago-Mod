@@ -200,6 +200,7 @@ public class BossRelicRewardScreen {
     }
 
     private void relicObtainLogic(final AbstractRelic r) {
+        logger.info("relicObtainLogic");
         final HashMap<String, Object> choice = new HashMap<String, Object>();
         final ArrayList<String> notPicked = new ArrayList<String>();
         choice.put("picked", r.relicId);
@@ -222,6 +223,7 @@ public class BossRelicRewardScreen {
     }
 
     private void relicSkipLogic() {
+        logger.info("relicSkipLogic");
         if (AbstractDungeon.getCurrRoom() instanceof TreasureRoomBoss && AbstractDungeon.screen == Enum.ARCHIPELAGO_BOSS_REWARD) {
             final TreasureRoomBoss r = (TreasureRoomBoss)AbstractDungeon.getCurrRoom();
             r.chest.close();
@@ -234,6 +236,7 @@ public class BossRelicRewardScreen {
     }
 
     private void updateCancelButton() {
+        logger.info("updateCancelButton");
         this.cancelButton.update();
         if (this.cancelButton.hb.clicked) {
             this.cancelButton.hb.clicked = false;
@@ -242,6 +245,7 @@ public class BossRelicRewardScreen {
     }
 
     private void updateConfirmButton() {
+        logger.info("updateConfirmButton");
         this.confirmButton.update();
         if (this.confirmButton.hb.clicked) {
             this.confirmButton.hb.clicked = false;
@@ -260,6 +264,7 @@ public class BossRelicRewardScreen {
     }
 
     public void noPick() {
+        //logger.info("noPick");
         final ArrayList<String> notPicked = new ArrayList<>();
         final HashMap<String, Object> choice = new HashMap<>();
         for (final AbstractRelic otherRelics : this.relics) {
@@ -327,6 +332,7 @@ public class BossRelicRewardScreen {
     }
 
     public void reopen() {
+        logger.info("reopen");
         this.confirmButton.hideInstantly();
         this.touchRelic = null;
         this.touchBlight = null;
@@ -361,6 +367,7 @@ public class BossRelicRewardScreen {
     }
 
     public void open(final ArrayList<AbstractRelic> chosenRelics) {
+        logger.info("open");
         this.confirmButton.hideInstantly();
         this.touchRelic = null;
         this.touchBlight = null;

@@ -48,6 +48,7 @@ public class ArchipelagoRewardScreen {
     private static final UIStrings uiStrings;
     public static final String[] TEXT;
     public static ArrayList<RewardItem> rewards = new ArrayList<>();
+    public static int rewardsQueued = 0;
     public static ArrayList<AbstractGameEffect> effects = new ArrayList<>();
     public static boolean hasTakenAll = false;
     private static float rewardAnimTimer = 0.2F;
@@ -151,6 +152,7 @@ public class ArchipelagoRewardScreen {
     }
 
     public static void reopen() {
+        rewardsQueued = 0;
         AbstractDungeon.getCurrRoom().rewardTime = true;
         rewardAnimTimer = 0.2F;
         AbstractDungeon.screen = Enum.ARCHIPELAGO_REWARD;
@@ -165,7 +167,12 @@ public class ArchipelagoRewardScreen {
     }
 
     public static void open(boolean animated) {
+        rewardsQueued = 0;
         AbstractDungeon.player.releaseCard();
+        if (AbstractDungeon.screen !=null)
+        {
+            AbstractDungeon.closeCurrentScreen();
+        }
         if (animated) {
             AbstractDungeon.overlayMenu.cancelButton.show(TEXT[0]);
         } else {
@@ -178,6 +185,8 @@ public class ArchipelagoRewardScreen {
         AbstractDungeon.dynamicBanner.appear(TEXT[1]);
         AbstractDungeon.overlayMenu.proceedButton.hide();
         AbstractDungeon.overlayMenu.hideCombatPanels();
+
+        AbstractDungeon.previousScreen = null;
         AbstractDungeon.screen = Enum.ARCHIPELAGO_REWARD;
         tip = CardCrawlGame.tips.getTip();
 
@@ -192,8 +201,7 @@ public class ArchipelagoRewardScreen {
         if ((AbstractDungeon.getCurrRoom() instanceof MonsterRoomBoss
                 || AbstractDungeon.getCurrRoom() instanceof MonsterRoom
                 || AbstractDungeon.getCurrRoom() instanceof MonsterRoomElite
-            )
-            && AbstractDungeon.getCurrRoom().isBattleOver) {
+        ) && AbstractDungeon.getCurrRoom().isBattleOver) {
             logger.info("Setting previous screen to combat_reward due to combat room.");
             AbstractDungeon.previousScreen = AbstractDungeon.CurrentScreen.COMBAT_REWARD;
         }
@@ -401,7 +409,7 @@ public class ArchipelagoRewardScreen {
         long itemID = networkItem.itemID;
         String location = networkItem.locationName;
         String player = networkItem.playerName;
-        if (itemID == 8000L) {
+        if (itemID == 8000L) { //card draw
             apReward = true;
             ArrayList<AbstractCard> cards = AbstractDungeon.getRewardCards();
             apReward = false;
@@ -413,7 +421,7 @@ public class ArchipelagoRewardScreen {
             reward.text = "Card Draw [] NL " + player + " [] NL " + location;
             addReward(reward);
         }
-        else if (itemID == 8001L) {
+        else if (itemID == 8001L) { //rare card draw
             apRareReward = true;
             ArrayList<AbstractCard> rareCards = AbstractDungeon.getRewardCards();
             apRareReward = false;
@@ -433,26 +441,26 @@ public class ArchipelagoRewardScreen {
             addReward(reward);
         }
         else if (itemID == 8002L) { // Relic
-                AbstractRelic relic = AbstractDungeon.returnRandomRelic(getRandomRelicTier());
-                RewardItem reward = new RewardItem(relic);
-                reward.text = "Relic [] NL "+player + " [] NL " + location;
-                RewardItemPatch.CustomFields.apReward.set(reward,true);
-                addReward(reward);
+            AbstractRelic relic = AbstractDungeon.returnRandomRelic(getRandomRelicTier());
+            RewardItem reward = new RewardItem(relic);
+            reward.text = "Relic [] NL "+player + " [] NL " + location;
+            RewardItemPatch.CustomFields.apReward.set(reward,true);
+            addReward(reward);
         }
         else if (itemID == 8003L) { // Boss Relic
-                ArrayList<AbstractRelic> bossRelics = new ArrayList<AbstractRelic>() {{
-                    add(AbstractDungeon.returnRandomRelic(AbstractRelic.RelicTier.BOSS));
-                    add(AbstractDungeon.returnRandomRelic(AbstractRelic.RelicTier.BOSS));
-                    add(AbstractDungeon.returnRandomRelic(AbstractRelic.RelicTier.BOSS));
-                }};
-                RewardItem reward = new RewardItem(1);
-                reward.goldAmt = 0;
-                reward.type = RewardItemPatch.RewardType.BOSS_RELIC;
-                RewardItemPatch.CustomFields.bossRelics.set(reward, bossRelics);
-                RewardItemPatch.CustomFields.apReward.set(reward,true);
-                reward.text = "Boss Relic [] NL " + player + " [] NL " + location;
-                addReward(reward);
-                //ArchipelagoMW.bossRelicRewardScreen.open(bossRelics);
+            ArrayList<AbstractRelic> bossRelics = new ArrayList<AbstractRelic>() {{
+                add(AbstractDungeon.returnRandomRelic(AbstractRelic.RelicTier.BOSS));
+                add(AbstractDungeon.returnRandomRelic(AbstractRelic.RelicTier.BOSS));
+                add(AbstractDungeon.returnRandomRelic(AbstractRelic.RelicTier.BOSS));
+            }};
+            RewardItem reward = new RewardItem(1);
+            reward.goldAmt = 0;
+            reward.type = RewardItemPatch.RewardType.BOSS_RELIC;
+            RewardItemPatch.CustomFields.bossRelics.set(reward, bossRelics);
+            RewardItemPatch.CustomFields.apReward.set(reward,true);
+            reward.text = "Boss Relic [] NL " + player + " [] NL " + location;
+            addReward(reward);
+            //ArchipelagoMW.bossRelicRewardScreen.open(bossRelics);
         }
     }
 

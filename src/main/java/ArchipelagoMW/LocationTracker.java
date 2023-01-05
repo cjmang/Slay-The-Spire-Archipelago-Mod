@@ -53,13 +53,13 @@ public class LocationTracker {
             add(20010L);
         }};
 
-         rareCardLocations = new ArrayList<Long>() {{
+        rareCardLocations = new ArrayList<Long>() {{
             add(21001L);
             add(21002L);
             add(21003L);
         }};
 
-         bossRelicLocations = new ArrayList<Long>() {{
+        bossRelicLocations = new ArrayList<Long>() {{
             add(22001L);
             add(22002L);
             add(22003L);

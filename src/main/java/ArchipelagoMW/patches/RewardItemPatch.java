@@ -80,13 +80,14 @@ public class RewardItemPatch {
         @SpirePrefixPatch
         public static SpireReturn<Boolean> PrefixPatch(RewardItem __instance){
             if(__instance.type == RewardType.BOSS_RELIC) {
-                //logger.info("boss Relic list: " + BossRelics.bossRelics.get(__instance));
+                logger.info("Boss relic Reward. Boss Relic list: " + CustomFields.bossRelics.get(__instance));
                 AbstractDungeon.bossRelicScreen.open(CustomFields.bossRelics.get(__instance));
-                return SpireReturn.Return(true);
+
+                return SpireReturn.Return(false);
             }
             if(__instance.type == RewardType.ARCHIPELAGO_LOCATION) {
-                //logger.info("boss Relic list: " + BossRelics.bossRelics.get(__instance));
-                //AbstractDungeon.bossRelicScreen.open(BossRelics.bossRelics.get(__instance));
+                logger.info("Archipelago location reached");
+
                 ArchipelagoRewardScreen.rewards.remove(__instance);
                 return SpireReturn.Return(true);
             }

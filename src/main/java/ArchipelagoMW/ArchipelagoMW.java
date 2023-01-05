@@ -9,6 +9,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.evacipated.cardcrawl.modthespire.lib.SpireInitializer;
 import com.google.gson.Gson;
 import com.megacrit.cardcrawl.core.Settings;
+import com.megacrit.cardcrawl.helpers.RelicLibrary;
 import com.megacrit.cardcrawl.localization.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -33,7 +34,7 @@ public class ArchipelagoMW implements
 
     //This is for the in-game mod settings panel.
     private static final String MODNAME = "Archipelago Multi-World";
-    private static final String AUTHOR = "Kono Tyran"; // And pretty soon - You!
+    private static final String AUTHOR = "Kono Tyran & Mavelovent"; // And pretty soon - You!
     private static final String DESCRIPTION = "An Archipelago multiworld mod.";
 
     //Mod Badge - A small icon that appears in the mod settings menu next to your mod.
@@ -52,28 +53,28 @@ public class ArchipelagoMW implements
     public static String makeUIPath(String resourcePath) {
         return getModID() + "Resources/images/ui/" + resourcePath;
     }
-    
+
     // =============== /MAKE IMAGE PATHS/ =================
-    
+
     // =============== /INPUT TEXTURE LOCATION/ =================
-    
-    
+
+
     // =============== SUBSCRIBE, CREATE THE COLOR_GRAY, INITIALIZE =================
-    
+
     public ArchipelagoMW() {
         logger.info("Subscribe to BaseMod hooks");
-        
+
         BaseMod.subscribe(this);
-      
+
         setModID("ArchipelagoMW");
 
         logger.info("Done subscribing");
     }
-    
+
     // ====== NO EDIT AREA ======
     // DON'T TOUCH THIS STUFF. IT IS HERE FOR STANDARDIZATION BETWEEN MODS AND TO ENSURE GOOD CODE PRACTICES.
     // IF YOU MODIFY THIS I WILL HUNT YOU DOWN AND DOWNVOTE YOUR MOD ON WORKSHOP
-    
+
     public static void setModID(String ID) { // DON'T EDIT
         Gson coolG = new Gson(); // EY DON'T EDIT THIS
         //   String IDjson = Gdx.files.internal("IDCheckStringsDONT-EDIT-AT-ALL.json").readString(String.valueOf(StandardCharsets.UTF_8)); // i hate u Gdx.files
@@ -89,11 +90,11 @@ public class ArchipelagoMW implements
         } // NO
         logger.info("Success! ID is " + modID); // WHY WOULD U WANT IT NOT TO LOG?? DON'T EDIT THIS.
     } // NO
-    
+
     public static String getModID() { // NO
         return modID; // DOUBLE NO
     } // NU-UH
-    
+
     private static void pathCheck() { // ALSO NO
         Gson coolG = new Gson(); // NOPE DON'T EDIT THIS
         //   String IDjson = Gdx.files.internal("IDCheckStringsDONT-EDIT-AT-ALL.json").readString(String.valueOf(StandardCharsets.UTF_8)); // i still hate u btw Gdx.files
@@ -110,10 +111,10 @@ public class ArchipelagoMW implements
             }// NO
         }// NO
     }// NO
-    
+
     // ====== YOU CAN EDIT AGAIN ======
-    
-    
+
+
     public static void initialize() {
         logger.info("========================= Initializing Archipelago Multi-World. Hi. =========================");
         ArchipelagoMW Archipelago = new ArchipelagoMW();
@@ -127,26 +128,26 @@ public class ArchipelagoMW implements
     }
 
     // =============== POST-INITIALIZE =================
-    
+
     @Override
     public void receivePostInitialize() {
         logger.info("Loading badge image and mod options");
-        
+
         // Load the Mod Badge
         Texture badgeTexture = TextureLoader.getTexture(BADGE_IMAGE);
 
         AP_ICON = TextureLoader.getTexture(makeUIPath("ap_icon.png"));
-        
+
         // Create the Mod Menu
         ModPanel settingsPanel = new ModPanel();
 
         //bossRelicRewardScreen = new BossRelicRewardScreen();
-        
+
         BaseMod.registerModBadge(badgeTexture, MODNAME, AUTHOR, DESCRIPTION, settingsPanel);
         //Settings.isInfo = true;
         //Settings.isDebug = true;
 
-        
+
         // =============== EVENTS =================
         // https://github.com/daviscook477/BaseMod/wiki/Custom-Events
 
@@ -169,27 +170,27 @@ public class ArchipelagoMW implements
         //BaseMod.addEvent(eventParams);
 
         // =============== /EVENTS/ =================
+        BaseMod.removeRelic(RelicLibrary.getRelic("Calling Bell"));
         logger.info("Done loading badge Image and mod options");
     }
-    
+
     // =============== / POST-INITIALIZE/ =================
 
-    
-    
+
+
     // ================ LOAD THE TEXT ===================
-    
+
     @Override
     public void receiveEditStrings() {
-        logger.info("You seeing this?");
         logger.info("Beginning to edit strings for mod with ID: " + getModID());
 
         // UIStrings
         BaseMod.loadCustomStringsFile(UIStrings.class,
                 getModID() + "Resources/localization/eng/ArchipelagoMW-UI-Strings.json");
-        
+
         logger.info("Done editing strings");
     }
-    
+
     // ================ /LOAD THE TEXT/ ===================
 
 

@@ -49,6 +49,7 @@ public class APClient extends gg.archipelago.APClient.APClient {
 
     @Override
     public void onConnectResult(ConnectionResultEvent connectionResultEvent) {
+        ArchipelagoRewardScreen.rewardsQueued = 0;
         String msg = "Connecting to AP...";
         switch ( connectionResultEvent.getResult()) {
             case SlotAlreadyTaken:
@@ -82,6 +83,7 @@ public class APClient extends gg.archipelago.APClient.APClient {
         try {
             SlotData data = connectionResultEvent.getSlotData(SlotData.class);
             logger.info("slot data parsed");
+
             AbstractPlayer character = CardCrawlGame.characterManager.getCharacter(AbstractPlayer.PlayerClass.IRONCLAD);
             switch(data.character) {
                 case "1":
@@ -181,8 +183,20 @@ public class APClient extends gg.archipelago.APClient.APClient {
     @Override
     public void onReceiveItem(NetworkItem networkItem) {
         //ignore received items that happen while we are not yet loaded
-        if (AbstractDungeon.isPlayerInDungeon())
-            ArchipelagoRewardScreen.addReward(networkItem);
+        logger.info("NetworkItem received: " + networkItem.itemName);
+        ArchipelagoRewardScreen.rewardsQueued +=1 ;
+        if (AbstractDungeon.isPlayerInDungeon()) {
+            AbstractRoom room;
+            try {
+                room =  AbstractDungeon.getCurrRoom();
+                logger.info("Player is in dungeon! Adding it! He is in room: " + room);
+                ArchipelagoRewardScreen.addReward(networkItem);
+            }
+            catch (NullPointerException e) {
+                logger.info("Player is not in the dungeon yet? GetCurrRoom Failed. Most likely on second and further runs");
+            }
+
+        }
     }
 
     @Override
