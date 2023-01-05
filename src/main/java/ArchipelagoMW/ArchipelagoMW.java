@@ -1,6 +1,7 @@
 package ArchipelagoMW;
 
 import ArchipelagoMW.ui.RewardMenu.BossRelicRewardScreen;
+import ArchipelagoMW.ui.topPannel.ArchipelagoIcon;
 import basemod.*;
 import basemod.interfaces.*;
 import com.badlogic.gdx.Gdx;
@@ -144,6 +145,7 @@ public class ArchipelagoMW implements
         //bossRelicRewardScreen = new BossRelicRewardScreen();
 
         BaseMod.registerModBadge(badgeTexture, MODNAME, AUTHOR, DESCRIPTION, settingsPanel);
+        BaseMod.addTopPanelItem(new ArchipelagoIcon());
         //Settings.isInfo = true;
         //Settings.isDebug = true;
 
