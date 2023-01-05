@@ -55,7 +55,7 @@
         <dependency>
             <groupId>gg.archipelago</groupId>
             <artifactId>APClient</artifactId>
-            <version>1.7</version>
+            <version>1.8</version>
         </dependency>
     </dependencies>
 
@@ -115,9 +115,9 @@
                 <configuration>
                     <groupId>gg.archipelago</groupId>
                     <artifactId>APClient</artifactId>
-                    <version>1.7</version>
+                    <version>1.8</version>
                     <packaging>jar</packaging>
-                    <file>${basedir}/dependencies/Archipelago.MultiClient.Java-1.7-all.jar</file>
+                    <file>${basedir}/dependencies/Archipelago.MultiClient.Java-1.8-all.jar</file>
                     <generatePom>true</generatePom>
                 </configuration>
                 <executions>

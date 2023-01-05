@@ -9,6 +9,7 @@ import com.megacrit.cardcrawl.dungeons.AbstractDungeon;
 import com.megacrit.cardcrawl.helpers.SeedHelper;
 import com.megacrit.cardcrawl.random.Random;
 import com.megacrit.cardcrawl.screens.mainMenu.MainMenuScreen;
+import gg.archipelago.APClient.ItemFlags;
 import gg.archipelago.APClient.Print.APPrint;
 import gg.archipelago.APClient.events.ConnectionAttemptEvent;
 import gg.archipelago.APClient.events.ConnectionResultEvent;
@@ -34,7 +35,7 @@ public class APClient extends gg.archipelago.APClient.APClient {
         apClient = new APClient("", 0);
         apClient.setPassword(password);
         apClient.setName(slotName);
-        apClient.setItemsHandlingFlags(0b111);
+        apClient.setItemsHandlingFlags(ItemFlags.SEND_ITEMS + ItemFlags.SEND_OWN_ITEMS + ItemFlags.SEND_STARTING_INVENTORY);
         try {
             apClient.connect(address);
         } catch (URISyntaxException e) {
