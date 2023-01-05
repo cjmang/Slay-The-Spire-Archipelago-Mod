@@ -186,10 +186,8 @@ public class APClient extends gg.archipelago.APClient.APClient {
         logger.info("NetworkItem received: " + networkItem.itemName);
         ArchipelagoRewardScreen.rewardsQueued +=1 ;
         if (AbstractDungeon.isPlayerInDungeon()) {
-            AbstractRoom room;
             try {
-                room =  AbstractDungeon.getCurrRoom();
-                logger.info("Player is in dungeon! Adding it! He is in room: " + room);
+                logger.info("Player is in dungeon! Adding it! He is in room: " + AbstractDungeon.getCurrRoom());
                 ArchipelagoRewardScreen.addReward(networkItem);
             }
             catch (NullPointerException e) {
