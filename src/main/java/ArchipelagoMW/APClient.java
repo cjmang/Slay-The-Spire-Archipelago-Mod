@@ -1,5 +1,6 @@
 package ArchipelagoMW;
 
+import ArchipelagoMW.patches.NeowPatch;
 import ArchipelagoMW.ui.RewardMenu.ArchipelagoRewardScreen;
 import ArchipelagoMW.ui.connection.ConnectionPanel;
 import com.megacrit.cardcrawl.characters.AbstractPlayer;
@@ -8,6 +9,9 @@ import com.megacrit.cardcrawl.core.Settings;
 import com.megacrit.cardcrawl.dungeons.AbstractDungeon;
 import com.megacrit.cardcrawl.helpers.SeedHelper;
 import com.megacrit.cardcrawl.random.Random;
+import com.megacrit.cardcrawl.neow.NeowEvent;
+import com.megacrit.cardcrawl.neow.NeowRoom;
+import com.megacrit.cardcrawl.rooms.AbstractRoom;
 import com.megacrit.cardcrawl.screens.mainMenu.MainMenuScreen;
 import gg.archipelago.APClient.ItemFlags;
 import gg.archipelago.APClient.Print.APPrint;
@@ -21,6 +25,7 @@ import org.apache.logging.log4j.Logger;
 
 import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.Set;
 
 public class APClient extends gg.archipelago.APClient.APClient {
 
@@ -142,8 +147,11 @@ public class APClient extends gg.archipelago.APClient.APClient {
             ArchipelagoRewardScreen.rewards.clear();
             ArchipelagoRewardScreen.index = 0;
 
-            LocationTracker.scoutFirstLocations();
+            LocationTracker.scoutAllLocations();
 
+            Set<Long> checkedLocations = getLocationManager().getCheckedLocations();
+            NeowPatch.act2portalAvailable = checkedLocations.contains(22001L);
+            NeowPatch.act3portalAvailable = checkedLocations.contains(22002L);
         }
         catch (Exception e) {
             e.printStackTrace();
@@ -186,15 +194,14 @@ public class APClient extends gg.archipelago.APClient.APClient {
         //ignore received items that happen while we are not yet loaded
         logger.info("NetworkItem received: " + networkItem.itemName);
         ArchipelagoRewardScreen.rewardsQueued +=1 ;
-        if (AbstractDungeon.isPlayerInDungeon()) {
+        if (CardCrawlGame.isInARun()) {
             try {
-                logger.info("Player is in dungeon! Adding it! He is in room: " + AbstractDungeon.getCurrRoom());
+                logger.info("Adding item to player in room: " + AbstractDungeon.getCurrRoom());
                 ArchipelagoRewardScreen.addReward(networkItem);
             }
             catch (NullPointerException e) {
-                logger.info("Player is not in the dungeon yet? GetCurrRoom Failed. Most likely on second and further runs");
+                logger.info("Player was unable to receive item for now");
             }
-
         }
     }
 

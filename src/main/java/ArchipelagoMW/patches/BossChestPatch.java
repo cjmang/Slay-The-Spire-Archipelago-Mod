@@ -6,6 +6,7 @@ import com.evacipated.cardcrawl.modthespire.lib.SpireInsertPatch;
 import com.evacipated.cardcrawl.modthespire.lib.SpirePatch;
 import com.evacipated.cardcrawl.modthespire.lib.SpirePrefixPatch;
 import com.evacipated.cardcrawl.modthespire.lib.SpireReturn;
+import com.megacrit.cardcrawl.dungeons.AbstractDungeon;
 import com.megacrit.cardcrawl.rewards.chests.BossChest;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -17,8 +18,7 @@ public class BossChestPatch {
 
         @SpireInsertPatch(rloc = 34 - 25)
         public static SpireReturn<BossChest> Insert(BossChest __instance) {
-            logger.info("Boss Chest Patch");
-            LocationTracker.sendBossRelic();
+            LocationTracker.sendBossRelic(AbstractDungeon.actNum);
             return SpireReturn.Return(__instance);
         }
 

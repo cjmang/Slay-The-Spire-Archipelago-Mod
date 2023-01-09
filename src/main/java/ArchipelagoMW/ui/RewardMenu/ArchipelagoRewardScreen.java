@@ -169,6 +169,12 @@ public class ArchipelagoRewardScreen {
     public static void open(boolean animated) {
         rewardsQueued = 0;
         AbstractDungeon.player.releaseCard();
+
+        logger.info("current map location y: " + AbstractDungeon.getCurrMapNode().y);
+        if(AbstractDungeon.getCurrMapNode().y==-1){
+            AbstractDungeon.nextRoom = null; // this is necessary to make the first nodes available in new act (dunno how else to force it)
+        }
+
         if (AbstractDungeon.screen !=null)
         {
             AbstractDungeon.closeCurrentScreen();
@@ -205,9 +211,10 @@ public class ArchipelagoRewardScreen {
             logger.info("Setting previous screen to combat_reward due to combat room.");
             AbstractDungeon.previousScreen = AbstractDungeon.CurrentScreen.COMBAT_REWARD;
         }
+
         logger.info("returning to room " + AbstractDungeon.previousScreen);
+
         AbstractDungeon.closeCurrentScreen();
-        //AbstractDungeon.dynamicBanner.hide();
     }
 
     public static void update() {

@@ -31,7 +31,7 @@ public class ArchipelagoIcon extends TopPanelItem {
         if (!APClient.apClient.isConnected()) {
             this.setClickable(true);
             super.render(sb, Color.RED);
-        } else if (AbstractDungeon.getCurrRoom().phase != AbstractRoom.RoomPhase.COMPLETE || (AbstractDungeon.getCurrMapNode().y == -1 && AbstractDungeon.actNum != 1)) {
+        } else if (AbstractDungeon.getCurrRoom().phase != AbstractRoom.RoomPhase.COMPLETE ) {
             this.setClickable(false);
             super.render(sb, Color.GRAY);
         }
@@ -55,9 +55,6 @@ public class ArchipelagoIcon extends TopPanelItem {
             ArchipelagoRewardScreen.close();
         } else {
             if (AbstractDungeon.getCurrRoom().phase == AbstractRoom.RoomPhase.COMPLETE) {
-                if (AbstractDungeon.getCurrMapNode().y == -1 && AbstractDungeon.actNum != 1) {
-                    return;
-                }
                 ArchipelagoRewardScreen.open();
             }
         }
