@@ -16,8 +16,8 @@ public class SlotData {
     @SerializedName("ascension")
     public int ascension = 0;
 
-    @SerializedName("heart_run")
-    public int heartRun = 0;
+    @SerializedName(value = "final_Act", alternate = "heart_run")
+    public int finalAct = 0;
 
     @SerializedName("downfall")
     public int downfall = 0;
