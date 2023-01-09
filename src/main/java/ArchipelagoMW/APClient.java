@@ -10,9 +10,6 @@ import com.megacrit.cardcrawl.core.Settings;
 import com.megacrit.cardcrawl.dungeons.AbstractDungeon;
 import com.megacrit.cardcrawl.helpers.SeedHelper;
 import com.megacrit.cardcrawl.random.Random;
-import com.megacrit.cardcrawl.neow.NeowEvent;
-import com.megacrit.cardcrawl.neow.NeowRoom;
-import com.megacrit.cardcrawl.rooms.AbstractRoom;
 import com.megacrit.cardcrawl.screens.mainMenu.MainMenuScreen;
 import downfall.patches.EvilModeCharacterSelect;
 import gg.archipelago.APClient.ItemFlags;
@@ -36,7 +33,7 @@ public class APClient extends gg.archipelago.APClient.APClient {
     public static APClient apClient;
 
     public static void newConnection(String address, String slotName, String password) {
-        if(apClient != null) {
+        if (apClient != null) {
             apClient.close();
         }
         apClient = new APClient("", 0);
@@ -59,7 +56,7 @@ public class APClient extends gg.archipelago.APClient.APClient {
     public void onConnectResult(ConnectionResultEvent connectionResultEvent) {
         ArchipelagoRewardScreen.rewardsQueued = 0;
         String msg = "Connecting to AP...";
-        switch ( connectionResultEvent.getResult()) {
+        switch (connectionResultEvent.getResult()) {
             case SlotAlreadyTaken:
                 msg = "Slot already in use.";
                 break;
@@ -81,10 +78,10 @@ public class APClient extends gg.archipelago.APClient.APClient {
         }
         ConnectionPanel.connectionResultText = msg;
 
-        if(connectionResultEvent.getResult() != ConnectionResult.Success)
+        if (connectionResultEvent.getResult() != ConnectionResult.Success)
             return;
 
-        if(CardCrawlGame.mode != CardCrawlGame.GameMode.CHAR_SELECT)
+        if (CardCrawlGame.mode != CardCrawlGame.GameMode.CHAR_SELECT)
             return;
 
         logger.info("about to parse slot data");
@@ -93,7 +90,10 @@ public class APClient extends gg.archipelago.APClient.APClient {
             logger.info("slot data parsed");
 
             AbstractPlayer character = CardCrawlGame.characterManager.getCharacter(AbstractPlayer.PlayerClass.IRONCLAD);
-            switch(data.character) {
+            switch (data.character) {
+                case "0":
+                    data.character = "The Ironclad";
+                    break;
                 case "1":
                     data.character = "The Silent";
                     break;
@@ -104,19 +104,43 @@ public class APClient extends gg.archipelago.APClient.APClient {
                     data.character = "The Watcher";
                     break;
                 case "4":
+                    data.character = "The Hermit";
+                    break;
+                case "5":
+                    data.character = "The Slime Boss";
+                    break;
+                case "6":
+                    data.character = "The Guardian";
+                    break;
+                case "7":
+                    data.character = "The Hexaghost";
+                    break;
+                case "8":
+                    data.character = "The Champ";
+                    break;
+                case "9":
+                    data.character = "The Gremlins";
+                    break;
+                case "10":
+                    data.character = "The Automaton";
+                    break;
+                case "11":
+                    data.character = "The Snecko";
+                    break;
+                case "12":
                     character = CardCrawlGame.characterManager.getRandomCharacter(new Random());
             }
 
             for (AbstractPlayer ch : CardCrawlGame.characterManager.getAllCharacters()) {
-                if( ch.title.equalsIgnoreCase(data.character)) {
+                if (ch.title.equalsIgnoreCase(data.character)) {
                     character = ch;
                     break;
                 }
             }
-            logger.info("character: "+character.name);
-            logger.info("heart: "+data.heartRun);
-            logger.info("seed: "+data.seed);
-            logger.info("ascension: "+data.ascension);
+            logger.info("character: " + character.name);
+            logger.info("heart: " + data.finalAct);
+            logger.info("seed: " + data.seed);
+            logger.info("ascension: " + data.ascension);
             /*
             AbstractDungeon.player = CardCrawlGame.characterManager.recreateCharacter(character);
             for (AbstractRelic relic : AbstractDungeon.player.relics) {
@@ -137,7 +161,7 @@ public class APClient extends gg.archipelago.APClient.APClient {
             CardCrawlGame.mainMenuScreen.isFadingOut = true;
             CardCrawlGame.mainMenuScreen.fadeOutMusic();
 
-            Settings.isFinalActAvailable = (data.heartRun >= 1);
+            Settings.isFinalActAvailable = (data.finalAct >= 1);
             SeedHelper.setSeed(data.seed);
 
             AbstractDungeon.isAscensionMode = (data.ascension > 0);
@@ -157,8 +181,7 @@ public class APClient extends gg.archipelago.APClient.APClient {
             Set<Long> checkedLocations = getLocationManager().getCheckedLocations();
             NeowPatch.act2portalAvailable = checkedLocations.contains(22001L);
             NeowPatch.act3portalAvailable = checkedLocations.contains(22002L);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
@@ -198,13 +221,12 @@ public class APClient extends gg.archipelago.APClient.APClient {
     public void onReceiveItem(NetworkItem networkItem) {
         //ignore received items that happen while we are not yet loaded
         logger.info("NetworkItem received: " + networkItem.itemName);
-        ArchipelagoRewardScreen.rewardsQueued +=1 ;
+        ArchipelagoRewardScreen.rewardsQueued += 1;
         if (CardCrawlGame.isInARun()) {
             try {
                 logger.info("Adding item to player in room: " + AbstractDungeon.getCurrRoom());
                 ArchipelagoRewardScreen.addReward(networkItem);
-            }
-            catch (NullPointerException e) {
+            } catch (NullPointerException e) {
                 logger.info("Player was unable to receive item for now");
             }
         }

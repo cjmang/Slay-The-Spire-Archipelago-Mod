@@ -2,24 +2,29 @@ package ArchipelagoMW;
 
 import ArchipelagoMW.ui.RewardMenu.BossRelicRewardScreen;
 import ArchipelagoMW.ui.topPannel.ArchipelagoIcon;
-import basemod.*;
-import basemod.interfaces.*;
+import ArchipelagoMW.util.IDCheckDontTouchPls;
+import ArchipelagoMW.util.TextureLoader;
+import basemod.BaseMod;
+import basemod.ModLabel;
+import basemod.ModPanel;
+import basemod.interfaces.EditStringsSubscriber;
+import basemod.interfaces.PostInitializeSubscriber;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Texture;
 import com.evacipated.cardcrawl.modthespire.lib.SpireInitializer;
 import com.google.gson.Gson;
 import com.megacrit.cardcrawl.core.Settings;
+import com.megacrit.cardcrawl.helpers.FontHelper;
 import com.megacrit.cardcrawl.helpers.RelicLibrary;
-import com.megacrit.cardcrawl.localization.*;
+import com.megacrit.cardcrawl.localization.UIStrings;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import ArchipelagoMW.util.IDCheckDontTouchPls;
-import ArchipelagoMW.util.TextureLoader;
 
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 
 
 @SpireInitializer
@@ -142,6 +147,31 @@ public class ArchipelagoMW implements
         // Create the Mod Menu
         ModPanel settingsPanel = new ModPanel();
 
+        int configPos = 800;
+        int configStep = 40;
+        configPos -= 90;
+        ModLabel validLabel = new ModLabel("Valid Characters:", 350.0F, (float) configPos, Settings.CREAM_COLOR, FontHelper.charDescFont, settingsPanel, (label) -> {
+        });
+        settingsPanel.addUIElement(validLabel);
+
+        String[] titles = BaseMod.getModdedCharacters().stream().map(p -> p.title).toArray(String[]::new);
+
+        int chunkSize = 4;
+        int remainder = titles.length % chunkSize;
+        int chunks = titles.length / chunkSize + (remainder > 1 ? 1 : 0);
+        for (int i = 0; i <= chunks; i++) {
+            configPos -= configStep;
+            String[] line;
+            if (i == chunks && remainder > 0) {
+                line = Arrays.copyOfRange(titles, chunks * chunkSize, titles.length);
+            } else {
+                line = Arrays.copyOfRange(titles, i * chunkSize, i * chunkSize + chunkSize);
+            }
+            ModLabel lineLabel = new ModLabel("\"" + String.join("\", \"", line) + "\"", 350.0F, (float) configPos, Settings.CREAM_COLOR, FontHelper.charDescFont, settingsPanel, (label) -> {
+            });
+            settingsPanel.addUIElement(lineLabel);
+        }
+
         //bossRelicRewardScreen = new BossRelicRewardScreen();
 
         BaseMod.registerModBadge(badgeTexture, MODNAME, AUTHOR, DESCRIPTION, settingsPanel);
@@ -177,7 +207,6 @@ public class ArchipelagoMW implements
     }
 
     // =============== / POST-INITIALIZE/ =================
-
 
 
     // ================ LOAD THE TEXT ===================

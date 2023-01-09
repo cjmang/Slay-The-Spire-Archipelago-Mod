@@ -1,5 +1,6 @@
 package ArchipelagoMW.ui.RewardMenu;
 
+import ArchipelagoMW.APClient;
 import ArchipelagoMW.ArchipelagoMW;
 import ArchipelagoMW.patches.RewardItemPatch;
 import com.badlogic.gdx.Gdx;
@@ -13,7 +14,10 @@ import com.megacrit.cardcrawl.cards.AbstractCard;
 import com.megacrit.cardcrawl.core.CardCrawlGame;
 import com.megacrit.cardcrawl.core.Settings;
 import com.megacrit.cardcrawl.dungeons.AbstractDungeon;
-import com.megacrit.cardcrawl.helpers.*;
+import com.megacrit.cardcrawl.helpers.FontHelper;
+import com.megacrit.cardcrawl.helpers.ImageMaster;
+import com.megacrit.cardcrawl.helpers.MathHelper;
+import com.megacrit.cardcrawl.helpers.ModHelper;
 import com.megacrit.cardcrawl.helpers.controller.CInputActionSet;
 import com.megacrit.cardcrawl.helpers.input.InputHelper;
 import com.megacrit.cardcrawl.localization.UIStrings;
@@ -30,7 +34,6 @@ import com.megacrit.cardcrawl.ui.buttons.CancelButton;
 import com.megacrit.cardcrawl.ui.buttons.SingingBowlButton;
 import com.megacrit.cardcrawl.vfx.AbstractGameEffect;
 import com.megacrit.cardcrawl.vfx.RewardGlowEffect;
-import ArchipelagoMW.APClient;
 import gg.archipelago.APClient.parts.DataPackage;
 import gg.archipelago.APClient.parts.NetworkItem;
 import org.apache.logging.log4j.LogManager;
@@ -125,10 +128,10 @@ public class ArchipelagoRewardScreen {
         }
     }
 
-    @SpirePatch(clz=AbstractDungeon.class, method="rollRarity",paramtypez = {Random.class})
+    @SpirePatch(clz = AbstractDungeon.class, method = "rollRarity", paramtypez = {Random.class})
     public static class RarityRollPatch {
 
-        @SpireInsertPatch(rloc= 2003-2001, localvars = {"roll"})
+        @SpireInsertPatch(rloc = 2003 - 2001, localvars = {"roll"})
         public static SpireReturn<AbstractCard.CardRarity> Insert(int roll) {
             if (apReward) {
                 final int rareRate = 3;
@@ -140,14 +143,14 @@ public class ArchipelagoRewardScreen {
                 }
                 return SpireReturn.Return(AbstractCard.CardRarity.COMMON);
             }
-            if(apRareReward) {
+            if (apRareReward) {
                 return SpireReturn.Return(AbstractCard.CardRarity.RARE);
             }
             return SpireReturn.Continue();
         }
     }
 
-    public ArchipelagoRewardScreen () {
+    public ArchipelagoRewardScreen() {
         baseSeed = APClient.apClient.getRoomInfo().seedName.hashCode();
     }
 
@@ -171,12 +174,11 @@ public class ArchipelagoRewardScreen {
         AbstractDungeon.player.releaseCard();
 
         logger.info("current map location y: " + AbstractDungeon.getCurrMapNode().y);
-        if(AbstractDungeon.getCurrMapNode().y==-1){
+        if (AbstractDungeon.getCurrMapNode().y == -1) {
             AbstractDungeon.nextRoom = null; // this is necessary to make the first nodes available in new act (dunno how else to force it)
         }
 
-        if (AbstractDungeon.screen !=null)
-        {
+        if (AbstractDungeon.screen != null) {
             AbstractDungeon.closeCurrentScreen();
         }
         if (animated) {
@@ -427,8 +429,7 @@ public class ArchipelagoRewardScreen {
             RewardItemPatch.CustomFields.apReward.set(reward, true);
             reward.text = "Card Draw [] NL " + player + " [] NL " + location;
             addReward(reward);
-        }
-        else if (itemID == 8001L) { //rare card draw
+        } else if (itemID == 8001L) { //rare card draw
             apRareReward = true;
             ArrayList<AbstractCard> rareCards = AbstractDungeon.getRewardCards();
             apRareReward = false;
@@ -446,15 +447,13 @@ public class ArchipelagoRewardScreen {
 
             reward.text = "Rare Card Draw [] NL " + player + " [] NL " + location;
             addReward(reward);
-        }
-        else if (itemID == 8002L) { // Relic
+        } else if (itemID == 8002L) { // Relic
             AbstractRelic relic = AbstractDungeon.returnRandomRelic(getRandomRelicTier());
             RewardItem reward = new RewardItem(relic);
-            reward.text = "Relic [] NL "+player + " [] NL " + location;
-            RewardItemPatch.CustomFields.apReward.set(reward,true);
+            reward.text = "Relic [] NL " + player + " [] NL " + location;
+            RewardItemPatch.CustomFields.apReward.set(reward, true);
             addReward(reward);
-        }
-        else if (itemID == 8003L) { // Boss Relic
+        } else if (itemID == 8003L) { // Boss Relic
             ArrayList<AbstractRelic> bossRelics = new ArrayList<AbstractRelic>() {{
                 add(AbstractDungeon.returnRandomRelic(AbstractRelic.RelicTier.BOSS));
                 add(AbstractDungeon.returnRandomRelic(AbstractRelic.RelicTier.BOSS));
@@ -464,7 +463,7 @@ public class ArchipelagoRewardScreen {
             reward.goldAmt = 0;
             reward.type = RewardItemPatch.RewardType.BOSS_RELIC;
             RewardItemPatch.CustomFields.bossRelics.set(reward, bossRelics);
-            RewardItemPatch.CustomFields.apReward.set(reward,true);
+            RewardItemPatch.CustomFields.apReward.set(reward, true);
             reward.text = "Boss Relic [] NL " + player + " [] NL " + location;
             addReward(reward);
             //ArchipelagoMW.bossRelicRewardScreen.open(bossRelics);
@@ -485,13 +484,13 @@ public class ArchipelagoRewardScreen {
 
     private static AbstractRelic.RelicTier getRandomRelicTier() {
         int roll = AbstractDungeon.relicRng.random(0, 99);
-        if(ModHelper.isModEnabled("Elite Swarm")) {
+        if (ModHelper.isModEnabled("Elite Swarm")) {
             roll += 10;
         }
-        if(roll< 50) {
+        if (roll < 50) {
             return AbstractRelic.RelicTier.COMMON;
         }
-        if(roll >82) {
+        if (roll > 82) {
             return AbstractRelic.RelicTier.RARE;
         }
         return AbstractRelic.RelicTier.UNCOMMON;
@@ -502,7 +501,7 @@ public class ArchipelagoRewardScreen {
             int index = 0;
             boolean anyHovered = false;
 
-            for(Iterator<RewardItem> rewardItemIterator = rewards.iterator(); rewardItemIterator.hasNext(); ++index) {
+            for (Iterator<RewardItem> rewardItemIterator = rewards.iterator(); rewardItemIterator.hasNext(); ++index) {
                 RewardItem rewardItem = rewardItemIterator.next();
                 if (rewardItem.hb.hovered) {
                     anyHovered = true;
@@ -512,7 +511,7 @@ public class ArchipelagoRewardScreen {
 
             if (!anyHovered) {
                 index = 0;
-                Gdx.input.setCursorPosition((int)(rewards.get(index)).hb.cX, Settings.HEIGHT - (int)(rewards.get(index)).hb.cY);
+                Gdx.input.setCursorPosition((int) (rewards.get(index)).hb.cX, Settings.HEIGHT - (int) (rewards.get(index)).hb.cY);
             } else if (!CInputActionSet.up.isJustPressed() && !CInputActionSet.altUp.isJustPressed()) {
                 if (CInputActionSet.down.isJustPressed() || CInputActionSet.altDown.isJustPressed()) {
                     ++index;
@@ -520,7 +519,7 @@ public class ArchipelagoRewardScreen {
                         index = 0;
                     }
 
-                    Gdx.input.setCursorPosition((int)(rewards.get(index)).hb.cX, Settings.HEIGHT - (int)(rewards.get(index)).hb.cY);
+                    Gdx.input.setCursorPosition((int) (rewards.get(index)).hb.cX, Settings.HEIGHT - (int) (rewards.get(index)).hb.cY);
                 }
             } else {
                 --index;
@@ -528,7 +527,7 @@ public class ArchipelagoRewardScreen {
                     index = rewards.size() - 1;
                 }
 
-                Gdx.input.setCursorPosition((int)(rewards.get(index)).hb.cX, Settings.HEIGHT - (int)(rewards.get(index)).hb.cY);
+                Gdx.input.setCursorPosition((int) (rewards.get(index)).hb.cX, Settings.HEIGHT - (int) (rewards.get(index)).hb.cY);
             }
 
         }
@@ -545,12 +544,12 @@ public class ArchipelagoRewardScreen {
 
     private static void renderItemReward(SpriteBatch sb) {
         sb.setColor(uiColor);
-        sb.draw(ImageMaster.REWARD_SCREEN_SHEET, (float)Settings.WIDTH / 2.0F - 306.0F, (float)Settings.HEIGHT / 2.0F - 46.0F * Settings.scale - 358.0F, 306.0F, 358.0F, 612.0F, 716.0F, Settings.xScale, Settings.scale, 0.0F, 0, 0, 612, 716, false, false);
+        sb.draw(ImageMaster.REWARD_SCREEN_SHEET, (float) Settings.WIDTH / 2.0F - 306.0F, (float) Settings.HEIGHT / 2.0F - 46.0F * Settings.scale - 358.0F, 306.0F, 358.0F, 612.0F, 716.0F, Settings.xScale, Settings.scale, 0.0F, 0, 0, 612, 716, false, false);
         if (camera == null) {// 88
             try {
                 Field f = CardCrawlGame.class.getDeclaredField("camera");// 90
                 f.setAccessible(true);// 91
-                camera = (OrthographicCamera)f.get(Gdx.app.getApplicationListener());// 92
+                camera = (OrthographicCamera) f.get(Gdx.app.getApplicationListener());// 92
             } catch (IllegalAccessException | NoSuchFieldException var4) {// 93
                 var4.printStackTrace();// 94
                 return;// 95
@@ -559,7 +558,7 @@ public class ArchipelagoRewardScreen {
 
         sb.flush();// 99
         Rectangle scissors = new Rectangle();// 100
-        Rectangle clipBounds = new Rectangle((float)Settings.WIDTH / 2.0F - 300.0F * Settings.scale, (float)Settings.HEIGHT / 2.0F - 350.0F * Settings.scale, 600.0F * Settings.scale, 600.0F * Settings.scale);// 101
+        Rectangle clipBounds = new Rectangle((float) Settings.WIDTH / 2.0F - 300.0F * Settings.scale, (float) Settings.HEIGHT / 2.0F - 350.0F * Settings.scale, 600.0F * Settings.scale, 600.0F * Settings.scale);// 101
         ScissorStack.calculateScissors(camera, sb.getTransformMatrix(), clipBounds, scissors);// 103
         ScissorStack.pushScissors(scissors);
         for (RewardItem reward : rewards) {
@@ -604,12 +603,12 @@ public class ArchipelagoRewardScreen {
     }
 
     static {
-        uiStrings = CardCrawlGame.languagePack.getUIString(ArchipelagoMW.getModID()+":RewardMenu");
+        uiStrings = CardCrawlGame.languagePack.getUIString(ArchipelagoMW.getModID() + ":RewardMenu");
         TEXT = uiStrings.TEXT;
         uiColor = Color.BLACK.cpy();
         tipY = -100.0F * Settings.scale;
 
-        scrollBar = new ScrollBar(new ScrollListener(), (float)Settings.WIDTH / 2.0F + 270.0F * Settings.scale, (float)Settings.HEIGHT / 2.0F - 86.0F * Settings.scale, 500.0F * Settings.scale);// 46
+        scrollBar = new ScrollBar(new ScrollListener(), (float) Settings.WIDTH / 2.0F + 270.0F * Settings.scale, (float) Settings.HEIGHT / 2.0F - 86.0F * Settings.scale, 500.0F * Settings.scale);// 46
         scrollLowerBound = 0.0F;// 50
         scrollUpperBound = 0.0F;// 51
         scrollPosition = 0.0F;// 52

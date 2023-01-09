@@ -24,8 +24,7 @@ public class RewardItemPatch {
 
     private static final Logger logger = LogManager.getLogger(RewardItemPatch.class.getName()); // This is our logger! It prints stuff out in the console.
 
-    public static class RewardType
-    {
+    public static class RewardType {
         @SpireEnum
         public static RewardItem.RewardType BOSS_RELIC;
         @SpireEnum
@@ -38,54 +37,53 @@ public class RewardItemPatch {
         public static SpireField<Boolean> apReward = new SpireField<>(() -> false);
     }
 
-    @SpirePatch(clz= RewardItem.class,method="render")
+    @SpirePatch(clz = RewardItem.class, method = "render")
     public static class TextPatch {
 
         @SpireInstrumentPatch
         public static ExprEditor Instrument() {
             return new ExprEditor() {
                 public void edit(MethodCall m) throws CannotCompileException {
-                    if(m.getClassName().equals(FontHelper.class.getName()) && m.getMethodName().equals("renderSmartText")) {
+                    if (m.getClassName().equals(FontHelper.class.getName()) && m.getMethodName().equals("renderSmartText")) {
                         m.replace("");
                     }
                 }
             };
         }
 
-        @SpireInsertPatch(rloc = 597-385, localvars = {"color"})
+        @SpireInsertPatch(rloc = 597 - 385, localvars = {"color"})
         public static void Insert(RewardItem __instance, SpriteBatch sb, String ___text, float ___REWARD_TEXT_X, float ___y, Color color) {
-            if(___text.contains("[] NL")) {
+            if (___text.contains("[] NL")) {
                 //float lineHeight = FontHelper.getSmartWidth(FontHelper.cardDescFont_N, ___text, 1000.0F * Settings.scale, 30.0F);
-                FontHelper.renderSmartText(sb, FontHelper.cardDescFont_N, ___text, ___REWARD_TEXT_X, ___y + 35.5F * Settings.scale , 1000.0F * Settings.scale, 26.0F * Settings.scale, color);
-            }
-            else {
+                FontHelper.renderSmartText(sb, FontHelper.cardDescFont_N, ___text, ___REWARD_TEXT_X, ___y + 35.5F * Settings.scale, 1000.0F * Settings.scale, 26.0F * Settings.scale, color);
+            } else {
                 FontHelper.renderSmartText(sb, FontHelper.cardDescFont_N, ___text, ___REWARD_TEXT_X, ___y + 5.0F * Settings.scale, 1000.0F * Settings.scale, 0.0F, color);
             }
         }
 
-        @SpireInsertPatch(rloc = 575-385)
+        @SpireInsertPatch(rloc = 575 - 385)
         public static void InsertBossRelicIcon(RewardItem __instance, SpriteBatch sb, RewardItem.RewardType ___type, float ___REWARD_ITEM_X, float ___y) {
             if (___type == RewardItemPatch.RewardType.BOSS_RELIC) {
                 sb.draw(ImageMaster.RUN_HISTORY_MAP_ICON_BOSS_CHEST, ___REWARD_ITEM_X - 22.0F, ___y - 40.0F - 2.0F * Settings.scale, 32.0F, 32.0F, 64.0F, 64.0F, Settings.scale * 1.5F, Settings.scale * 1.5F, 0.0F, 0, 0, 64, 64, false, false);
             }
             if (___type == RewardType.ARCHIPELAGO_LOCATION) {
-                sb.draw(ArchipelagoMW.AP_ICON,  ___REWARD_ITEM_X - 32.0F, ___y - 32.0F - 2.0F * Settings.scale, 32.0F, 32.0F, 64.0F, 64.0F, Settings.scale, Settings.scale, 0.0F, 0, 0, 64, 64, false, false);
+                sb.draw(ArchipelagoMW.AP_ICON, ___REWARD_ITEM_X - 32.0F, ___y - 32.0F - 2.0F * Settings.scale, 32.0F, 32.0F, 64.0F, 64.0F, Settings.scale, Settings.scale, 0.0F, 0, 0, 64, 64, false, false);
             }
         }
     }
 
-    @SpirePatch(clz=RewardItem.class, method = "claimReward")
+    @SpirePatch(clz = RewardItem.class, method = "claimReward")
     public static class ClaimRewardPatch {
 
         @SpirePrefixPatch
-        public static SpireReturn<Boolean> PrefixPatch(RewardItem __instance){
-            if(__instance.type == RewardType.BOSS_RELIC) {
+        public static SpireReturn<Boolean> PrefixPatch(RewardItem __instance) {
+            if (__instance.type == RewardType.BOSS_RELIC) {
                 logger.info("Boss relic Reward. Boss Relic list: " + CustomFields.bossRelics.get(__instance));
                 AbstractDungeon.bossRelicScreen.open(CustomFields.bossRelics.get(__instance));
 
                 return SpireReturn.Return(false);
             }
-            if(__instance.type == RewardType.ARCHIPELAGO_LOCATION) {
+            if (__instance.type == RewardType.ARCHIPELAGO_LOCATION) {
                 logger.info("Archipelago location reached");
 
                 ArchipelagoRewardScreen.rewards.remove(__instance);

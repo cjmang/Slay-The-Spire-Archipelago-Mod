@@ -70,7 +70,7 @@ public class ConnectionInfoScreen {
 
         //back button
         backButton.update();
-        if( backButton.hb.clicked || InputHelper.pressedEscape) {
+        if (backButton.hb.clicked || InputHelper.pressedEscape) {
             backButton.hb.clicked = false;
             InputHelper.pressedEscape = false;
             backToMenu();
@@ -78,11 +78,11 @@ public class ConnectionInfoScreen {
 
 
         confirmButton.update();
-        if(confirmButton.hb.clicked || Gdx.input.isKeyJustPressed(Input.Keys.ENTER)) {
+        if (confirmButton.hb.clicked || Gdx.input.isKeyJustPressed(Input.Keys.ENTER)) {
             Gdx.input.setInputProcessor(new ScrollInputProcessor());
             confirmButton.hb.clicked = false;
             ConnectionPanel.connectionResultText = TEXT[5];
-            ArchipelagoMW.setConnectionInfo(ConnectionPanel.addressField,ConnectionPanel.slotNameField, ConnectionPanel.passwordField);
+            ArchipelagoMW.setConnectionInfo(ConnectionPanel.addressField, ConnectionPanel.slotNameField, ConnectionPanel.passwordField);
             APClient.newConnection(ConnectionPanel.addressField, ConnectionPanel.slotNameField, ConnectionPanel.passwordField);
         }
 
@@ -104,7 +104,7 @@ public class ConnectionInfoScreen {
     }
 
     static {
-        uiStrings = CardCrawlGame.languagePack.getUIString(ArchipelagoMW.getModID()+":ConnectionMenu");
+        uiStrings = CardCrawlGame.languagePack.getUIString(ArchipelagoMW.getModID() + ":ConnectionMenu");
         TEXT = uiStrings.TEXT;
     }
 

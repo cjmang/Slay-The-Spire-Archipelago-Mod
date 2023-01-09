@@ -49,7 +49,7 @@ public class AddressTypeHelper implements InputProcessor {
                 ConnectionPanel.selected = ConnectionPanel.field.slotname;
                 Gdx.input.setInputProcessor(new SlotNameTypeHelper());
             }
-            
+
             //don't fill if the panel is full.
             if (ConnectionPanel.addressIsFull()) {
                 return false;

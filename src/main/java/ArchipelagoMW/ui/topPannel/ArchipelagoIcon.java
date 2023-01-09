@@ -1,5 +1,6 @@
 package ArchipelagoMW.ui.topPannel;
 
+import ArchipelagoMW.APClient;
 import ArchipelagoMW.ArchipelagoMW;
 import ArchipelagoMW.ui.RewardMenu.ArchipelagoRewardScreen;
 import ArchipelagoMW.ui.connection.ConnectionPanel;
@@ -11,7 +12,6 @@ import com.megacrit.cardcrawl.core.Settings;
 import com.megacrit.cardcrawl.dungeons.AbstractDungeon;
 import com.megacrit.cardcrawl.helpers.FontHelper;
 import com.megacrit.cardcrawl.rooms.AbstractRoom;
-import ArchipelagoMW.APClient;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -22,7 +22,7 @@ public class ArchipelagoIcon extends TopPanelItem {
     private static final Texture IMG = ArchipelagoMW.AP_ICON;
     public static final String ID = "ArchipelagoMW:ClaimRewards";
 
-    public ArchipelagoIcon(){
+    public ArchipelagoIcon() {
         super(IMG, ID);
     }
 
@@ -31,11 +31,10 @@ public class ArchipelagoIcon extends TopPanelItem {
         if (!APClient.apClient.isConnected()) {
             this.setClickable(true);
             super.render(sb, Color.RED);
-        } else if (AbstractDungeon.getCurrRoom().phase != AbstractRoom.RoomPhase.COMPLETE ) {
+        } else if (AbstractDungeon.getCurrRoom().phase != AbstractRoom.RoomPhase.COMPLETE) {
             this.setClickable(false);
             super.render(sb, Color.GRAY);
-        }
-        else {
+        } else {
             this.setClickable(true);
             super.render(sb, color);
         }
@@ -49,9 +48,7 @@ public class ArchipelagoIcon extends TopPanelItem {
         // if we are disconnected and we click the ap button try new connection.
         if (!APClient.apClient.isConnected()) {
             APClient.newConnection(ArchipelagoMW.address, ArchipelagoMW.slotName, ConnectionPanel.passwordField);
-        }
-
-        else if (AbstractDungeon.screen == ArchipelagoRewardScreen.Enum.ARCHIPELAGO_REWARD) {
+        } else if (AbstractDungeon.screen == ArchipelagoRewardScreen.Enum.ARCHIPELAGO_REWARD) {
             ArchipelagoRewardScreen.close();
         } else {
             if (AbstractDungeon.getCurrRoom().phase == AbstractRoom.RoomPhase.COMPLETE) {

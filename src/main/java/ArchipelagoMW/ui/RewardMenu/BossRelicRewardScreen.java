@@ -33,7 +33,10 @@ import de.robojumper.ststwitch.TwitchVoter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Optional;
 import java.util.stream.Stream;
 
 public class BossRelicRewardScreen {
@@ -68,6 +71,7 @@ public class BossRelicRewardScreen {
         @SpireEnum
         public static AbstractDungeon.CurrentScreen ARCHIPELAGO_BOSS_REWARD;
     }
+
     public BossRelicRewardScreen() {
         this.isDone = false;
         this.relics = new ArrayList<AbstractRelic>();
@@ -92,7 +96,7 @@ public class BossRelicRewardScreen {
         if (this.shineTimer < 0.0f && !Settings.DISABLE_EFFECTS) {
             this.shineTimer = 0.1f;
             AbstractDungeon.topLevelEffects.add(new BossChestShineEffect());
-            AbstractDungeon.topLevelEffects.add(new BossChestShineEffect(MathUtils.random(0.0f, (float)Settings.WIDTH), MathUtils.random(0.0f, Settings.HEIGHT - 128.0f * Settings.scale)));
+            AbstractDungeon.topLevelEffects.add(new BossChestShineEffect(MathUtils.random(0.0f, (float) Settings.WIDTH), MathUtils.random(0.0f, Settings.HEIGHT - 128.0f * Settings.scale)));
         }
         this.updateControllerInput();
         if (AbstractDungeon.actNum < 4 || !AbstractPlayer.customMods.contains("Blight Chests")) {
@@ -102,8 +106,7 @@ public class BossRelicRewardScreen {
                     this.relicObtainLogic(r);
                 }
             }
-        }
-        else {
+        } else {
             for (final AbstractBlight b : this.blights) {
                 b.update();
                 if (b.isObtained) {
@@ -145,36 +148,29 @@ public class BossRelicRewardScreen {
         if (!anyHovered) {
             if (!this.relics.isEmpty()) {
                 CInputHelper.setCursor(this.relics.get(0).hb);
-            }
-            else {
+            } else {
                 CInputHelper.setCursor(this.blights.get(0).hb);
             }
-        }
-        else if (!this.relics.isEmpty()) {
+        } else if (!this.relics.isEmpty()) {
             if (CInputActionSet.left.isJustPressed() || CInputActionSet.altLeft.isJustPressed()) {
                 if (index != 1) {
                     CInputHelper.setCursor(this.relics.get(1).hb);
                 }
-            }
-            else if (CInputActionSet.right.isJustPressed() || CInputActionSet.altRight.isJustPressed()) {
+            } else if (CInputActionSet.right.isJustPressed() || CInputActionSet.altRight.isJustPressed()) {
                 if (index != 2) {
                     CInputHelper.setCursor(this.relics.get(2).hb);
                 }
-            }
-            else if (CInputActionSet.up.isJustPressed() || CInputActionSet.altUp.isJustPressed()) {
+            } else if (CInputActionSet.up.isJustPressed() || CInputActionSet.altUp.isJustPressed()) {
                 if (index != 0) {
                     CInputHelper.setCursor(this.relics.get(0).hb);
                 }
-            }
-            else if ((CInputActionSet.down.isJustPressed() || CInputActionSet.altDown.isJustPressed()) && index == 0) {
+            } else if ((CInputActionSet.down.isJustPressed() || CInputActionSet.altDown.isJustPressed()) && index == 0) {
                 CInputHelper.setCursor(this.relics.get(1).hb);
             }
-        }
-        else if (CInputActionSet.left.isJustPressed() || CInputActionSet.altLeft.isJustPressed() || CInputActionSet.right.isJustPressed() || CInputActionSet.altRight.isJustPressed()) {
+        } else if (CInputActionSet.left.isJustPressed() || CInputActionSet.altLeft.isJustPressed() || CInputActionSet.right.isJustPressed() || CInputActionSet.altRight.isJustPressed()) {
             if (index == 0) {
                 CInputHelper.setCursor(this.blights.get(1).hb);
-            }
-            else {
+            } else {
                 CInputHelper.setCursor(this.blights.get(0).hb);
             }
         }
@@ -184,7 +180,7 @@ public class BossRelicRewardScreen {
         final HashMap<String, Object> choice = new HashMap<String, Object>();
         final ArrayList<String> notPicked = new ArrayList<String>();
         choice.put("picked", b.blightID);
-        final TreasureRoomBoss curRoom = (TreasureRoomBoss)AbstractDungeon.getCurrRoom();
+        final TreasureRoomBoss curRoom = (TreasureRoomBoss) AbstractDungeon.getCurrRoom();
         curRoom.choseRelic = true;
         for (final AbstractBlight otherBlights : this.blights) {
             if (otherBlights != b) {
@@ -204,7 +200,7 @@ public class BossRelicRewardScreen {
         final HashMap<String, Object> choice = new HashMap<String, Object>();
         final ArrayList<String> notPicked = new ArrayList<String>();
         choice.put("picked", r.relicId);
-        final TreasureRoomBoss curRoom = (TreasureRoomBoss)AbstractDungeon.getCurrRoom();
+        final TreasureRoomBoss curRoom = (TreasureRoomBoss) AbstractDungeon.getCurrRoom();
         curRoom.choseRelic = true;
         for (final AbstractRelic otherRelics : this.relics) {
             if (otherRelics != r) {
@@ -225,7 +221,7 @@ public class BossRelicRewardScreen {
     private void relicSkipLogic() {
         logger.info("relicSkipLogic");
         if (AbstractDungeon.getCurrRoom() instanceof TreasureRoomBoss && AbstractDungeon.screen == Enum.ARCHIPELAGO_BOSS_REWARD) {
-            final TreasureRoomBoss r = (TreasureRoomBoss)AbstractDungeon.getCurrRoom();
+            final TreasureRoomBoss r = (TreasureRoomBoss) AbstractDungeon.getCurrRoom();
             r.chest.close();
         }
         AbstractDungeon.closeCurrentScreen();
@@ -421,8 +417,7 @@ public class BossRelicRewardScreen {
             if (this.mayVote && twitchVoter.isVotingConnected() && !this.isVoting) {
                 BossRelicRewardScreen.logger.info("Publishing Boss Relic Vote");
                 this.isVoting = twitchVoter.initiateSimpleNumberVote(Stream.concat(Stream.of("skip"), this.relics.stream().map(AbstractRelic::toString)).toArray(String[]::new), this::completeVoting);
-            }
-            else if (this.isVoting && (!this.mayVote || !twitchVoter.isVotingConnected())) {
+            } else if (this.isVoting && (!this.mayVote || !twitchVoter.isVotingConnected())) {
                 twitchVoter.endVoting(true);
                 this.isVoting = false;
             }
@@ -443,8 +438,7 @@ public class BossRelicRewardScreen {
         }
         if (option == 0) {
             this.relicSkipLogic();
-        }
-        else if (option < this.relics.size() + 1) {
+        } else if (option < this.relics.size() + 1) {
             final AbstractRelic r = this.relics.get(option - 1);
             if (!r.relicId.equals("Black Blood") && !r.relicId.equals("Ring of the Serpent")) {
                 r.obtain();

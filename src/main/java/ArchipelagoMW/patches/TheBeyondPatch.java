@@ -2,13 +2,10 @@ package ArchipelagoMW.patches;
 
 import com.evacipated.cardcrawl.modthespire.lib.SpirePatch;
 import com.evacipated.cardcrawl.modthespire.lib.SpirePostfixPatch;
-import com.evacipated.cardcrawl.modthespire.lib.SpirePrefixPatch;
-import com.evacipated.cardcrawl.modthespire.lib.SpireReturn;
 import com.megacrit.cardcrawl.characters.AbstractPlayer;
 import com.megacrit.cardcrawl.dungeons.AbstractDungeon;
 import com.megacrit.cardcrawl.dungeons.TheBeyond;
 import com.megacrit.cardcrawl.map.MapRoomNode;
-import com.megacrit.cardcrawl.neow.NeowEvent;
 import com.megacrit.cardcrawl.rooms.EmptyRoom;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -19,9 +16,10 @@ public class TheBeyondPatch {
 
     public static final Logger logger = LogManager.getLogger(NeowPatch.class.getName());
 
-    public TheBeyondPatch(){}
+    public TheBeyondPatch() {
+    }
 
-    @SpirePatch(clz = TheBeyond.class, method =  SpirePatch.CONSTRUCTOR,paramtypez={
+    @SpirePatch(clz = TheBeyond.class, method = SpirePatch.CONSTRUCTOR, paramtypez = {
             AbstractPlayer.class,
             ArrayList.class
     })

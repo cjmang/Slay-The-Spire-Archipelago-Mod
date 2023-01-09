@@ -2,15 +2,12 @@ package ArchipelagoMW.patches;
 
 import ArchipelagoMW.ArchipelagoMW;
 import ArchipelagoMW.ui.RewardMenu.ArchipelagoRewardScreen;
-import ArchipelagoMW.ui.RewardMenu.BossRelicRewardScreen;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.evacipated.cardcrawl.modthespire.lib.*;
 import com.megacrit.cardcrawl.core.Settings;
-import com.megacrit.cardcrawl.dungeons.AbstractDungeon;
 import com.megacrit.cardcrawl.relics.AbstractRelic;
 import com.megacrit.cardcrawl.rewards.RewardItem;
 import com.megacrit.cardcrawl.rewards.chests.AbstractChest;
-import com.megacrit.cardcrawl.rewards.chests.BossChest;
 import com.megacrit.cardcrawl.rooms.TreasureRoomBoss;
 import com.megacrit.cardcrawl.screens.select.BossRelicSelectScreen;
 import javassist.CannotCompileException;
@@ -27,13 +24,14 @@ import java.util.ArrayList;
 public class BossRelicScreenPatch {
 
     private static final Logger logger = LogManager.getLogger(BossRelicScreenPatch.class.getName()); // This is our logger! It prints stuff out in the console.
-    @SpirePatch(clz= BossRelicSelectScreen.class,method="render")
+
+    @SpirePatch(clz = BossRelicSelectScreen.class, method = "render")
     public static class RenderPatch {
 
         @SpireInsertPatch(rloc = 329 - 311)
         public static void Insert(BossRelicSelectScreen __instance, SpriteBatch sb, ArrayList<AbstractRelic> ___relics) {
-            if(___relics.isEmpty()) {
-                sb.draw(ArchipelagoMW.AP_ICON, Settings.WIDTH/2.0F, Settings.HEIGHT/2.0F);
+            if (___relics.isEmpty()) {
+                sb.draw(ArchipelagoMW.AP_ICON, Settings.WIDTH / 2.0F, Settings.HEIGHT / 2.0F);
             }
         }
 
@@ -43,8 +41,8 @@ public class BossRelicScreenPatch {
             return new ExprEditor() {
                 public void edit(Cast cast) throws CannotCompileException {
                     try {
-                        if(cast.getType().getName().equals(TreasureRoomBoss.class.getName())) {
-                            cast.replace("if ($1 instanceof "+ TreasureRoomBoss.class.getName() +") {$_ = $proceed($$);}");
+                        if (cast.getType().getName().equals(TreasureRoomBoss.class.getName())) {
+                            cast.replace("if ($1 instanceof " + TreasureRoomBoss.class.getName() + ") {$_ = $proceed($$);}");
                         }
                     } catch (NotFoundException e) {
                         e.printStackTrace();
@@ -75,7 +73,8 @@ public class BossRelicScreenPatch {
             };
         }
     }
-    @SpirePatch(clz=BossRelicSelectScreen.class, method = "relicObtainLogic")
+
+    @SpirePatch(clz = BossRelicSelectScreen.class, method = "relicObtainLogic")
     public static class ObtainLogic {
 
         @SpireInstrumentPatch
@@ -83,8 +82,8 @@ public class BossRelicScreenPatch {
             return new ExprEditor() {
                 public void edit(Cast cast) throws CannotCompileException {
                     try {
-                        if(cast.getType().getName().equals(TreasureRoomBoss.class.getName())) {
-                            cast.replace("if ($1 instanceof "+ TreasureRoomBoss.class.getName() +") {$_ = $proceed($$);}");
+                        if (cast.getType().getName().equals(TreasureRoomBoss.class.getName())) {
+                            cast.replace("if ($1 instanceof " + TreasureRoomBoss.class.getName() + ") {$_ = $proceed($$);}");
                         }
                     } catch (NotFoundException e) {
                         e.printStackTrace();
@@ -119,24 +118,26 @@ public class BossRelicScreenPatch {
         }
 
     }
+
     @SpirePatch(clz = BossRelicSelectScreen.class, method = "relicObtainLogic")
     public static class RelicObtainLogicPatch {
         //the only one that works reliably with current logic
 
         @SpirePrefixPatch
-        public static void PrefixPatch(BossRelicSelectScreen __instance, AbstractRelic r){
+        public static void PrefixPatch(BossRelicSelectScreen __instance, AbstractRelic r) {
             RewardItem reward = findRewardItem(r);
             ArchipelagoRewardScreen.rewards.remove(reward);
             ArchipelagoRewardScreen.positionRewards();
         }
+
         public static RewardItem findRewardItem(AbstractRelic bossRelic) {
             //logger.info("looking for relic:" + bossRelic.name);
-            for(RewardItem rewardItem : ArchipelagoRewardScreen.rewards) {
+            for (RewardItem rewardItem : ArchipelagoRewardScreen.rewards) {
                 ArrayList<AbstractRelic> list = RewardItemPatch.CustomFields.bossRelics.get(rewardItem);
-                if(list == null){
+                if (list == null) {
                     continue;
                 }
-                if(list.contains(bossRelic)) {
+                if (list.contains(bossRelic)) {
                     return rewardItem;
                 }
             }

@@ -77,26 +77,27 @@ public class LocationTracker {
         try {
             Field isBoss = RewardItem.class.getDeclaredField("isBoss");
             isBoss.setAccessible(true);
-            if ((boolean)isBoss.get(reward)) {
-                if(rareCardLocations.isEmpty())
+            if ((boolean) isBoss.get(reward)) {
+                if (rareCardLocations.isEmpty())
                     return "";
                 long locationID = rareCardLocations.remove(0);
                 APClient.apClient.checkLocation(locationID);
                 NetworkItem item = scoutedLocations.get(locationID);
-                if(item == null)
-                    return "Rare Card Draw "+ (3 - rareCardLocations.size());
+                if (item == null)
+                    return "Rare Card Draw " + (3 - rareCardLocations.size());
                 return item.itemName + " [] NL " + item.playerName + " [] NL Rare Card Draw";
             }
-        } catch (NoSuchFieldException | IllegalAccessException ignored) {}
+        } catch (NoSuchFieldException | IllegalAccessException ignored) {
+        }
         cardDraw = !cardDraw;
-        if(cardDraw) {
-            if(cardDrawLocations.isEmpty())
+        if (cardDraw) {
+            if (cardDrawLocations.isEmpty())
                 return "";
             long locationID = cardDrawLocations.remove(0);
             APClient.apClient.checkLocation(locationID);
             NetworkItem item = scoutedLocations.get(locationID);
-            if(item == null)
-                return "Card Draw "+ (15 - cardDrawLocations.size());
+            if (item == null)
+                return "Card Draw " + (15 - cardDrawLocations.size());
             return item.itemName + " [] NL " + item.playerName + " [] NL Card Draw";
         }
         return "";
@@ -106,13 +107,13 @@ public class LocationTracker {
      * sends the next relic location to AP
      */
     static public String sendRelic() {
-        if(relicLocations.isEmpty())
+        if (relicLocations.isEmpty())
             return "";
 
         long locationID = relicLocations.remove(0);
         APClient.apClient.checkLocation(locationID);
         NetworkItem item = scoutedLocations.get(locationID);
-        if(item == null)
+        if (item == null)
             return "Relic " + (10 - relicLocations.size());
         return item.itemName + " [] NL " + item.playerName + " [] NL Relic";
     }
@@ -123,17 +124,16 @@ public class LocationTracker {
     static public String sendBossRelic(int act) {
         logger.info("Going to send relic from act " + act);
         long locationID;
-        try{
+        try {
             locationID = bossRelicLocations.get(act - 1);
-        }
-        catch(IndexOutOfBoundsException e){
-            logger.info("Index out of bounds! Tried to access bossRelicLocation position " + (act-1));
+        } catch (IndexOutOfBoundsException e) {
+            logger.info("Index out of bounds! Tried to access bossRelicLocation position " + (act - 1));
             logger.info("while the length is " + bossRelicLocations.size());
             return "";
         }
         APClient.apClient.checkLocation(locationID);
         NetworkItem item = scoutedLocations.get(locationID);
-        if(item == null)
+        if (item == null)
             return "Boss Relic " + act;
         return item.itemName + " [] NL " + item.playerName + " [] NL Boss Relic";
     }

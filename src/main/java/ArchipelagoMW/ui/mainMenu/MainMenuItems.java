@@ -10,7 +10,7 @@ import com.megacrit.cardcrawl.screens.mainMenu.MenuButton;
 
 @SpirePatch(
         clz = MainMenuScreen.class,
-        method="setMainMenuButtons"
+        method = "setMainMenuButtons"
 )
 public class MainMenuItems {
 

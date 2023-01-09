@@ -6,7 +6,9 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.megacrit.cardcrawl.core.CardCrawlGame;
 import com.megacrit.cardcrawl.core.Settings;
-import com.megacrit.cardcrawl.helpers.*;
+import com.megacrit.cardcrawl.helpers.FontHelper;
+import com.megacrit.cardcrawl.helpers.Hitbox;
+import com.megacrit.cardcrawl.helpers.ImageMaster;
 import com.megacrit.cardcrawl.helpers.input.InputHelper;
 import com.megacrit.cardcrawl.helpers.input.ScrollInputProcessor;
 import com.megacrit.cardcrawl.localization.UIStrings;
@@ -56,14 +58,14 @@ public class ConnectionPanel {
     public float y;
 
     public enum field {
-        none,address,slotname,password
+        none, address, slotname, password
     }
 
     public static field selected;
 
-    public Hitbox addressHB = new Hitbox(PANEL_WIDTH *.9f - addressOffset,50 * Settings.scale);
-    public Hitbox slotNameHB = new Hitbox(PANEL_WIDTH *.9f - slotNameOffset,50 * Settings.scale);
-    public Hitbox passwordHB = new Hitbox(PANEL_WIDTH *.9f - passwordOffset,50 * Settings.scale);
+    public Hitbox addressHB = new Hitbox(PANEL_WIDTH * .9f - addressOffset, 50 * Settings.scale);
+    public Hitbox slotNameHB = new Hitbox(PANEL_WIDTH * .9f - slotNameOffset, 50 * Settings.scale);
+    public Hitbox passwordHB = new Hitbox(PANEL_WIDTH * .9f - passwordOffset, 50 * Settings.scale);
 
     public ConnectionPanel() {
 
@@ -75,9 +77,9 @@ public class ConnectionPanel {
         Gdx.input.setInputProcessor(new AddressTypeHelper());
         selected = field.address;
 
-        addressHB.move(this.x + ADDRESS_X + addressHB.width/2 + addressOffset, this.y + ADDRESS_Y);
-        slotNameHB.move(this.x + SLOT_NAME_X + slotNameHB.width/2 + slotNameOffset, this.y + SLOT_NAME_Y);
-        passwordHB.move(this.x + PASSWORD_X + passwordHB.width/2 + passwordOffset, this.y + PASSWORD_Y);
+        addressHB.move(this.x + ADDRESS_X + addressHB.width / 2 + addressOffset, this.y + ADDRESS_Y);
+        slotNameHB.move(this.x + SLOT_NAME_X + slotNameHB.width / 2 + slotNameOffset, this.y + SLOT_NAME_Y);
+        passwordHB.move(this.x + PASSWORD_X + passwordHB.width / 2 + passwordOffset, this.y + PASSWORD_Y);
     }
 
     public void move(float x, float y) {
@@ -87,32 +89,32 @@ public class ConnectionPanel {
 
     public void update() {
         addressHB.update();
-        if(addressHB.hovered && InputHelper.justClickedLeft) {
+        if (addressHB.hovered && InputHelper.justClickedLeft) {
             addressHB.clickStarted = true;
             CardCrawlGame.sound.play("UI_CLICK_1");
         }
 
-        if(addressHB.clicked) {
+        if (addressHB.clicked) {
             addressHB.clicked = false;
             selected = field.address;
             Gdx.input.setInputProcessor(new AddressTypeHelper());
         }
-        if(addressHB.justHovered && selected != field.address) {
+        if (addressHB.justHovered && selected != field.address) {
             CardCrawlGame.sound.play("UI_HOVER");
         }
 
         slotNameHB.update();
-        if(slotNameHB.hovered && InputHelper.justClickedLeft) {
+        if (slotNameHB.hovered && InputHelper.justClickedLeft) {
             slotNameHB.clickStarted = true;
             CardCrawlGame.sound.play("UI_CLICK_1");
         }
 
-        if(slotNameHB.clicked && InputHelper.justReleasedClickLeft) {
+        if (slotNameHB.clicked && InputHelper.justReleasedClickLeft) {
             slotNameHB.clicked = false;
             selected = field.slotname;
             Gdx.input.setInputProcessor(new SlotNameTypeHelper());
         }
-        if(slotNameHB.justHovered && selected != field.slotname) {
+        if (slotNameHB.justHovered && selected != field.slotname) {
             CardCrawlGame.sound.play("UI_HOVER");
         }
 
@@ -133,7 +135,7 @@ public class ConnectionPanel {
             }
         }
 
-        if((!slotNameHB.hovered || !addressHB.hovered || !passwordHB.hovered) && InputHelper.justClickedLeft) {
+        if ((!slotNameHB.hovered || !addressHB.hovered || !passwordHB.hovered) && InputHelper.justClickedLeft) {
             selected = field.none;
             //select no input box.
             Gdx.input.setInputProcessor(new ScrollInputProcessor());
@@ -143,9 +145,11 @@ public class ConnectionPanel {
     public static boolean addressIsFull() {
         return addressField.length() >= 100;
     }
+
     public static boolean slotNameIsFull() {
         return slotNameField.length() >= 100;
     }
+
     public static boolean passwordIsFull() {
         return slotNameField.length() >= 100;
     }
@@ -220,7 +224,7 @@ public class ConnectionPanel {
             else
                 sb.setColor(Color.DARK_GRAY.cpy());
 
-            String hiddenPassword = StringUtils.repeat("*",passwordField.length());
+            String hiddenPassword = StringUtils.repeat("*", passwordField.length());
 
             renderTextBox(sb, passwordOffset, PASSWORD_X, PASSWORD_Y, passwordHB, hiddenPassword);
 
@@ -236,13 +240,13 @@ public class ConnectionPanel {
 
         slotNameHB.render(sb);
         addressHB.render(sb);
-        if(showPassword)
+        if (showPassword)
             passwordHB.render(sb);
     }
 
     private void renderTextBox(SpriteBatch sb, float textOffset, float poxX, float posY, Hitbox textHB, String text) {
         sb.draw(ImageMaster.INPUT_SETTINGS_ROW,
-                this.x + poxX + textOffset - 18, this.y + posY - textHB.height/2 - 10,
+                this.x + poxX + textOffset - 18, this.y + posY - textHB.height / 2 - 10,
                 PANEL_WIDTH * .9f - textOffset - 18, 50f * Settings.scale);
 
         FontHelper.renderSmartText(sb, FontHelper.cardTitleFont, text,
@@ -251,7 +255,7 @@ public class ConnectionPanel {
     }
 
     static {
-        uiStrings = CardCrawlGame.languagePack.getUIString(ArchipelagoMW.getModID()+":ConnectionMenu");
+        uiStrings = CardCrawlGame.languagePack.getUIString(ArchipelagoMW.getModID() + ":ConnectionMenu");
         TEXT = uiStrings.TEXT;
         addressField = "";
         slotNameField = "";

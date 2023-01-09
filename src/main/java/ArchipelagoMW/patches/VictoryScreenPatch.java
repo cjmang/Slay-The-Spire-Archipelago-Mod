@@ -20,7 +20,7 @@ public class VictoryScreenPatch {
 
         @SpirePostfixPatch
         public static void Postfix() {
-            if(!GameOverScreen.isVictory)
+            if (!GameOverScreen.isVictory)
                 return;
             // don't send victory if we are in the beyond victory screen and we are on a heart run.
             if (CardCrawlGame.dungeon instanceof TheBeyond && Settings.isFinalActAvailable)

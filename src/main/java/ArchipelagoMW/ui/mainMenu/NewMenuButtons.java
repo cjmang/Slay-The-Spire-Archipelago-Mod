@@ -22,15 +22,14 @@ public class NewMenuButtons {
 
 
     //set the text for our new button
-    @SpirePatch(clz=MenuButton.class, method="setLabel")
+    @SpirePatch(clz = MenuButton.class, method = "setLabel")
     public static class SetLabel {
-        public static void Postfix(MenuButton button)
-        {
+        public static void Postfix(MenuButton button) {
             try {
                 if (button.result == ARCHIPELAGO) {
                     Field f_label = MenuButton.class.getDeclaredField("label");
                     f_label.setAccessible(true);
-                    f_label.set(button, CardCrawlGame.languagePack.getUIString(ArchipelagoMW.getModID()+":MainMenu").TEXT[0]);
+                    f_label.set(button, CardCrawlGame.languagePack.getUIString(ArchipelagoMW.getModID() + ":MainMenu").TEXT[0]);
                 }
             } catch (Exception e) {
                 e.printStackTrace();
@@ -39,10 +38,9 @@ public class NewMenuButtons {
     }
 
     //set what to do when the button is clicked;
-    @SpirePatch(clz=MenuButton.class, method="buttonEffect")
+    @SpirePatch(clz = MenuButton.class, method = "buttonEffect")
     public static class ButtonEffect {
-        public static void Postfix(MenuButton button)
-        {
+        public static void Postfix(MenuButton button) {
             if (button.result == ARCHIPELAGO) {
                 NewMenuButtons.openConnectionInfo();
             }
@@ -51,8 +49,8 @@ public class NewMenuButtons {
 
     public static void openConnectionInfo() {
         logger.info("I should be opening the connection window now...");
-         connectionInfoScreen = new ConnectionInfoScreen();
-         connectionInfoScreen.open();
+        connectionInfoScreen = new ConnectionInfoScreen();
+        connectionInfoScreen.open();
     }
 
 }

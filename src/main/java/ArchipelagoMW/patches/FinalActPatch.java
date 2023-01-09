@@ -6,7 +6,7 @@ import com.megacrit.cardcrawl.core.Settings;
 
 public class FinalActPatch {
     // Deal with shitty heart saving stuff
-    @SpirePatch(clz = Settings.class, method="setFinalActAvailability")
+    @SpirePatch(clz = Settings.class, method = "setFinalActAvailability")
     public static class StupidFixForHardCheckAgainstHeart {
         public static SpireReturn Prefix() {
             return SpireReturn.Return(null);
