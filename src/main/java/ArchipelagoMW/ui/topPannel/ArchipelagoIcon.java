@@ -12,8 +12,12 @@ import com.megacrit.cardcrawl.core.Settings;
 import com.megacrit.cardcrawl.dungeons.AbstractDungeon;
 import com.megacrit.cardcrawl.helpers.FontHelper;
 import com.megacrit.cardcrawl.rooms.AbstractRoom;
+import gg.archipelago.APClient.parts.NetworkItem;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
+import java.util.LinkedList;
+import java.util.List;
 
 public class ArchipelagoIcon extends TopPanelItem {
 
@@ -22,8 +26,25 @@ public class ArchipelagoIcon extends TopPanelItem {
     private static final Texture IMG = ArchipelagoMW.AP_ICON;
     public static final String ID = "ArchipelagoMW:ClaimRewards";
 
+    public static List<NetworkItem> pendingRewards = new LinkedList<NetworkItem>();
+
     public ArchipelagoIcon() {
         super(IMG, ID);
+    }
+
+    public static void addPendingReward(NetworkItem networkItem) {
+        pendingRewards.add(networkItem);
+    }
+
+    @Override
+    public void update() {
+        super.update();
+
+        if(pendingRewards.size() > 0)
+            for (NetworkItem reward : pendingRewards)
+                ArchipelagoRewardScreen.addReward(reward);
+
+        pendingRewards.clear();
     }
 
     @Override

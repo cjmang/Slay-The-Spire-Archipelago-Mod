@@ -3,6 +3,7 @@ package ArchipelagoMW;
 import ArchipelagoMW.patches.NeowPatch;
 import ArchipelagoMW.ui.RewardMenu.ArchipelagoRewardScreen;
 import ArchipelagoMW.ui.connection.ConnectionPanel;
+import ArchipelagoMW.ui.topPannel.ArchipelagoIcon;
 import com.evacipated.cardcrawl.modthespire.Loader;
 import com.megacrit.cardcrawl.characters.AbstractPlayer;
 import com.megacrit.cardcrawl.core.CardCrawlGame;
@@ -225,7 +226,7 @@ public class APClient extends gg.archipelago.APClient.APClient {
         if (CardCrawlGame.isInARun()) {
             try {
                 logger.info("Adding item to player in room: " + AbstractDungeon.getCurrRoom());
-                ArchipelagoRewardScreen.addReward(networkItem);
+                ArchipelagoIcon.addPendingReward(networkItem);
             } catch (NullPointerException e) {
                 logger.info("Player was unable to receive item for now");
             }
