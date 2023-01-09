@@ -3,6 +3,7 @@ package ArchipelagoMW;
 import ArchipelagoMW.patches.NeowPatch;
 import ArchipelagoMW.ui.RewardMenu.ArchipelagoRewardScreen;
 import ArchipelagoMW.ui.connection.ConnectionPanel;
+import com.evacipated.cardcrawl.modthespire.Loader;
 import com.megacrit.cardcrawl.characters.AbstractPlayer;
 import com.megacrit.cardcrawl.core.CardCrawlGame;
 import com.megacrit.cardcrawl.core.Settings;
@@ -13,6 +14,7 @@ import com.megacrit.cardcrawl.neow.NeowEvent;
 import com.megacrit.cardcrawl.neow.NeowRoom;
 import com.megacrit.cardcrawl.rooms.AbstractRoom;
 import com.megacrit.cardcrawl.screens.mainMenu.MainMenuScreen;
+import downfall.patches.EvilModeCharacterSelect;
 import gg.archipelago.APClient.ItemFlags;
 import gg.archipelago.APClient.Print.APPrint;
 import gg.archipelago.APClient.events.ConnectionAttemptEvent;
@@ -129,6 +131,9 @@ public class APClient extends gg.archipelago.APClient.APClient {
             }*/
 
             CardCrawlGame.chosenCharacter = character.chosenClass;
+            if (Loader.isModLoaded("downfall"))
+                EvilModeCharacterSelect.evilMode = data.downfall == 1;
+
             CardCrawlGame.mainMenuScreen.isFadingOut = true;
             CardCrawlGame.mainMenuScreen.fadeOutMusic();
 

@@ -8,14 +8,17 @@ public class SlotData {
     public String seed;
 
     @SerializedName("character")
-    public String character;
+    public String character = "The Ironclad";
 
     @SerializedName("games")
     public int games;
 
     @SerializedName("ascension")
-    public int ascension;
+    public int ascension = 0;
 
     @SerializedName("heart_run")
-    public int heartRun;
+    public int heartRun = 0;
+
+    @SerializedName("downfall")
+    public int downfall = 0;
 }
