@@ -23,7 +23,7 @@ public class VictoryScreenPatch {
             if (!GameOverScreen.isVictory)
                 return;
             // don't send victory if we are in the beyond victory screen and we are on a heart run.
-            if (CardCrawlGame.dungeon instanceof TheBeyond && Settings.isFinalActAvailable)
+            if (CardCrawlGame.dungeon instanceof TheBeyond && APClient.slotData.finalAct == 1)
                 return;
 
             APClient.apClient.setGameState(ClientStatus.CLIENT_GOAL);

@@ -4,6 +4,7 @@ import ArchipelagoMW.patches.NeowPatch;
 import ArchipelagoMW.ui.RewardMenu.ArchipelagoRewardScreen;
 import ArchipelagoMW.ui.connection.ConnectionPanel;
 import ArchipelagoMW.ui.topPannel.ArchipelagoIcon;
+import ArchipelagoMW.util.DeathLinkHelper;
 import com.evacipated.cardcrawl.modthespire.Loader;
 import com.megacrit.cardcrawl.characters.AbstractPlayer;
 import com.megacrit.cardcrawl.core.CardCrawlGame;
@@ -17,6 +18,7 @@ import gg.archipelago.APClient.ItemFlags;
 import gg.archipelago.APClient.Print.APPrint;
 import gg.archipelago.APClient.events.ConnectionAttemptEvent;
 import gg.archipelago.APClient.events.ConnectionResultEvent;
+import gg.archipelago.APClient.helper.DeathLink;
 import gg.archipelago.APClient.network.BouncedPacket;
 import gg.archipelago.APClient.network.ConnectionResult;
 import gg.archipelago.APClient.parts.NetworkItem;
@@ -33,11 +35,13 @@ public class APClient extends gg.archipelago.APClient.APClient {
 
     public static APClient apClient;
 
+    public static SlotData slotData;
+
     public static void newConnection(String address, String slotName, String password) {
         if (apClient != null) {
             apClient.close();
         }
-        apClient = new APClient("", 0);
+        apClient = new APClient();
         apClient.setPassword(password);
         apClient.setName(slotName);
         apClient.setItemsHandlingFlags(ItemFlags.SEND_ITEMS + ItemFlags.SEND_OWN_ITEMS + ItemFlags.SEND_STARTING_INVENTORY);
@@ -48,8 +52,8 @@ public class APClient extends gg.archipelago.APClient.APClient {
         }
     }
 
-    private APClient(String saveID, int slotID) {
-        super(saveID, slotID);
+    private APClient() {
+        super();
         this.setGame("Slay the Spire");
     }
 
@@ -87,86 +91,81 @@ public class APClient extends gg.archipelago.APClient.APClient {
 
         logger.info("about to parse slot data");
         try {
-            SlotData data = connectionResultEvent.getSlotData(SlotData.class);
+            slotData = connectionResultEvent.getSlotData(SlotData.class);
             logger.info("slot data parsed");
 
             AbstractPlayer character = CardCrawlGame.characterManager.getCharacter(AbstractPlayer.PlayerClass.IRONCLAD);
-            switch (data.character) {
+            switch (slotData.character) {
                 case "0":
-                    data.character = "The Ironclad";
+                    slotData.character = "The Ironclad";
                     break;
                 case "1":
-                    data.character = "The Silent";
+                    slotData.character = "The Silent";
                     break;
                 case "2":
-                    data.character = "The Defect";
+                    slotData.character = "The Defect";
                     break;
                 case "3":
-                    data.character = "The Watcher";
+                    slotData.character = "The Watcher";
                     break;
                 case "4":
-                    data.character = "The Hermit";
+                    slotData.character = "The Hermit";
                     break;
                 case "5":
-                    data.character = "The Slime Boss";
+                    slotData.character = "The Slime Boss";
                     break;
                 case "6":
-                    data.character = "The Guardian";
+                    slotData.character = "The Guardian";
                     break;
                 case "7":
-                    data.character = "The Hexaghost";
+                    slotData.character = "The Hexaghost";
                     break;
                 case "8":
-                    data.character = "The Champ";
+                    slotData.character = "The Champ";
                     break;
                 case "9":
-                    data.character = "The Gremlins";
+                    slotData.character = "The Gremlins";
                     break;
                 case "10":
-                    data.character = "The Automaton";
+                    slotData.character = "The Automaton";
                     break;
                 case "11":
-                    data.character = "The Snecko";
+                    slotData.character = "The Snecko";
                     break;
                 case "12":
                     character = CardCrawlGame.characterManager.getRandomCharacter(new Random());
             }
 
             for (AbstractPlayer ch : CardCrawlGame.characterManager.getAllCharacters()) {
-                if (ch.title.equalsIgnoreCase(data.character)) {
+                if (ch.title.equalsIgnoreCase(slotData.character)) {
                     character = ch;
                     break;
                 }
             }
             logger.info("character: " + character.name);
-            logger.info("heart: " + data.finalAct);
-            logger.info("seed: " + data.seed);
-            logger.info("ascension: " + data.ascension);
-            /*
-            AbstractDungeon.player = CardCrawlGame.characterManager.recreateCharacter(character);
-            for (AbstractRelic relic : AbstractDungeon.player.relics) {
-                relic.updateDescription(AbstractDungeon.player.chosenClass);
-                relic.onEquip();
-            }
-
-            for (AbstractCard card : AbstractDungeon.player.masterDeck.group) {
-                if(card.rarity != AbstractCard.CardRarity.BASIC) {
-                    CardHelper.obtain(card.cardID, card.rarity, card.color);
-                }
-            }*/
+            logger.info("heart: " + slotData.finalAct);
+            logger.info("seed: " + slotData.seed);
+            logger.info("ascension: " + slotData.ascension);
 
             CardCrawlGame.chosenCharacter = character.chosenClass;
             if (Loader.isModLoaded("downfall"))
-                EvilModeCharacterSelect.evilMode = data.downfall == 1;
+                EvilModeCharacterSelect.evilMode = slotData.downfall == 1;
+
+            if(slotData.deathLink > 0) {
+                DeathLink.setDeathLinkEnabled(true);
+                getEventManager().registerListener(new DeathLinkHelper(slotData.deathLink));
+            }
+
+            DeathLinkHelper.update.death = false;
 
             CardCrawlGame.mainMenuScreen.isFadingOut = true;
             CardCrawlGame.mainMenuScreen.fadeOutMusic();
 
-            Settings.isFinalActAvailable = (data.finalAct >= 1);
-            SeedHelper.setSeed(data.seed);
+            Settings.isFinalActAvailable = (slotData.finalAct == 1);
+            SeedHelper.setSeed(slotData.seed);
 
-            AbstractDungeon.isAscensionMode = (data.ascension > 0);
-            AbstractDungeon.ascensionLevel = data.ascension;
+            AbstractDungeon.isAscensionMode = (slotData.ascension > 0);
+            AbstractDungeon.ascensionLevel = slotData.ascension;
 
             AbstractDungeon.generateSeeds();
             Settings.seedSet = true;
@@ -210,12 +209,12 @@ public class APClient extends gg.archipelago.APClient.APClient {
 
     @Override
     public void onError(Exception e) {
-        ConnectionPanel.connectionResultText = "Server Error [] NL " + e.getMessage();
+        ConnectionPanel.connectionResultText = "Server Error NL " + e.getMessage();
     }
 
     @Override
     public void onClose(String message, int i) {
-        ConnectionPanel.connectionResultText = "Connection Closed [] NL " + message;
+        ConnectionPanel.connectionResultText = "Connection Closed NL " + message;
     }
 
     @Override

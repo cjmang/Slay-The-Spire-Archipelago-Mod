@@ -427,7 +427,7 @@ public class ArchipelagoRewardScreen {
             reward.type = RewardItem.RewardType.CARD;
             reward.cards = cards;
             RewardItemPatch.CustomFields.apReward.set(reward, true);
-            reward.text = "Card Draw [] NL " + player + " [] NL " + location;
+            reward.text = player + " NL " + location;
             addReward(reward);
         } else if (itemID == 8001L) { //rare card draw
             apRareReward = true;
@@ -445,12 +445,12 @@ public class ArchipelagoRewardScreen {
             } catch (Exception ignored) {
             }
 
-            reward.text = "Rare Card Draw [] NL " + player + " [] NL " + location;
+            reward.text = player + " NL " + location;
             addReward(reward);
         } else if (itemID == 8002L) { // Relic
             AbstractRelic relic = AbstractDungeon.returnRandomRelic(getRandomRelicTier());
             RewardItem reward = new RewardItem(relic);
-            reward.text = "Relic [] NL " + player + " [] NL " + location;
+            reward.text = player + " NL " + location;
             RewardItemPatch.CustomFields.apReward.set(reward, true);
             addReward(reward);
         } else if (itemID == 8003L) { // Boss Relic
@@ -464,7 +464,7 @@ public class ArchipelagoRewardScreen {
             reward.type = RewardItemPatch.RewardType.BOSS_RELIC;
             RewardItemPatch.CustomFields.bossRelics.set(reward, bossRelics);
             RewardItemPatch.CustomFields.apReward.set(reward, true);
-            reward.text = "Boss Relic [] NL " + player + " [] NL " + location;
+            reward.text = player + " NL " + location;
             addReward(reward);
             //ArchipelagoMW.bossRelicRewardScreen.open(bossRelics);
         }

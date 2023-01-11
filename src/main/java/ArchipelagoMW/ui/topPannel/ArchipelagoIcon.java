@@ -2,11 +2,11 @@ package ArchipelagoMW.ui.topPannel;
 
 import ArchipelagoMW.APClient;
 import ArchipelagoMW.ArchipelagoMW;
+import ArchipelagoMW.APTextures;
 import ArchipelagoMW.ui.RewardMenu.ArchipelagoRewardScreen;
 import ArchipelagoMW.ui.connection.ConnectionPanel;
 import basemod.TopPanelItem;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.megacrit.cardcrawl.core.Settings;
 import com.megacrit.cardcrawl.dungeons.AbstractDungeon;
@@ -23,13 +23,12 @@ public class ArchipelagoIcon extends TopPanelItem {
 
     public static final Logger logger = LogManager.getLogger(ArchipelagoIcon.class.getName());
 
-    private static final Texture IMG = ArchipelagoMW.AP_ICON;
-    public static final String ID = "ArchipelagoMW:ClaimRewards";
+    public static final String ID = ArchipelagoMW.makeID("ClaimRewards");
 
     public static List<NetworkItem> pendingRewards = new LinkedList<NetworkItem>();
 
     public ArchipelagoIcon() {
-        super(IMG, ID);
+        super(APTextures.AP_ICON, ID);
     }
 
     public static void addPendingReward(NetworkItem networkItem) {
@@ -65,7 +64,6 @@ public class ArchipelagoIcon extends TopPanelItem {
 
     @Override
     protected void onClick() {
-        logger.info("click da button!");
         // if we are disconnected and we click the ap button try new connection.
         if (!APClient.apClient.isConnected()) {
             APClient.newConnection(ArchipelagoMW.address, ArchipelagoMW.slotName, ConnectionPanel.passwordField);

@@ -1,6 +1,6 @@
 package ArchipelagoMW.patches;
 
-import ArchipelagoMW.ArchipelagoMW;
+import ArchipelagoMW.APTextures;
 import ArchipelagoMW.ui.RewardMenu.ArchipelagoRewardScreen;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -53,11 +53,11 @@ public class RewardItemPatch {
 
         @SpireInsertPatch(rloc = 597 - 385, localvars = {"color"})
         public static void Insert(RewardItem __instance, SpriteBatch sb, String ___text, float ___REWARD_TEXT_X, float ___y, Color color) {
-            if (___text.contains("[] NL")) {
+            if (___text.contains("NL")) {
                 //float lineHeight = FontHelper.getSmartWidth(FontHelper.cardDescFont_N, ___text, 1000.0F * Settings.scale, 30.0F);
-                FontHelper.renderSmartText(sb, FontHelper.cardDescFont_N, ___text, ___REWARD_TEXT_X, ___y + 35.5F * Settings.scale, 1000.0F * Settings.scale, 26.0F * Settings.scale, color);
+                FontHelper.renderSmartText(sb, FontHelper.cardDescFont_N, ___text, ___REWARD_TEXT_X, ___y + 20.5F * Settings.scale, 1000.0F * Settings.scale, 26.0F * Settings.scale, color);
             } else {
-                FontHelper.renderSmartText(sb, FontHelper.cardDescFont_N, ___text, ___REWARD_TEXT_X, ___y + 5.0F * Settings.scale, 1000.0F * Settings.scale, 0.0F, color);
+                FontHelper.renderSmartText(sb, FontHelper.cardDescFont_N, ___text, ___REWARD_TEXT_X, ___y + 5.0F * Settings.scale, 1000.0F * Settings.scale, 26.0F, color);
             }
         }
 
@@ -67,7 +67,7 @@ public class RewardItemPatch {
                 sb.draw(ImageMaster.RUN_HISTORY_MAP_ICON_BOSS_CHEST, ___REWARD_ITEM_X - 22.0F, ___y - 40.0F - 2.0F * Settings.scale, 32.0F, 32.0F, 64.0F, 64.0F, Settings.scale * 1.5F, Settings.scale * 1.5F, 0.0F, 0, 0, 64, 64, false, false);
             }
             if (___type == RewardType.ARCHIPELAGO_LOCATION) {
-                sb.draw(ArchipelagoMW.AP_ICON, ___REWARD_ITEM_X - 32.0F, ___y - 32.0F - 2.0F * Settings.scale, 32.0F, 32.0F, 64.0F, 64.0F, Settings.scale, Settings.scale, 0.0F, 0, 0, 64, 64, false, false);
+                sb.draw(APTextures.AP_ICON, ___REWARD_ITEM_X - 32.0F, ___y - 32.0F - 2.0F * Settings.scale, 32.0F, 32.0F, 64.0F, 64.0F, Settings.scale, Settings.scale, 0.0F, 0, 0, 64, 64, false, false);
             }
         }
     }
