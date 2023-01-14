@@ -9,7 +9,7 @@ import com.megacrit.cardcrawl.dungeons.AbstractDungeon;
 import com.megacrit.cardcrawl.helpers.Hitbox;
 import com.megacrit.cardcrawl.helpers.TipHelper;
 import com.megacrit.cardcrawl.rewards.chests.AbstractChest;
-import gg.archipelago.APClient.parts.NetworkItem;
+import gg.archipelago.client.parts.NetworkItem;
 
 public class APChest extends AbstractChest {
 
@@ -25,13 +25,13 @@ public class APChest extends AbstractChest {
     }
 
     public void open(boolean bossChest) {
-            CardCrawlGame.sound.play("CHEST_OPEN");
+        CardCrawlGame.sound.play("CHEST_OPEN");
     }
 
     @Override
     public void render(SpriteBatch sb) {
         super.render(sb);
-        if(!this.isOpen) {
+        if (!this.isOpen) {
             TipHelper.renderGenericTip(CHEST_LOC_X - hb.width / 2, CHEST_LOC_Y + hb.height / 2f, item.itemName, item.playerName);
         }
     }

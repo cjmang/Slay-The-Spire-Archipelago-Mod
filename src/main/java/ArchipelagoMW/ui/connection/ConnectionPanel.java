@@ -1,6 +1,7 @@
 package ArchipelagoMW.ui.connection;
 
 import ArchipelagoMW.ArchipelagoMW;
+import ArchipelagoMW.patches.ConfirmPopupPatch;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -12,6 +13,7 @@ import com.megacrit.cardcrawl.helpers.ImageMaster;
 import com.megacrit.cardcrawl.helpers.input.InputHelper;
 import com.megacrit.cardcrawl.helpers.input.ScrollInputProcessor;
 import com.megacrit.cardcrawl.localization.UIStrings;
+import com.megacrit.cardcrawl.screens.options.ConfirmPopup;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -67,6 +69,8 @@ public class ConnectionPanel {
     public Hitbox slotNameHB = new Hitbox(PANEL_WIDTH * .9f - slotNameOffset, 50 * Settings.scale);
     public Hitbox passwordHB = new Hitbox(PANEL_WIDTH * .9f - passwordOffset, 50 * Settings.scale);
 
+    public final ConfirmPopup resumeSave;
+
     public ConnectionPanel() {
 
         this.uiColor = new Color(1.0F, 1.0F, 1.0F, 1.0F);// 37
@@ -80,6 +84,8 @@ public class ConnectionPanel {
         addressHB.move(this.x + ADDRESS_X + addressHB.width / 2 + addressOffset, this.y + ADDRESS_Y);
         slotNameHB.move(this.x + SLOT_NAME_X + slotNameHB.width / 2 + slotNameOffset, this.y + SLOT_NAME_Y);
         passwordHB.move(this.x + PASSWORD_X + passwordHB.width / 2 + passwordOffset, this.y + PASSWORD_Y);
+
+        resumeSave = new ConfirmPopup("Resume?", "Archipelago Save Detected would you like to resume?", ConfirmPopupPatch.AP_SAVE_RESUME);
     }
 
     public void move(float x, float y) {
@@ -88,58 +94,61 @@ public class ConnectionPanel {
     }
 
     public void update() {
-        addressHB.update();
-        if (addressHB.hovered && InputHelper.justClickedLeft) {
-            addressHB.clickStarted = true;
-            CardCrawlGame.sound.play("UI_CLICK_1");
-        }
-
-        if (addressHB.clicked) {
-            addressHB.clicked = false;
-            selected = field.address;
-            Gdx.input.setInputProcessor(new AddressTypeHelper());
-        }
-        if (addressHB.justHovered && selected != field.address) {
-            CardCrawlGame.sound.play("UI_HOVER");
-        }
-
-        slotNameHB.update();
-        if (slotNameHB.hovered && InputHelper.justClickedLeft) {
-            slotNameHB.clickStarted = true;
-            CardCrawlGame.sound.play("UI_CLICK_1");
-        }
-
-        if (slotNameHB.clicked && InputHelper.justReleasedClickLeft) {
-            slotNameHB.clicked = false;
-            selected = field.slotname;
-            Gdx.input.setInputProcessor(new SlotNameTypeHelper());
-        }
-        if (slotNameHB.justHovered && selected != field.slotname) {
-            CardCrawlGame.sound.play("UI_HOVER");
-        }
-
-        if (showPassword) {
-            passwordHB.update();
-            if (passwordHB.hovered && InputHelper.justClickedLeft) {
-                passwordHB.clickStarted = true;
+        if(!resumeSave.shown) {
+            addressHB.update();
+            if (addressHB.hovered && InputHelper.justClickedLeft) {
+                addressHB.clickStarted = true;
                 CardCrawlGame.sound.play("UI_CLICK_1");
             }
 
-            if (passwordHB.clicked && InputHelper.justReleasedClickLeft) {
-                passwordHB.clicked = false;
-                selected = field.password;
-                Gdx.input.setInputProcessor(new PasswordTypeHelper());
+            if (addressHB.clicked) {
+                addressHB.clicked = false;
+                selected = field.address;
+                Gdx.input.setInputProcessor(new AddressTypeHelper());
             }
-            if (passwordHB.justHovered && selected != field.password) {
+            if (addressHB.justHovered && selected != field.address) {
                 CardCrawlGame.sound.play("UI_HOVER");
             }
-        }
 
-        if ((!slotNameHB.hovered || !addressHB.hovered || !passwordHB.hovered) && InputHelper.justClickedLeft) {
-            selected = field.none;
-            //select no input box.
-            Gdx.input.setInputProcessor(new ScrollInputProcessor());
+            slotNameHB.update();
+            if (slotNameHB.hovered && InputHelper.justClickedLeft) {
+                slotNameHB.clickStarted = true;
+                CardCrawlGame.sound.play("UI_CLICK_1");
+            }
+
+            if (slotNameHB.clicked && InputHelper.justReleasedClickLeft) {
+                slotNameHB.clicked = false;
+                selected = field.slotname;
+                Gdx.input.setInputProcessor(new SlotNameTypeHelper());
+            }
+            if (slotNameHB.justHovered && selected != field.slotname) {
+                CardCrawlGame.sound.play("UI_HOVER");
+            }
+
+            if (showPassword) {
+                passwordHB.update();
+                if (passwordHB.hovered && InputHelper.justClickedLeft) {
+                    passwordHB.clickStarted = true;
+                    CardCrawlGame.sound.play("UI_CLICK_1");
+                }
+
+                if (passwordHB.clicked && InputHelper.justReleasedClickLeft) {
+                    passwordHB.clicked = false;
+                    selected = field.password;
+                    Gdx.input.setInputProcessor(new PasswordTypeHelper());
+                }
+                if (passwordHB.justHovered && selected != field.password) {
+                    CardCrawlGame.sound.play("UI_HOVER");
+                }
+            }
+
+            if ((!slotNameHB.hovered || !addressHB.hovered || !passwordHB.hovered) && InputHelper.justClickedLeft) {
+                selected = field.none;
+                //select no input box.
+                Gdx.input.setInputProcessor(new ScrollInputProcessor());
+            }
         }
+        resumeSave.update();
     }
 
     public static boolean addressIsFull() {
@@ -238,10 +247,13 @@ public class ConnectionPanel {
             }
         }
 
-        slotNameHB.render(sb);
-        addressHB.render(sb);
         if (showPassword)
             passwordHB.render(sb);
+
+        slotNameHB.render(sb);
+        addressHB.render(sb);
+
+        resumeSave.render(sb);
     }
 
     private void renderTextBox(SpriteBatch sb, float textOffset, float poxX, float posY, Hitbox textHB, String text) {

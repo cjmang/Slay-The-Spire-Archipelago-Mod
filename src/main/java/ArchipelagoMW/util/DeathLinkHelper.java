@@ -1,5 +1,6 @@
 package ArchipelagoMW.util;
 
+import ArchipelagoMW.APClient;
 import basemod.ReflectionHacks;
 import com.evacipated.cardcrawl.modthespire.Loader;
 import com.evacipated.cardcrawl.modthespire.lib.*;
@@ -10,27 +11,27 @@ import com.megacrit.cardcrawl.rooms.AbstractRoom;
 import com.megacrit.cardcrawl.screens.DeathScreen;
 import com.megacrit.cardcrawl.screens.GameOverScreen;
 import com.megacrit.cardcrawl.screens.options.ConfirmPopup;
-import gg.archipelago.APClient.APClient;
-import gg.archipelago.APClient.events.APEventListener;
-import gg.archipelago.APClient.events.DeathLinkEvent;
-import gg.archipelago.APClient.helper.DeathLink;
+import gg.archipelago.client.events.ArchipelagoEventListener;
+import gg.archipelago.client.events.DeathLinkEvent;
+import gg.archipelago.client.helper.DeathLink;
 import gremlin.actions.GremlinSwapAction;
 import gremlin.characters.GremlinCharacter;
 import gremlin.orbs.GremlinStandby;
 import javassist.CtBehavior;
 
-import java.lang.reflect.Field;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 public class DeathLinkHelper {
 
     public float damagePercent = 0;
 
     public DeathLinkHelper(int deathLink) {
-        damagePercent = deathLink/100f;
+        damagePercent = deathLink / 100f;
     }
 
-    @APEventListener
+    @ArchipelagoEventListener
     public void onDeathLink(DeathLinkEvent event) {
         //ohh hey! look its a death link event.. *hopefully*
         int damage = (int) (AbstractDungeon.player.maxHealth * damagePercent);
@@ -43,11 +44,12 @@ public class DeathLinkHelper {
         public static int pendingDamage = 0;
         public static String cause;
         public static boolean death = false;
+
         public static void Prefix() {
-            if (pendingDamage <= 0 )
+            if (pendingDamage <= 0)
                 return;
 
-            if(Loader.isModLoaded("downfall") && AbstractDungeon.player instanceof GremlinCharacter) {
+            if (Loader.isModLoaded("downfall") && AbstractDungeon.player instanceof GremlinCharacter) {
                 GremlinCharacter p = (GremlinCharacter) AbstractDungeon.player;
 
                 p.currentHealth -= pendingDamage;
@@ -57,16 +59,16 @@ public class DeathLinkHelper {
                 if (AbstractDungeon.getCurrRoom().phase == AbstractRoom.RoomPhase.COMBAT) {
                     for (int i = 0; i < p.maxOrbs; ++i) {
                         if (p.orbs.get(i) instanceof GremlinStandby) {
-                            GremlinStandby gs = (GremlinStandby)p.orbs.get(i);
+                            GremlinStandby gs = (GremlinStandby) p.orbs.get(i);
                             gs.hp -= pendingDamage;
                         }
                     }
 
-                    if(p.currentHealth <= 0) {
+                    if (p.currentHealth <= 0) {
                         boolean anotherGrem = false;
                         for (int i = 0; i < p.maxOrbs; ++i) {
                             if (p.orbs.get(i) instanceof GremlinStandby) {
-                                GremlinStandby gs = (GremlinStandby)p.orbs.get(i);
+                                GremlinStandby gs = (GremlinStandby) p.orbs.get(i);
                                 if (gs.hp > 0) {
                                     anotherGrem = true;
                                     break;
@@ -84,7 +86,7 @@ public class DeathLinkHelper {
                     p.gremlinDeathSFX();
                     String newGremlin = null;
                     int newIndex = 0;
-                    for(int i = 0; i < 5; ++i) {
+                    for (int i = 0; i < 5; ++i) {
                         if (p.mobState.gremlinHP.get(i) > 0) {
                             newGremlin = p.mobState.gremlins.get(i);
                             newIndex = i;
@@ -108,7 +110,7 @@ public class DeathLinkHelper {
                 AbstractDungeon.player.isDead = true;
                 death = true;
                 AbstractDungeon.deathScreen = new DeathScreen(null);
-                ReflectionHacks.setPrivate(AbstractDungeon.deathScreen, DeathScreen.class,"deathText", cause);
+                ReflectionHacks.setPrivate(AbstractDungeon.deathScreen, DeathScreen.class, "deathText", cause);
                 AbstractDungeon.screen = AbstractDungeon.CurrentScreen.DEATH;
             }
             pendingDamage = 0;
@@ -145,10 +147,9 @@ public class DeathLinkHelper {
             }
             HashMap<String, Integer> mobs = new HashMap<>();
             for (AbstractMonster monster : monsters.monsters) {
-                if (mobs.containsKey(monster.name)){
+                if (mobs.containsKey(monster.name)) {
                     mobs.put(monster.name, mobs.get(monster.name) + 1);
-                }
-                else {
+                } else {
                     mobs.put(monster.name, 1);
                 }
             }
@@ -156,13 +157,12 @@ public class DeathLinkHelper {
             if (!mobs.isEmpty()) {
                 StringBuilder sb = new StringBuilder();
                 for (Map.Entry<String, Integer> entry : mobs.entrySet()) {
-                    if(entry.getValue() > 1) {
+                    if (entry.getValue() > 1) {
                         sb.append(entry.getValue());
                         sb.append(" ");
                         sb.append(entry.getKey());
                         sb.append("s ");
-                    }
-                    else {
+                    } else {
                         sb.append(entry.getKey());
                         sb.append(" ");
                     }

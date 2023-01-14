@@ -38,7 +38,7 @@ public class ConnectionInfoScreen {
     private float waitTimer;
 
 
-    private final ConnectionPanel addressPanel = new ConnectionPanel();
+    public final ConnectionPanel addressPanel = new ConnectionPanel();
 
     public ConnectionInfoScreen() {
     }
@@ -68,22 +68,24 @@ public class ConnectionInfoScreen {
     //update when something happens on our screen.
     public void update() {
 
-        //back button
-        backButton.update();
-        if (backButton.hb.clicked || InputHelper.pressedEscape) {
-            backButton.hb.clicked = false;
-            InputHelper.pressedEscape = false;
-            backToMenu();
-        }
+        if(!addressPanel.resumeSave.shown) {
+            //back button
+            backButton.update();
+            if (backButton.hb.clicked || InputHelper.pressedEscape) {
+                backButton.hb.clicked = false;
+                InputHelper.pressedEscape = false;
+                backToMenu();
+            }
 
 
-        confirmButton.update();
-        if (confirmButton.hb.clicked || Gdx.input.isKeyJustPressed(Input.Keys.ENTER)) {
-            Gdx.input.setInputProcessor(new ScrollInputProcessor());
-            confirmButton.hb.clicked = false;
-            ConnectionPanel.connectionResultText = TEXT[5];
-            ArchipelagoMW.setConnectionInfo(ConnectionPanel.addressField, ConnectionPanel.slotNameField, ConnectionPanel.passwordField);
-            APClient.newConnection(ConnectionPanel.addressField, ConnectionPanel.slotNameField, ConnectionPanel.passwordField);
+            confirmButton.update();
+            if (confirmButton.hb.clicked || Gdx.input.isKeyJustPressed(Input.Keys.ENTER)) {
+                Gdx.input.setInputProcessor(new ScrollInputProcessor());
+                confirmButton.hb.clicked = false;
+                ConnectionPanel.connectionResultText = TEXT[5];
+                ArchipelagoMW.setConnectionInfo(ConnectionPanel.addressField, ConnectionPanel.slotNameField, ConnectionPanel.passwordField);
+                APClient.newConnection(ConnectionPanel.addressField, ConnectionPanel.slotNameField, ConnectionPanel.passwordField);
+            }
         }
 
         //pass the update to our address panel.
@@ -99,8 +101,10 @@ public class ConnectionInfoScreen {
                 Settings.GOLD_COLOR);
 
         this.addressPanel.render(sb);
-        this.backButton.render(sb);
-        this.confirmButton.render(sb);
+        if(!addressPanel.resumeSave.shown) {
+            this.backButton.render(sb);
+            this.confirmButton.render(sb);
+        }
     }
 
     static {

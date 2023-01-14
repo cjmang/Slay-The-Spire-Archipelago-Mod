@@ -98,9 +98,9 @@ public class RewardItemPatch {
 
         @SpireInsertPatch(rloc = 356 - 290)
         public static void Insert(RewardItem __instance, ArrayList<AbstractCard> ___cards) {
-            if (AbstractDungeon.screen == ArchipelagoRewardScreen.Enum.ARCHIPELAGO_REWARD) {
+            if (AbstractDungeon.screen == ArchipelagoRewardScreen.Enum.ARCHIPELAGO_REWARD_SCREEN) {
                 AbstractDungeon.cardRewardScreen.open(___cards, __instance, ArchipelagoRewardScreen.TEXT[4]);
-                AbstractDungeon.previousScreen = ArchipelagoRewardScreen.Enum.ARCHIPELAGO_REWARD;
+                AbstractDungeon.previousScreen = ArchipelagoRewardScreen.Enum.ARCHIPELAGO_REWARD_SCREEN;
             }
         }
 

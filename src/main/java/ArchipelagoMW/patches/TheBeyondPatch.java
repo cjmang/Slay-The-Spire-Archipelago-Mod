@@ -7,14 +7,10 @@ import com.megacrit.cardcrawl.dungeons.AbstractDungeon;
 import com.megacrit.cardcrawl.dungeons.TheBeyond;
 import com.megacrit.cardcrawl.map.MapRoomNode;
 import com.megacrit.cardcrawl.rooms.EmptyRoom;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import java.util.ArrayList;
 
 public class TheBeyondPatch {
-
-    public static final Logger logger = LogManager.getLogger(NeowPatch.class.getName());
 
     public TheBeyondPatch() {
     }

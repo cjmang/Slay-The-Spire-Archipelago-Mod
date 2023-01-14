@@ -4,7 +4,7 @@ import ArchipelagoMW.LocationTracker;
 import com.evacipated.cardcrawl.modthespire.lib.*;
 import com.megacrit.cardcrawl.rewards.RewardItem;
 import com.megacrit.cardcrawl.screens.CombatRewardScreen;
-import gg.archipelago.APClient.parts.NetworkItem;
+import gg.archipelago.client.parts.NetworkItem;
 import javassist.CtBehavior;
 
 import java.util.ArrayList;
@@ -47,7 +47,7 @@ public class CombatRewardScreenPatch {
 
             @Override
             public int[] Locate(CtBehavior ctBehavior) throws Exception {
-                Matcher reward = new Matcher.MethodCallMatcher(CombatRewardScreen.class,"setupItemReward");
+                Matcher reward = new Matcher.MethodCallMatcher(CombatRewardScreen.class, "setupItemReward");
                 int[] match = LineFinder.findInOrder(ctBehavior, reward);
                 for (int i = 0; i < match.length; i++) {
                     match[i]++;

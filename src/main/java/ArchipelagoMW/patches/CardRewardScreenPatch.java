@@ -1,6 +1,7 @@
 package ArchipelagoMW.patches;
 
 import ArchipelagoMW.ui.RewardMenu.ArchipelagoRewardScreen;
+import basemod.BaseMod;
 import com.evacipated.cardcrawl.modthespire.lib.SpirePatch;
 import com.evacipated.cardcrawl.modthespire.lib.SpirePrefixPatch;
 import com.evacipated.cardcrawl.modthespire.lib.SpireReturn;
@@ -18,7 +19,7 @@ public class CardRewardScreenPatch {
             if (___rItem != null) {
                 if (RewardItemPatch.CustomFields.apReward.get(___rItem)) {
                     ArchipelagoRewardScreen.rewards.remove(___rItem);
-                    ArchipelagoRewardScreen.positionRewards();
+                    ((ArchipelagoRewardScreen) BaseMod.getCustomScreen(ArchipelagoRewardScreen.Enum.ARCHIPELAGO_REWARD_SCREEN)).positionRewards();
                     AbstractDungeon.dynamicBanner.appear();
                     AbstractDungeon.overlayMenu.cancelButton.show(ArchipelagoRewardScreen.TEXT[0]);
                     return SpireReturn.Return(null);
