@@ -3,6 +3,7 @@ package ArchipelagoMW.patches;
 import ArchipelagoMW.apEvents.ConnectionResult;
 import com.evacipated.cardcrawl.modthespire.lib.SpireEnum;
 import com.evacipated.cardcrawl.modthespire.lib.SpirePatch;
+import com.evacipated.cardcrawl.modthespire.lib.SpirePostfixPatch;
 import com.megacrit.cardcrawl.core.CardCrawlGame;
 import com.megacrit.cardcrawl.core.Settings;
 import com.megacrit.cardcrawl.helpers.ModHelper;
@@ -14,6 +15,7 @@ public class ConfirmPopupPatch {
 
     @SpirePatch(clz = ConfirmPopup.class, method = "yesButtonEffect")
     public static class YesButtonEffect {
+        @SpirePostfixPatch
         public static void Postfix(ConfirmPopup __instance, ConfirmPopup.ConfirmType ___type) {
             if (___type == AP_SAVE_RESUME) {
                 CardCrawlGame.loadingSave = true;
@@ -32,6 +34,7 @@ public class ConfirmPopupPatch {
 
     @SpirePatch(clz = ConfirmPopup.class, method = "noButtonEffect")
     public static class NoButtonEffect {
+        @SpirePostfixPatch
         public static void Postfix(ConfirmPopup __instance, ConfirmPopup.ConfirmType ___type) {
             if (___type == AP_SAVE_RESUME) {
                 ConnectionResult.Connect();

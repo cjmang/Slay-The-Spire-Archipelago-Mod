@@ -3,6 +3,7 @@ package ArchipelagoMW.ui.RewardMenu;
 import ArchipelagoMW.APClient;
 import ArchipelagoMW.ArchipelagoMW;
 import ArchipelagoMW.patches.RewardItemPatch;
+import basemod.ReflectionHacks;
 import basemod.abstracts.CustomScreen;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
@@ -48,7 +49,9 @@ public class ArchipelagoRewardScreen  extends CustomScreen {
     private static final Logger logger = LogManager.getLogger(ArchipelagoRewardScreen.class.getName()); // This is our logger! It prints stuff out in the console.
 
     private static final UIStrings uiStrings;
+
     public static final String[] TEXT;
+
     public static ArrayList<RewardItem> rewards = new ArrayList<>();
     public static int rewardsQueued = 0;
     public ArrayList<AbstractGameEffect> effects = new ArrayList<>();
@@ -66,7 +69,7 @@ public class ArchipelagoRewardScreen  extends CustomScreen {
     private boolean grabbedScreen;
     private float grabStartY;
 
-    public static int index = 0;
+    public static int receivedItemsIndex = 0;
     public static boolean apReward = false;
     public static boolean apRareReward = false;
 
@@ -121,19 +124,11 @@ public class ArchipelagoRewardScreen  extends CustomScreen {
 
     public void reopen() {
         rewardsQueued = 0;
-        //AbstractDungeon.getCurrRoom().rewardTime = true;
-        //rewardAnimTimer = 0.2F;
-        //AbstractDungeon.screen = curScreen();
-        //AbstractDungeon.topPanel.unhoverHitboxes();
         AbstractDungeon.isScreenUp = true;
         AbstractDungeon.dynamicBanner.appear(TEXT[1]);
         AbstractDungeon.overlayMenu.hideCombatPanels();
         AbstractDungeon.overlayMenu.showBlackScreen();
-        //AbstractDungeon.overlayMenu.cancelButton.show(TEXT[0]);
-//        if(previousScreen != null) {
-//            AbstractDungeon.previousScreen = previousScreen;
-//            previousScreen = null;
-//        }
+
     }
 
     @Override
@@ -171,6 +166,7 @@ public class ArchipelagoRewardScreen  extends CustomScreen {
     }
 
 
+    @SuppressWarnings("unused")
     public void open() {
         APScreen = true;
         rewardsQueued = 0;
@@ -194,7 +190,8 @@ public class ArchipelagoRewardScreen  extends CustomScreen {
         tip = CardCrawlGame.tips.getTip();
 
         ArrayList<NetworkItem> items = APClient.apClient.getItemManager().getReceivedItems();
-        for (int i = index; i < items.size(); ++i) {
+        for (int i = receivedItemsIndex; i < items.size(); ++i) {
+            receivedItemsIndex = i + 1;
             addReward(items.get(i));
         }
     }
@@ -220,6 +217,7 @@ public class ArchipelagoRewardScreen  extends CustomScreen {
         }
     }
 
+    @SuppressWarnings("SuspiciousNameCombination")
     private void rewardViewUpdate() {
         if (rewardAnimTimer != 0.0F) {
             rewardAnimTimer -= Gdx.graphics.getDeltaTime();
@@ -304,92 +302,71 @@ public class ArchipelagoRewardScreen  extends CustomScreen {
     }
 
     public boolean doUpdate(RewardItem reward) {
-        boolean ret = false;// 231
-        float upperBounds = (float) Settings.HEIGHT / 2.0F + 204.0F * Settings.scale;// 232
-        float lowerBounds = (float) Settings.HEIGHT / 2.0F + -336.0F * Settings.scale;// 233
-        if (reward.y < upperBounds && reward.y > lowerBounds) {// 234
-            ret = true;// 235
+        boolean ret = false;
+        float upperBounds = (float) Settings.HEIGHT / 2.0F + 204.0F * Settings.scale;
+        float lowerBounds = (float) Settings.HEIGHT / 2.0F + -336.0F * Settings.scale;
+        if (reward.y < upperBounds && reward.y > lowerBounds) {
+            ret = true;
         }
 
-        if (!ret) {// 238
-            reward.hb.hovered = false;// 240
-            reward.hb.justHovered = false;// 241
-            reward.hb.clicked = false;// 242
-            reward.hb.clickStarted = false;// 243
-            if (reward.flashTimer > 0.0F) {// 246
-                reward.flashTimer -= Gdx.graphics.getDeltaTime();// 247
-                if (reward.flashTimer < 0.0F) {// 248
-                    reward.flashTimer = 0.0F;// 249
+        if (!ret) {
+            reward.hb.hovered = false;
+            reward.hb.justHovered = false;
+            reward.hb.clicked = false;
+            reward.hb.clickStarted = false;
+            if (reward.flashTimer > 0.0F) {
+                reward.flashTimer -= Gdx.graphics.getDeltaTime();
+                if (reward.flashTimer < 0.0F) {
+                    reward.flashTimer = 0.0F;
                 }
             }
         }
 
-        try {
-            Field f = RewardItem.class.getDeclaredField("effects");// 255
-            f.setAccessible(true);// 256
-            ArrayList<AbstractGameEffect> effects = (ArrayList) f.get(reward);// 257
-            Iterator it;
-            AbstractGameEffect e;
-            if (!ret) {// 259
-                if (effects.size() == 0) {// 261
-                    effects.add(new RewardGlowEffect(reward.hb.cX, reward.hb.cY));// 262
-                }
-
-                it = effects.iterator();// 264
-
-                while (it.hasNext()) {
-                    e = (AbstractGameEffect) it.next();// 265
-                    e.update();// 266
-                    if (e.isDone) {// 267
-                        it.remove();// 268
-                    }
-                }
+        ArrayList<AbstractGameEffect> effects = ReflectionHacks.getPrivate(reward,RewardItem.class, "effects");
+        if (!ret) {
+            if (effects.size() == 0) {
+                effects.add(new RewardGlowEffect(reward.hb.cX, reward.hb.cY));
             }
 
-            it = effects.iterator();
+            Iterator<AbstractGameEffect> effectIterator = effects.iterator();
 
-            while (it.hasNext()) {
-                e = (AbstractGameEffect) it.next();// 272
-                if (e instanceof RewardGlowEffect) {// 273
-                    moveRewardGlowEffect((RewardGlowEffect) e, reward.hb.cX, reward.hb.cY);// 274
+            while (effectIterator.hasNext()) {
+                AbstractGameEffect effect = effectIterator.next();
+                effect.update();
+                if (effect.isDone) {// 267
+                    effectIterator.remove();// 268
                 }
             }
-        } catch (NoSuchFieldException | IllegalAccessException var8) {// 277
-            var8.printStackTrace();// 278
         }
 
-        return ret;// 281
+        for (AbstractGameEffect effect : effects) {
+            if (effect instanceof RewardGlowEffect) {
+                moveRewardGlowEffect((RewardGlowEffect) effect, reward.hb.cX, reward.hb.cY);
+            }
+        }
+
+        return ret;
     }
 
     private void moveRewardGlowEffect(RewardGlowEffect effect, float x, float y) {
-        try {
-            Field f = RewardGlowEffect.class.getDeclaredField("x");// 287
-            f.setAccessible(true);// 288
-            f.setFloat(effect, x);// 289
-            f = RewardGlowEffect.class.getDeclaredField("y");// 291
-            f.setAccessible(true);// 292
-            f.setFloat(effect, y);// 293
-        } catch (NoSuchFieldException | IllegalAccessException var4) {// 294
-            var4.printStackTrace();// 295
-        }
-
-    }// 297
+        ReflectionHacks.setPrivate(effect, effect.getClass(), "x",x);
+        ReflectionHacks.setPrivate(effect, effect.getClass(), "y",y);
+    }
 
     public void positionRewards() {
-        float baseY = (float) Settings.HEIGHT / 2.0F + 124.0F * Settings.scale;// 137
-        float spacingY = 100.0F * Settings.scale;// 138
+        float baseY = (float) Settings.HEIGHT / 2.0F + 124.0F * Settings.scale;
+        float spacingY = 100.0F * Settings.scale;
 
-        for (int i = 0; i < rewards.size(); ++i) {// 140
-            rewards.get(i).move(baseY - (float) i * spacingY + scrollPosition);// 141
+        for (int i = 0; i < rewards.size(); ++i) {
+            rewards.get(i).move(baseY - (float) i * spacingY + scrollPosition);
         }
 
-        if (rewards.isEmpty()) {// 143
-            hasTakenAll = true;// 144
+        if (rewards.isEmpty()) {
+            hasTakenAll = true;
         }
     }
 
     public void addReward(RewardItem item) {
-        ++index;
         rewards.add(item);
         positionRewards();
     }
@@ -446,7 +423,6 @@ public class ArchipelagoRewardScreen  extends CustomScreen {
             RewardItemPatch.CustomFields.apReward.set(reward, true);
             reward.text = player + " NL " + location;
             addReward(reward);
-            //ArchipelagoMW.bossRelicRewardScreen.open(bossRelics);
         }
     }
 

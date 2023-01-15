@@ -13,7 +13,6 @@ import com.megacrit.cardcrawl.characters.AbstractPlayer;
 import com.megacrit.cardcrawl.core.CardCrawlGame;
 import com.megacrit.cardcrawl.core.Settings;
 import com.megacrit.cardcrawl.dungeons.AbstractDungeon;
-import com.megacrit.cardcrawl.dungeons.Exordium;
 import com.megacrit.cardcrawl.helpers.SeedHelper;
 import com.megacrit.cardcrawl.random.Random;
 import com.megacrit.cardcrawl.screens.mainMenu.MainMenuScreen;
@@ -31,7 +30,7 @@ public class ConnectionResult {
     @ArchipelagoEventListener
     public void onConnectionResult(ConnectionResultEvent event) {
         ArchipelagoRewardScreen.rewardsQueued = 0;
-        String msg = "Connecting to AP...";
+        String msg;
         switch (event.getResult()) {
             case SlotAlreadyTaken:
                 msg = "Slot already in use.";
@@ -117,7 +116,7 @@ public class ConnectionResult {
         }
         LocationTracker.reset();
         ArchipelagoRewardScreen.rewards.clear();
-        ArchipelagoRewardScreen.index = 0;
+        ArchipelagoRewardScreen.receivedItemsIndex = 0;
         LocationTracker.scoutAllLocations();
         APClient.apClient.dataStorageGet(Collections.singleton(SavePatch.AP_SAVE_STRING));
     }

@@ -1,7 +1,9 @@
 package ArchipelagoMW;
 
+import ArchipelagoMW.patches.SavePatch;
 import basemod.ReflectionHacks;
 import com.megacrit.cardcrawl.rewards.RewardItem;
+import gg.archipelago.client.network.client.SetPacket;
 import gg.archipelago.client.parts.NetworkItem;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -71,8 +73,8 @@ public class LocationTracker {
     }
 
     /**
-     * @return true if this card draw was sent to AP,
-     * false if you should keep this card draw locally.
+     * @return a {@link NetworkItem} if this card draw was sent to AP,
+     * null if you should keep this card draw locally.
      */
     static public NetworkItem sendCardDraw(RewardItem reward) {
         boolean isBoss = ReflectionHacks.getPrivate(reward, RewardItem.class, "isBoss");
@@ -164,6 +166,9 @@ public class LocationTracker {
         }};
 
         APClient.apClient.getLocationManager().checkLocations(allLocations);
+        SetPacket set = new SetPacket(SavePatch.AP_SAVE_STRING,"");
+        set.addDataStorageOperation(SetPacket.Operation.REPLACE, "");
+        APClient.apClient.dataStorageSet(set);
     }
 
     public static void scoutAllLocations() {

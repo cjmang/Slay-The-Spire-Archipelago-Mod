@@ -1,5 +1,6 @@
 package ArchipelagoMW;
 
+import ArchipelagoMW.patches.RewardItemPatch;
 import ArchipelagoMW.ui.RewardMenu.ArchipelagoRewardScreen;
 import ArchipelagoMW.ui.RewardMenu.BossRelicRewardScreen;
 import ArchipelagoMW.ui.topPannel.ArchipelagoIcon;
@@ -11,10 +12,12 @@ import basemod.abstracts.CustomSavableRaw;
 import basemod.interfaces.EditStringsSubscriber;
 import basemod.interfaces.PostInitializeSubscriber;
 import com.evacipated.cardcrawl.modthespire.lib.SpireInitializer;
-import com.google.gson.*;
+import com.google.gson.Gson;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
 import com.google.gson.reflect.TypeToken;
 import com.megacrit.cardcrawl.core.Settings;
-import com.megacrit.cardcrawl.dungeons.AbstractDungeon;
 import com.megacrit.cardcrawl.helpers.CardLibrary;
 import com.megacrit.cardcrawl.helpers.FontHelper;
 import com.megacrit.cardcrawl.helpers.PotionHelper;
@@ -25,7 +28,6 @@ import com.megacrit.cardcrawl.rewards.RewardSave;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import javax.xml.stream.Location;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -42,7 +44,6 @@ public class ArchipelagoMW implements
     private static final String AUTHOR = "Kono Tyran & Mavelovent";
     private static final String DESCRIPTION = "An Archipelago multiworld mod.";
 
-    public static final String BADGE_IMAGE = "ArchipelagoMWResources/images/Badge.png";
     public static BossRelicRewardScreen bossRelicRewardScreen;
 
     // Archipelago Client Varaiables
@@ -50,10 +51,6 @@ public class ArchipelagoMW implements
     public static String slotName;
     public static String password;
 
-
-    public static String makeUIPath(String resourcePath) {
-        return getModID() + "Resources/images/ui/" + resourcePath;
-    }
 
     public ArchipelagoMW() {
         logger.info("Subscribe to BaseMod hooks");
@@ -67,6 +64,7 @@ public class ArchipelagoMW implements
         return modID;
     }
 
+    @SuppressWarnings("unused")
     public static void initialize() {
         logger.info("========================= Initializing Archipelago Multi-World. =========================");
         new ArchipelagoMW();
@@ -119,8 +117,8 @@ public class ArchipelagoMW implements
         BaseMod.registerModBadge(APTextures.AP_BADGE, MODNAME, AUTHOR, DESCRIPTION, settingsPanel);
         BaseMod.addTopPanelItem(new ArchipelagoIcon());
 
-        Type stringArrayList = new TypeToken<ArrayList<String>>() {}.getType();
-        Type rewardSaveList = new TypeToken<ArrayList<APRewardSave>>() {}.getType();
+        Type rewardSaveList = new TypeToken<ArrayList<APRewardSave>>() {
+        }.getType();
 
         BaseMod.addCustomScreen(new ArchipelagoRewardScreen());
         BaseMod.addSaveField("ap_rewards", new CustomSavableRaw() {
@@ -151,10 +149,11 @@ public class ArchipelagoMW implements
                     }
                 }
 
-                save.add("rewards", gson.toJsonTree(rewards,rewardSaveList));
+                save.add("rewards", gson.toJsonTree(rewards, rewardSaveList));
 
 
                 save.add("rewards_remaining", new JsonPrimitive(ArchipelagoRewardScreen.rewardsQueued));
+                save.add("received_index", new JsonPrimitive(ArchipelagoRewardScreen.receivedItemsIndex));
                 save.add("card_draw_index", new JsonPrimitive(LocationTracker.cardDrawIndex));
                 save.add("rare_card_draw_index", new JsonPrimitive(LocationTracker.rareCardIndex));
                 save.add("relic_index", new JsonPrimitive(LocationTracker.relicIndex));
@@ -185,19 +184,21 @@ public class ArchipelagoMW implements
                             item.type = RewardItem.RewardType.CARD;
                             item.text = RewardItem.TEXT[2];
                             item.cards = new ArrayList<>();
+                            RewardItemPatch.CustomFields.apReward.set(item, true);
                             for (String cardID : reward.cardIDs) {
-                                item.cards.add(CardLibrary.getCard(cardID));
+                                item.cards.add(CardLibrary.getCard(cardID).makeCopy());
                             }
                             rewards.add(item);
                             break;
                     }
-
-                    ArchipelagoRewardScreen.rewards = rewards;
-                    ArchipelagoRewardScreen.rewardsQueued = save.get("rewards_remaining").getAsInt();
-                    LocationTracker.cardDrawIndex = save.get("card_draw_index").getAsInt();
-                    LocationTracker.rareCardIndex = save.get("rare_card_draw_index").getAsInt();
-                    LocationTracker.relicIndex= save.get("relic_index").getAsInt();
                 }
+
+                ArchipelagoRewardScreen.rewards = rewards;
+                ArchipelagoRewardScreen.rewardsQueued = save.get("rewards_remaining").getAsInt();
+                ArchipelagoRewardScreen.receivedItemsIndex = save.get("received_index").getAsInt();
+                LocationTracker.cardDrawIndex = save.get("card_draw_index").getAsInt();
+                LocationTracker.rareCardIndex = save.get("rare_card_draw_index").getAsInt();
+                LocationTracker.relicIndex = save.get("relic_index").getAsInt();
             }
         });
 
