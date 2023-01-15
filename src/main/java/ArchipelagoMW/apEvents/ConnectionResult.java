@@ -121,7 +121,7 @@ public class ConnectionResult {
         APClient.apClient.dataStorageGet(Collections.singleton(SavePatch.AP_SAVE_STRING));
     }
 
-    public static void Connect() {
+    public static void start() {
 
         ArchipelagoMW.logger.info("about to parse slot data");
         try {

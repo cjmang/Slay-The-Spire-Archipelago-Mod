@@ -9,11 +9,11 @@ public class DataStorageGet {
 
     @ArchipelagoEventListener
     public void dataStorageGet(RetrievedEvent event) {
-        if (event.getString(SavePatch.AP_SAVE_STRING) != null || !event.getString(SavePatch.AP_SAVE_STRING).isEmpty()) {
+        if (event.getString(SavePatch.AP_SAVE_STRING) != null && !event.getString(SavePatch.AP_SAVE_STRING).isEmpty()) {
             SavePatch.compressedSave = event.getString(SavePatch.AP_SAVE_STRING);
             NewMenuButtons.connectionInfoScreen.addressPanel.resumeSave.show();
         } else {
-            ConnectionResult.Connect();
+            ConnectionResult.start();
         }
     }
 }
