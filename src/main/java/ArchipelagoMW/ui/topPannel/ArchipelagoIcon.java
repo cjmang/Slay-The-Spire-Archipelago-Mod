@@ -50,20 +50,16 @@ public class ArchipelagoIcon extends TopPanelItem {
     @Override
     public void update() {
         super.update();
-        if ((AbstractDungeon.screen == AbstractDungeon.CurrentScreen.COMBAT_REWARD
-                || AbstractDungeon.previousScreen == AbstractDungeon.CurrentScreen.COMBAT_REWARD
-                || AbstractDungeon.screen == AbstractDungeon.CurrentScreen.CARD_REWARD
-                || AbstractDungeon.previousScreen == AbstractDungeon.CurrentScreen.CARD_REWARD
-                || AbstractDungeon.screen == AbstractDungeon.CurrentScreen.CHOOSE_ONE
-                || AbstractDungeon.previousScreen == AbstractDungeon.CurrentScreen.CHOOSE_ONE
-                || AbstractDungeon.screen == AbstractDungeon.CurrentScreen.HAND_SELECT
-                || AbstractDungeon.previousScreen == AbstractDungeon.CurrentScreen.HAND_SELECT)
-                && !AbstractDungeon.getCurrRoom().phase.equals(AbstractRoom.RoomPhase.COMPLETE)
-        ) {
-            setClickable(false);
-        } else {
-            setClickable(true);
-        }
+        setClickable((AbstractDungeon.screen != AbstractDungeon.CurrentScreen.COMBAT_REWARD
+                && AbstractDungeon.previousScreen != AbstractDungeon.CurrentScreen.COMBAT_REWARD
+                && AbstractDungeon.screen != AbstractDungeon.CurrentScreen.CARD_REWARD
+                && AbstractDungeon.previousScreen != AbstractDungeon.CurrentScreen.CARD_REWARD
+                && AbstractDungeon.screen != AbstractDungeon.CurrentScreen.CHOOSE_ONE
+                && AbstractDungeon.previousScreen != AbstractDungeon.CurrentScreen.CHOOSE_ONE
+                && AbstractDungeon.screen != AbstractDungeon.CurrentScreen.HAND_SELECT
+                && AbstractDungeon.previousScreen != AbstractDungeon.CurrentScreen.HAND_SELECT)
+                || AbstractDungeon.getCurrRoom().phase.equals(AbstractRoom.RoomPhase.COMPLETE)
+        );
 
         if (APInputActionSet.apmenu.isJustPressed() && isClickable()) {
             onClick();
