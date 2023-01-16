@@ -4,6 +4,7 @@ import ArchipelagoMW.patches.RewardItemPatch;
 import ArchipelagoMW.ui.RewardMenu.ArchipelagoRewardScreen;
 import ArchipelagoMW.ui.RewardMenu.BossRelicRewardScreen;
 import ArchipelagoMW.ui.topPannel.ArchipelagoIcon;
+import ArchipelagoMW.ui.topPannel.TestButton;
 import ArchipelagoMW.util.APRewardSave;
 import basemod.BaseMod;
 import basemod.ModLabel;
@@ -34,11 +35,11 @@ import java.util.Arrays;
 
 
 @SpireInitializer
-public class ArchipelagoMW implements
+public class Archipelago implements
         EditStringsSubscriber,
         PostInitializeSubscriber {
 
-    public static final Logger logger = LogManager.getLogger(ArchipelagoMW.class.getName());
+    public static final Logger logger = LogManager.getLogger(Archipelago.class.getName());
     private static final String modID = "ArchipelagoMW";
     private static final String MODNAME = "Archipelago Multi-World";
     private static final String AUTHOR = "Kono Tyran & Mavelovent";
@@ -52,7 +53,7 @@ public class ArchipelagoMW implements
     public static String password;
 
 
-    public ArchipelagoMW() {
+    public Archipelago() {
         logger.info("Subscribe to BaseMod hooks");
 
         BaseMod.subscribe(this);
@@ -67,8 +68,8 @@ public class ArchipelagoMW implements
     @SuppressWarnings("unused")
     public static void initialize() {
         logger.info("========================= Initializing Archipelago Multi-World. =========================");
-        new ArchipelagoMW();
-        logger.info("========================= Archipelago Multi-World Initialized. =========================");
+        new Archipelago();
+        logger.info("=========================  Archipelago Multi-World Initialized. =========================");
     }
 
     public static void setConnectionInfo(String addressField, String slotNameField, String passwordField) {
@@ -116,9 +117,9 @@ public class ArchipelagoMW implements
 
         BaseMod.registerModBadge(APTextures.AP_BADGE, MODNAME, AUTHOR, DESCRIPTION, settingsPanel);
         BaseMod.addTopPanelItem(new ArchipelagoIcon());
+        BaseMod.addTopPanelItem(new TestButton());
 
-        Type rewardSaveList = new TypeToken<ArrayList<APRewardSave>>() {
-        }.getType();
+        Type rewardSaveList = new TypeToken<ArrayList<APRewardSave>>() {}.getType();
 
         BaseMod.addCustomScreen(new ArchipelagoRewardScreen());
         BaseMod.addSaveField("ap_rewards", new CustomSavableRaw() {
