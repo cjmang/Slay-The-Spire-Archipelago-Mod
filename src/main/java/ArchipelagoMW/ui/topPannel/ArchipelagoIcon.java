@@ -3,6 +3,7 @@ package ArchipelagoMW.ui.topPannel;
 import ArchipelagoMW.APClient;
 import ArchipelagoMW.APTextures;
 import ArchipelagoMW.Archipelago;
+import ArchipelagoMW.LocationTracker;
 import ArchipelagoMW.ui.RewardMenu.ArchipelagoRewardScreen;
 import ArchipelagoMW.ui.connection.ConnectionPanel;
 import ArchipelagoMW.util.APInputActionSet;
@@ -98,7 +99,15 @@ public class ArchipelagoIcon extends TopPanelItem {
         float tipX = ReflectionHacks.getPrivateStatic(TopPanel.class, "TOP_RIGHT_TIP_X");
         float tipY = ReflectionHacks.getPrivateStatic(TopPanel.class, "TIP_Y");
         if (this.hitbox.hovered) {
-            TipHelper.renderGenericTip(tipX, tipY, "Archipelago Rewards (" + APInputActionSet.apmenu.getKeyString() + ")", "View unclaimed rewards that have been sent by Archipelago.");
+            TipHelper.renderGenericTip(tipX, tipY,
+                    "Archipelago Rewards (" + APInputActionSet.apmenu.getKeyString() + ")",
+                    "View unclaimed rewards that have been sent by Archipelago. NL NL " +
+                            "#yChecked #yLocations: NL " +
+                            "TAB Card Draw: #b" + LocationTracker.cardDrawIndex + " NL " +
+                            "TAB Rare Card Draw: #b" + LocationTracker.rareCardIndex + " NL " +
+                            "TAB Relic: #b" + LocationTracker.relicIndex + " NL " +
+                            "TAB Boss Relic: #b" + LocationTracker.bossRelicIndex
+            );
         }
 
         FontHelper.renderFontRightTopAligned(sb, FontHelper.topPanelAmountFont, Integer.toString(ArchipelagoRewardScreen.rewardsQueued), this.x + 58.0F * Settings.scale, this.y + 25.0F * Settings.scale, Color.WHITE);
