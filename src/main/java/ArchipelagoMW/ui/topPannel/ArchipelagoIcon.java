@@ -37,14 +37,10 @@ public class ArchipelagoIcon extends TopPanelItem {
 
     public static final String ID = Archipelago.makeID("ClaimRewards");
 
-    public static List<NetworkItem> pendingRewards = new LinkedList<NetworkItem>();
+    public static List<NetworkItem> pendingRewards = new LinkedList<>();
 
     public ArchipelagoIcon() {
         super(APTextures.AP_ICON, ID);
-    }
-
-    public static void addPendingReward(NetworkItem networkItem) {
-        pendingRewards.add(networkItem);
     }
 
     @Override
@@ -111,7 +107,7 @@ public class ArchipelagoIcon extends TopPanelItem {
 
     @Override
     protected void onClick() {
-        // if we are disconnected and we click the ap button try new connection.
+        // if we are disconnected, and we click the ap button try new connection.
         if (!APClient.apClient.isConnected()) {
             APClient.newConnection(Archipelago.address, Archipelago.slotName, ConnectionPanel.passwordField);
         } else if (AbstractDungeon.screen == ArchipelagoRewardScreen.Enum.ARCHIPELAGO_REWARD_SCREEN) {
