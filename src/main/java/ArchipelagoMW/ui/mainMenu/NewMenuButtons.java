@@ -1,6 +1,6 @@
 package ArchipelagoMW.ui.mainMenu;
 
-import ArchipelagoMW.ArchipelagoMW;
+import ArchipelagoMW.Archipelago;
 import ArchipelagoMW.ui.connection.ConnectionInfoScreen;
 import com.evacipated.cardcrawl.modthespire.lib.SpireEnum;
 import com.evacipated.cardcrawl.modthespire.lib.SpirePatch;
@@ -29,7 +29,7 @@ public class NewMenuButtons {
                 if (button.result == ARCHIPELAGO) {
                     Field f_label = MenuButton.class.getDeclaredField("label");
                     f_label.setAccessible(true);
-                    f_label.set(button, CardCrawlGame.languagePack.getUIString(ArchipelagoMW.getModID() + ":MainMenu").TEXT[0]);
+                    f_label.set(button, CardCrawlGame.languagePack.getUIString(Archipelago.getModID() + ":MainMenu").TEXT[0]);
                 }
             } catch (Exception e) {
                 e.printStackTrace();

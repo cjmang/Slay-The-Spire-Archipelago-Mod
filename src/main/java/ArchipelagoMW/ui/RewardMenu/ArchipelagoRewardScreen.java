@@ -1,7 +1,7 @@
 package ArchipelagoMW.ui.RewardMenu;
 
 import ArchipelagoMW.APClient;
-import ArchipelagoMW.ArchipelagoMW;
+import ArchipelagoMW.Archipelago;
 import ArchipelagoMW.patches.RewardItemPatch;
 import basemod.ReflectionHacks;
 import basemod.abstracts.CustomScreen;
@@ -575,7 +575,7 @@ public class ArchipelagoRewardScreen  extends CustomScreen {
     }
 
     static {
-        uiStrings = CardCrawlGame.languagePack.getUIString(ArchipelagoMW.getModID() + ":RewardMenu");
+        uiStrings = CardCrawlGame.languagePack.getUIString(Archipelago.getModID() + ":RewardMenu");
         TEXT = uiStrings.TEXT;
     }
 }

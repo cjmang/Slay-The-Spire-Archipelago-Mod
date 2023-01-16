@@ -1,6 +1,6 @@
 package ArchipelagoMW.ui.connection;
 
-import ArchipelagoMW.ArchipelagoMW;
+import ArchipelagoMW.Archipelago;
 import ArchipelagoMW.patches.ConfirmPopupPatch;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
@@ -267,7 +267,7 @@ public class ConnectionPanel {
     }
 
     static {
-        uiStrings = CardCrawlGame.languagePack.getUIString(ArchipelagoMW.getModID() + ":ConnectionMenu");
+        uiStrings = CardCrawlGame.languagePack.getUIString(Archipelago.getModID() + ":ConnectionMenu");
         TEXT = uiStrings.TEXT;
         addressField = "";
         slotNameField = "";

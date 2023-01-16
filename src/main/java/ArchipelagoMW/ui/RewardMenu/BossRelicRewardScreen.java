@@ -1,6 +1,6 @@
 package ArchipelagoMW.ui.RewardMenu;
 
-import ArchipelagoMW.ArchipelagoMW;
+import ArchipelagoMW.Archipelago;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
@@ -459,12 +459,12 @@ public class BossRelicRewardScreen {
         TwitchVoter.registerListener(new TwitchVoteListener() {
             @Override
             public void onTwitchAvailable() {
-                ArchipelagoMW.bossRelicRewardScreen.updateVote();
+                Archipelago.bossRelicRewardScreen.updateVote();
             }
 
             @Override
             public void onTwitchUnavailable() {
-                ArchipelagoMW.bossRelicRewardScreen.updateVote();
+                Archipelago.bossRelicRewardScreen.updateVote();
             }
         });
     }

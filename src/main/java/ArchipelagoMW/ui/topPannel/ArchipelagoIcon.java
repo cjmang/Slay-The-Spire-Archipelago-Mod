@@ -2,7 +2,7 @@ package ArchipelagoMW.ui.topPannel;
 
 import ArchipelagoMW.APClient;
 import ArchipelagoMW.APTextures;
-import ArchipelagoMW.ArchipelagoMW;
+import ArchipelagoMW.Archipelago;
 import ArchipelagoMW.ui.RewardMenu.ArchipelagoRewardScreen;
 import ArchipelagoMW.ui.connection.ConnectionPanel;
 import ArchipelagoMW.util.APInputActionSet;
@@ -20,8 +20,6 @@ import com.megacrit.cardcrawl.helpers.FontHelper;
 import com.megacrit.cardcrawl.helpers.MathHelper;
 import com.megacrit.cardcrawl.helpers.TipHelper;
 import com.megacrit.cardcrawl.rooms.AbstractRoom;
-import com.megacrit.cardcrawl.rooms.TreasureRoom;
-import com.megacrit.cardcrawl.rooms.TreasureRoomBoss;
 import com.megacrit.cardcrawl.ui.panels.TopPanel;
 import gg.archipelago.client.parts.NetworkItem;
 import org.apache.logging.log4j.LogManager;
@@ -36,7 +34,7 @@ public class ArchipelagoIcon extends TopPanelItem {
 
     public static final Logger logger = LogManager.getLogger(ArchipelagoIcon.class.getName());
 
-    public static final String ID = ArchipelagoMW.makeID("ClaimRewards");
+    public static final String ID = Archipelago.makeID("ClaimRewards");
 
     public static List<NetworkItem> pendingRewards = new LinkedList<NetworkItem>();
 
@@ -110,7 +108,7 @@ public class ArchipelagoIcon extends TopPanelItem {
     protected void onClick() {
         // if we are disconnected and we click the ap button try new connection.
         if (!APClient.apClient.isConnected()) {
-            APClient.newConnection(ArchipelagoMW.address, ArchipelagoMW.slotName, ConnectionPanel.passwordField);
+            APClient.newConnection(Archipelago.address, Archipelago.slotName, ConnectionPanel.passwordField);
         } else if (AbstractDungeon.screen == ArchipelagoRewardScreen.Enum.ARCHIPELAGO_REWARD_SCREEN) {
             AbstractDungeon.closeCurrentScreen();
         } else {

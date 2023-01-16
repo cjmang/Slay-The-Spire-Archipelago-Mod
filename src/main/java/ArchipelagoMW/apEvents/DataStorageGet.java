@@ -7,13 +7,18 @@ import gg.archipelago.client.events.RetrievedEvent;
 
 public class DataStorageGet {
 
+    public static int loadRequestId;
+
     @ArchipelagoEventListener
     public void dataStorageGet(RetrievedEvent event) {
-        if (event.getString(SavePatch.AP_SAVE_STRING) != null && !event.getString(SavePatch.AP_SAVE_STRING).isEmpty()) {
-            SavePatch.compressedSave = event.getString(SavePatch.AP_SAVE_STRING);
-            NewMenuButtons.connectionInfoScreen.addressPanel.resumeSave.show();
-        } else {
-            ConnectionResult.start();
+        if (event.getRequestID() == loadRequestId) {
+            if (event.getString(SavePatch.AP_SAVE_STRING) != null && !event.getString(SavePatch.AP_SAVE_STRING).isEmpty()) {
+                SavePatch.compressedSave = event.getString(SavePatch.AP_SAVE_STRING);
+                NewMenuButtons.connectionInfoScreen.addressPanel.resumeSave.show();
+            } else {
+                ConnectionResult.start();
+            }
         }
     }
 }
+

@@ -1,7 +1,7 @@
 package ArchipelagoMW.ui.connection;
 
 import ArchipelagoMW.APClient;
-import ArchipelagoMW.ArchipelagoMW;
+import ArchipelagoMW.Archipelago;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -83,7 +83,7 @@ public class ConnectionInfoScreen {
                 Gdx.input.setInputProcessor(new ScrollInputProcessor());
                 confirmButton.hb.clicked = false;
                 ConnectionPanel.connectionResultText = TEXT[5];
-                ArchipelagoMW.setConnectionInfo(ConnectionPanel.addressField, ConnectionPanel.slotNameField, ConnectionPanel.passwordField);
+                Archipelago.setConnectionInfo(ConnectionPanel.addressField, ConnectionPanel.slotNameField, ConnectionPanel.passwordField);
                 APClient.newConnection(ConnectionPanel.addressField, ConnectionPanel.slotNameField, ConnectionPanel.passwordField);
             }
         }
@@ -108,7 +108,7 @@ public class ConnectionInfoScreen {
     }
 
     static {
-        uiStrings = CardCrawlGame.languagePack.getUIString(ArchipelagoMW.getModID() + ":ConnectionMenu");
+        uiStrings = CardCrawlGame.languagePack.getUIString(Archipelago.getModID() + ":ConnectionMenu");
         TEXT = uiStrings.TEXT;
     }
 

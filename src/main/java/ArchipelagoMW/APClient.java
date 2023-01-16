@@ -5,6 +5,8 @@ import ArchipelagoMW.apEvents.DataStorageGet;
 import ArchipelagoMW.apEvents.LocationInfo;
 import ArchipelagoMW.apEvents.ReceiveItem;
 import ArchipelagoMW.ui.connection.ConnectionPanel;
+import ArchipelagoMW.ui.hud.InfoUpdater;
+import ArchipelagoMW.ui.topPannel.TestButton;
 import gg.archipelago.client.ArchipelagoClient;
 import gg.archipelago.client.ItemFlags;
 import gg.archipelago.client.Print.APPrint;
@@ -35,6 +37,8 @@ public class APClient extends ArchipelagoClient {
         apClient.getEventManager().registerListener(new LocationInfo());
         apClient.getEventManager().registerListener(new ReceiveItem());
         apClient.getEventManager().registerListener(new DataStorageGet());
+        apClient.getEventManager().registerListener(new InfoUpdater());
+        apClient.getEventManager().registerListener(new TestButton());
 
         try {
             apClient.connect(address);

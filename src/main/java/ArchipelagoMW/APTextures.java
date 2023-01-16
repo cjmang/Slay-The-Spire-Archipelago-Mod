@@ -10,11 +10,15 @@ public class APTextures {
     public static Texture AP_BADGE;
     public static Texture AP_ICON;
     public static Texture AP_CHEST;
+    public static Texture PLAYER_PANEL;
+    public static Texture TEAM_BAR;
 
     public static void initialize() {
         AP_BADGE = loadImage("ArchipelagoMWResources/images/Badge.png");
         AP_ICON = loadImage("ArchipelagoMWResources/images/ui/APIcon.png");
         AP_CHEST = loadImage("ArchipelagoMWResources/images/npc/APChest.png");
+        PLAYER_PANEL = loadImage("ArchipelagoMWResources/images/ui/hud/PlayerPanel.png");
+        TEAM_BAR = loadImage("ArchipelagoMWResources/images/ui/hud/TeamColorBar.png");
 
     }
 

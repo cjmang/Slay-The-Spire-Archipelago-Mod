@@ -1,7 +1,7 @@
 package ArchipelagoMW.apEvents;
 
 import ArchipelagoMW.APClient;
-import ArchipelagoMW.ArchipelagoMW;
+import ArchipelagoMW.Archipelago;
 import ArchipelagoMW.LocationTracker;
 import ArchipelagoMW.SlotData;
 import ArchipelagoMW.patches.SavePatch;
@@ -63,7 +63,7 @@ public class ConnectionResult {
 
 
         SlotData slotData = APClient.slotData;
-        ArchipelagoMW.logger.info("slot data parsed");
+        Archipelago.logger.info("slot data parsed");
 
 
         character = CardCrawlGame.characterManager.getCharacter(AbstractPlayer.PlayerClass.IRONCLAD);
@@ -118,18 +118,18 @@ public class ConnectionResult {
         ArchipelagoRewardScreen.rewards.clear();
         ArchipelagoRewardScreen.receivedItemsIndex = 0;
         LocationTracker.scoutAllLocations();
-        APClient.apClient.dataStorageGet(Collections.singleton(SavePatch.AP_SAVE_STRING));
+        DataStorageGet.loadRequestId = APClient.apClient.dataStorageGet(Collections.singleton(SavePatch.AP_SAVE_STRING));
     }
 
     public static void start() {
 
-        ArchipelagoMW.logger.info("about to parse slot data");
+        Archipelago.logger.info("about to parse slot data");
         try {
 
-            ArchipelagoMW.logger.info("character: " + character.name);
-            ArchipelagoMW.logger.info("heart: " + APClient.slotData.finalAct);
-            ArchipelagoMW.logger.info("seed: " + APClient.slotData.seed);
-            ArchipelagoMW.logger.info("ascension: " + APClient.slotData.ascension);
+            Archipelago.logger.info("character: " + character.name);
+            Archipelago.logger.info("heart: " + APClient.slotData.finalAct);
+            Archipelago.logger.info("seed: " + APClient.slotData.seed);
+            Archipelago.logger.info("ascension: " + APClient.slotData.ascension);
 
             CardCrawlGame.chosenCharacter = character.chosenClass;
             if (Loader.isModLoaded("downfall"))
