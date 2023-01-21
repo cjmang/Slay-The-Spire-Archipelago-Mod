@@ -1,6 +1,8 @@
 package ArchipelagoMW.ui.hud;
 
 import ArchipelagoMW.APTextures;
+import ArchipelagoMW.teams.PlayerInfo;
+import ArchipelagoMW.teams.TeamManager;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
@@ -15,6 +17,7 @@ import com.megacrit.cardcrawl.helpers.input.InputHelper;
 
 public class PlayerPanel implements Comparable<PlayerPanel>, HitboxListener {
 
+    public boolean shouldRender = false;
     private PlayerInfo player;
 
     private float currentX = 0f;
@@ -28,6 +31,11 @@ public class PlayerPanel implements Comparable<PlayerPanel>, HitboxListener {
 
     private float movementTime = 0f;
     private float travelTime = 1.5f;
+    private boolean slideIn = true;
+
+
+    private static final float barHeightMod = 1.5f;
+    private static final float panelWidthMod = .85f;
 
     private final Hitbox hb = new Hitbox(APTextures.PLAYER_PANEL.getWidth() * Settings.scale * .85f, APTextures.PLAYER_PANEL.getHeight() * Settings.scale);
 
@@ -37,30 +45,28 @@ public class PlayerPanel implements Comparable<PlayerPanel>, HitboxListener {
     private final float ICON_SIZE = 36f * Settings.scale;
 
     public PlayerPanel(PlayerInfo player) {
-        this.setIndex(SidePanel.playerPanels.size(), true);
         this.player = player;
+    }
+
+    public static float getWidth() {
+        return APTextures.PLAYER_PANEL.getWidth() * panelWidthMod * Settings.scale;
+    }
+
+    public static float getHeight() {
+        return APTextures.PLAYER_PANEL.getHeight() * Settings.scale;
     }
 
     public PlayerInfo getPlayer() {
         return player;
     }
 
-    public void setIndex(int index) {
-        setIndex(index, false);
-    }
-    public void setIndex(int index, boolean slideIn) {
-        float x = 0;
-        float y = Settings.HEIGHT - (320f * Settings.scale) - (85 * Math.min(index,5) * Settings.scale);
-        if(slideIn) {
-            this.currentX = x - APTextures.PLAYER_PANEL.getWidth() * .85f * Settings.scale;
+    public void setPos(float x, float y) {
+        if (slideIn) {
+            this.currentX = x - APTextures.PLAYER_PANEL.getWidth() * panelWidthMod * Settings.scale;
             this.currentY = y;
-            this.setPos(x, y);
-            return;
+            slideIn = false;
         }
-        this.setPos(0, y);
-    }
 
-    private void setPos(float x, float y) {
         this.startX = this.currentX;
         this.startY = this.currentY;
 
@@ -72,16 +78,15 @@ public class PlayerPanel implements Comparable<PlayerPanel>, HitboxListener {
     }
 
     public void render(SpriteBatch sb) {
+        if(!shouldRender)
+            return;
         sb.setColor(Color.WHITE);
-
-        float barHeightMod = 1.5f;
-        float panelWidthMod = 1.85f;
 
         //draw background
         sb.draw(APTextures.PLAYER_PANEL, currentX, currentY, APTextures.PLAYER_PANEL.getWidth() * panelWidthMod * Settings.scale, APTextures.PLAYER_PANEL.getHeight() * Settings.scale);
 
         //draw team bar
-        if(player.teamColor != null) {
+        if (player.teamColor != null) {
             sb.setColor(player.teamColor);
 
             sb.draw(APTextures.TEAM_BAR, currentX, currentY + APTextures.PLAYER_PANEL.getHeight() * Settings.scale - APTextures.TEAM_BAR.getHeight() * barHeightMod * Settings.scale, APTextures.TEAM_BAR.getWidth() * panelWidthMod * Settings.scale, APTextures.TEAM_BAR.getHeight() * barHeightMod * Settings.scale);
@@ -134,14 +139,33 @@ public class PlayerPanel implements Comparable<PlayerPanel>, HitboxListener {
             glyphLayout.setText(FontHelper.topPanelAmountFont, player.getName(), 0, player.getName().length(), Settings.CREAM_COLOR, APTextures.PLAYER_PANEL.getWidth() * .78f * Settings.scale, 8, false, "...");
             String nameString = (glyphLayout.runs.size >= 1) ? glyphLayout.runs.get(0).toString() : "";
             glyphLayout.reset();
-            player.displayName = nameString.substring(0, Math.max(nameString.indexOf(", #"),0));
+            player.displayName = nameString.substring(0, Math.max(nameString.indexOf(", #"), 0));
             player.dirty = false;
+
+            player.teamColor = TeamManager.colorMap.get(player.team);
         }
     }
 
     @Override
     public int compareTo(PlayerPanel o) {
-        return o.player.floor - this.player.floor;
+        String oTeam = o.player.team;
+        String myTeam = this.player.team;
+
+        if(oTeam != null && oTeam.equals(myTeam)) // if they are on the same team sort by floor
+            return o.player.floor - this.player.floor;
+
+        if (TeamManager.myTeam != null) { // not same team if one of them are on the active players team push up
+            if (oTeam != null && oTeam.equals(TeamManager.myTeam.name)) {
+                return 1;
+            }
+            if (myTeam != null && myTeam.equals(TeamManager.myTeam.name)) {
+                return -1;
+            }
+        }
+        if(oTeam != null && myTeam != null) // both players have a team sort alphabetically
+            return oTeam.compareTo(myTeam);
+
+        return o.player.floor - this.player.floor; // sort by floor
     }
 
     @Override
@@ -159,5 +183,9 @@ public class PlayerPanel implements Comparable<PlayerPanel>, HitboxListener {
 
     public String getName() {
         return this.player.getName();
+    }
+
+    public void slideIn(boolean slideIn) {
+        this.slideIn = true;
     }
 }

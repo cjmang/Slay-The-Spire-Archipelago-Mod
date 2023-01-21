@@ -1,6 +1,7 @@
 package ArchipelagoMW.patches;
 
 import ArchipelagoMW.APClient;
+import ArchipelagoMW.teams.TeamManager;
 import com.evacipated.cardcrawl.modthespire.lib.*;
 import com.megacrit.cardcrawl.helpers.AsyncSaver;
 import com.megacrit.cardcrawl.rooms.TreasureRoomBoss;
@@ -37,7 +38,7 @@ public class SavePatch {
         @SpireInsertPatch(locator = Locator.class, localvars = {"data", "save"})
         public static SpireReturn<Void> Insert(String data, SaveFile save) {
             // hopefully Save data?
-            if (save.current_room.equals(TreasureRoomBoss.class.getName())) {
+            if (save.current_room.equals(TreasureRoomBoss.class.getName()) && TeamManager.myTeam == null) {
                 compressedSave = compress(data);
                 SetPacket packet = new SetPacket(AP_SAVE_STRING, 0);
                 packet.addDataStorageOperation(SetPacket.Operation.REPLACE, compressedSave);

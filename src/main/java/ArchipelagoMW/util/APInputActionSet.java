@@ -2,7 +2,6 @@ package ArchipelagoMW.util;
 
 import com.badlogic.gdx.Input;
 import com.evacipated.cardcrawl.modthespire.lib.*;
-import com.megacrit.cardcrawl.core.CardCrawlGame;
 import com.megacrit.cardcrawl.helpers.input.InputAction;
 import com.megacrit.cardcrawl.helpers.input.InputActionSet;
 import com.megacrit.cardcrawl.screens.options.InputSettingsScreen;

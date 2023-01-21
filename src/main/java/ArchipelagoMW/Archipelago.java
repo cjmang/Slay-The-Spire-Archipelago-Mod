@@ -3,6 +3,7 @@ package ArchipelagoMW;
 import ArchipelagoMW.patches.RewardItemPatch;
 import ArchipelagoMW.ui.RewardMenu.ArchipelagoRewardScreen;
 import ArchipelagoMW.ui.RewardMenu.BossRelicRewardScreen;
+import ArchipelagoMW.ui.hud.SideBar;
 import ArchipelagoMW.ui.topPannel.ArchipelagoIcon;
 import ArchipelagoMW.ui.topPannel.TestButton;
 import ArchipelagoMW.util.APRewardSave;
@@ -32,6 +33,7 @@ import org.apache.logging.log4j.Logger;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Properties;
 
 
 @SpireInitializer
@@ -52,13 +54,15 @@ public class Archipelago implements
     public static String slotName;
     public static String password;
 
+    public static SideBar sideBar;
+
 
     public Archipelago() {
         logger.info("Subscribe to BaseMod hooks");
-
         BaseMod.subscribe(this);
-
         logger.info("Done subscribing");
+
+        APSettings.loadSettings();
     }
 
     public static String getModID() {
@@ -158,6 +162,7 @@ public class Archipelago implements
                 save.add("card_draw_index", new JsonPrimitive(LocationTracker.cardDrawIndex));
                 save.add("rare_card_draw_index", new JsonPrimitive(LocationTracker.rareCardIndex));
                 save.add("relic_index", new JsonPrimitive(LocationTracker.relicIndex));
+
                 return save;
             }
 
@@ -203,6 +208,7 @@ public class Archipelago implements
             }
         });
 
+        sideBar = new SideBar();
         BaseMod.removeRelic(RelicLibrary.getRelic("Calling Bell"));
         logger.info("Done loading badge Image and mod options");
     }

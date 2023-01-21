@@ -2,22 +2,19 @@ package ArchipelagoMW.ui.topPannel;
 
 import ArchipelagoMW.APTextures;
 import ArchipelagoMW.Archipelago;
-import ArchipelagoMW.ui.hud.PlayerInfo;
+import ArchipelagoMW.teams.PlayerInfo;
+import ArchipelagoMW.teams.PlayerManager;
+import ArchipelagoMW.teams.TeamManager;
 import ArchipelagoMW.ui.hud.PlayerPanel;
-import ArchipelagoMW.ui.hud.SidePanel;
+import ArchipelagoMW.ui.hud.SideBar;
 import basemod.TopPanelItem;
-import com.badlogic.gdx.graphics.Color;
 import gg.archipelago.client.events.ArchipelagoEventListener;
 import gg.archipelago.client.events.SetReplyEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.nio.charset.StandardCharsets;
-import java.util.Random;
-
 public class TestButton extends TopPanelItem {
 
-    static float rotateTimer;
 
     public static final Logger logger = LogManager.getLogger(TestButton.class.getName());
 
@@ -29,15 +26,25 @@ public class TestButton extends TopPanelItem {
 
     @Override
     protected void onClick() {
-        //InfoUpdater.initialLoad();
-        Random rand = new Random();
-        byte[] array = new byte[rand.nextInt(40)+5];
-        rand.nextBytes(array);
-        String name = new String(array, StandardCharsets.UTF_8);
-        PlayerInfo player = new PlayerInfo(name, rand.nextInt(200), rand.nextInt(50), rand.nextInt(3000));
-        player.teamColor = new Color(rand.nextFloat(),rand.nextFloat(),rand.nextFloat(),1f);
-        SidePanel.playerPanels.add(new PlayerPanel(player));
-        SidePanel.sortPlayers();
+        Archipelago.sideBar = new SideBar();
+        TeamManager.myTeam = null;
+        PlayerManager.players.clear();
+        PlayerManager.sendUpdate();
+        PlayerInfo test1 = new PlayerInfo("test1",50,20,10,43);
+        PlayerInfo test2 = new PlayerInfo("test2",50,20,11,43);
+        PlayerInfo test3 = new PlayerInfo("test3",50,20,12,43);
+        PlayerInfo test4 = new PlayerInfo("test4",50,20,13,43);
+        PlayerInfo test5 = new PlayerInfo("test5",50,20,14,43);
+        test1.team = "blue";
+        test2.team = "red";
+        test3.team = "blue";
+        test4.team = "red";
+        Archipelago.sideBar.playerPanels.add(new PlayerPanel(test1));
+        Archipelago.sideBar.playerPanels.add(new PlayerPanel(test2));
+        Archipelago.sideBar.playerPanels.add(new PlayerPanel(test3));
+        Archipelago.sideBar.playerPanels.add(new PlayerPanel(test4));
+        Archipelago.sideBar.playerPanels.add(new PlayerPanel(test5));
+        Archipelago.sideBar.sortPlayers();
     }
 
     @ArchipelagoEventListener

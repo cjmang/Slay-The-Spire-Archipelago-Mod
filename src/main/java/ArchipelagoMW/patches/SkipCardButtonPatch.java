@@ -5,7 +5,6 @@ import com.evacipated.cardcrawl.modthespire.lib.*;
 import com.megacrit.cardcrawl.dungeons.AbstractDungeon;
 import com.megacrit.cardcrawl.screens.CardRewardScreen;
 import com.megacrit.cardcrawl.ui.buttons.SkipCardButton;
-import gg.archipelago.client.events.ArchipelagoEventListener;
 import javassist.CtBehavior;
 
 public class SkipCardButtonPatch {

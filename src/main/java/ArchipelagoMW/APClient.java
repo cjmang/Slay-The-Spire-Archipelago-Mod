@@ -4,8 +4,9 @@ import ArchipelagoMW.apEvents.ConnectionResult;
 import ArchipelagoMW.apEvents.DataStorageGet;
 import ArchipelagoMW.apEvents.LocationInfo;
 import ArchipelagoMW.apEvents.ReceiveItem;
+import ArchipelagoMW.teams.TeamManager;
 import ArchipelagoMW.ui.connection.ConnectionPanel;
-import ArchipelagoMW.ui.hud.InfoUpdater;
+import ArchipelagoMW.teams.PlayerManager;
 import ArchipelagoMW.ui.topPannel.TestButton;
 import gg.archipelago.client.ArchipelagoClient;
 import gg.archipelago.client.ItemFlags;
@@ -37,7 +38,8 @@ public class APClient extends ArchipelagoClient {
         apClient.getEventManager().registerListener(new LocationInfo());
         apClient.getEventManager().registerListener(new ReceiveItem());
         apClient.getEventManager().registerListener(new DataStorageGet());
-        apClient.getEventManager().registerListener(new InfoUpdater());
+        apClient.getEventManager().registerListener(new PlayerManager());
+        apClient.getEventManager().registerListener(new TeamManager());
         apClient.getEventManager().registerListener(new TestButton());
 
         try {
