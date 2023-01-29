@@ -3,7 +3,6 @@ package ArchipelagoMW.teams;
 import ArchipelagoMW.APClient;
 import ArchipelagoMW.Archipelago;
 import ArchipelagoMW.ui.hud.TeamButton;
-import ArchipelagoMW.util.DeathLinkHelper;
 import com.badlogic.gdx.graphics.Color;
 import com.evacipated.cardcrawl.modthespire.lib.*;
 import com.google.gson.Gson;
@@ -29,6 +28,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class TeamManager {
 
@@ -76,6 +76,7 @@ public class TeamManager {
     public static boolean checkIfDead = false;
 
     public static ConcurrentHashMap<String, TeamInfo> teams = new ConcurrentHashMap<>();
+    public static CopyOnWriteArrayList<TeamInfo> newTeams = new CopyOnWriteArrayList<>();
 
     public static TeamInfo myTeam;
 
@@ -102,10 +103,12 @@ public class TeamManager {
         for (String stringKey : event.data.keySet()) {
             String[] key = stringKey.split("_");
 
+            if(key.length < 2 || !key[1].startsWith("team")) // not a team update
+                return;
+
             if (key.length == 3 && key[1].equals("team")) { // spire_team_{name}
                 if (!updateTeam(gson.fromJson((String) event.data.get(stringKey), TeamInfo.class))) {
-                    Archipelago.sideBar.APTeamsPanel.teamButtons.removeIf(teamButton -> teamButton.getName().equals(key[2]));
-                    if(Archipelago.sideBar.APTeamsPanel.selectedTeam.name.equals(key[2])) {
+                    if(Archipelago.sideBar.APTeamsPanel.selectedTeam != null && Archipelago.sideBar.APTeamsPanel.selectedTeam.name.equals(key[2])) {
                         Archipelago.sideBar.APTeamsPanel.selectedTeam = null;
                     }
                 }
@@ -113,18 +116,14 @@ public class TeamManager {
             if (key.length == 4 && key[3].equals("players")) { // spire_team_{name}_players
                 ArrayList<String> players = event.getValueAsObject(stringKey, arrayListString);
                 if (players != null && players.contains(CardCrawlGame.playerName) && (myTeam == null || !key[2].equals(myTeam.name))) {
-                    while (players.contains(CardCrawlGame.playerName)) {
-                        players.remove(CardCrawlGame.playerName);
-                    }
                     SetPacket removeMe = new SetPacket(stringKey, "I matter");
-                    removeMe.addDataStorageOperation(SetPacket.Operation.REPLACE, players);
+                    removeMe.addDataStorageOperation(SetPacket.Operation.REMOVE,CardCrawlGame.playerName);
                     APClient.apClient.dataStorageSet(removeMe);
                     if (players.isEmpty()) {
                         teams.remove(key[2]);
-                        Archipelago.sideBar.APTeamsPanel.teamButtons.removeIf(teamButton -> teamButton.getName().equals(key[2]));
                         SetPacket deleteTeam = new SetPacket("spire_teams", "I matter");
-
-                        deleteTeam.addDataStorageOperation(SetPacket.Operation.REPLACE, teams.keySet().toArray());
+                        deleteTeam.want_reply = true;
+                        deleteTeam.addDataStorageOperation(SetPacket.Operation.REMOVE, key[2]);
                         APClient.apClient.dataStorageSet(deleteTeam);
                     }
                 } else {
@@ -185,12 +184,10 @@ public class TeamManager {
                     teams.remove(team);
                 }
             }
-            //teams.removeIf(team -> !teamNames.remove(team.name));
 
 
             for (String teamName : teamNames) {
-
-                updateTeam(new TeamInfo(teamName));
+                newTeams.add(new TeamInfo(teamName));
             }
 
         } else if (key.length == 3 && key[1].equals("team")) { // spire_team_{name}
@@ -213,9 +210,8 @@ public class TeamManager {
                     APClient.apClient.dataStorageSet(removeMe);
                     if (players.isEmpty()) {
                         teams.remove(key[2]);
-                        Archipelago.sideBar.APTeamsPanel.teamButtons.removeIf(teamButton -> teamButton.getName().equals(key[2]));
                         SetPacket deleteTeam = new SetPacket("spire_teams", "I matter");
-
+                        deleteTeam.want_reply = true;
                         deleteTeam.addDataStorageOperation(SetPacket.Operation.REPLACE, teams.keySet().toArray());
                         APClient.apClient.dataStorageSet(deleteTeam);
                     }
@@ -245,58 +241,77 @@ public class TeamManager {
     }
 
     public static void update() {
+        for (TeamInfo team : newTeams) {
+            addTeam(team);
+        }
+        newTeams.clear();
         if (checkIfDead) {
             checkIfDead();
             checkIfDead = false;
         }
+        Archipelago.sideBar.APTeamsPanel.teamButtons.removeIf(teamButton -> !teams.containsKey(teamButton.getName()));
     }
 
     public static void uploadTeam(TeamInfo team) {
-        SetPacket teamUpdatePacket = new SetPacket("spire_team_" + team.name, new ArrayList<>());
+        SetPacket teamUpdatePacket = new SetPacket("spire_team_" + team.name, null);
         teamUpdatePacket.addDataStorageOperation(SetPacket.Operation.REPLACE, gson.toJson(team));
         teamUpdatePacket.want_reply = true;
         APClient.apClient.dataStorageSet(teamUpdatePacket);
     }
 
-    private static boolean updateTeam(TeamInfo newTeam) {
-        if (newTeam == null)
+    private static boolean updateTeam(TeamInfo team) {
+        if (team == null || !teams.containsKey(team.name))
             return false;
 
-        if (!teams.containsKey(newTeam.name)) {
-            newTeam.members = new ArrayList<>();
-            teams.put(newTeam.name, newTeam);
-            ArrayList<String> keys = new ArrayList<>();
-            keys.add("spire_team_" + newTeam.name);
-            keys.add("spire_team_" + newTeam.name + "_players");
-            APClient.apClient.dataStorageSetNotify(keys);
-            APClient.apClient.dataStorageGet(keys);
-            Archipelago.sideBar.APTeamsPanel.teamButtons.add(new TeamButton(newTeam));
-            return true;
-        }
-        TeamInfo oldTeam = teams.get(newTeam.name);
-        oldTeam.update(newTeam);
+        TeamInfo oldTeam = teams.get(team.name);
+        oldTeam.update(team);
         if (Archipelago.sideBar.APTeamsPanel.selectedTeam != null && Archipelago.sideBar.APTeamsPanel.selectedTeam.equals(oldTeam))
             Archipelago.sideBar.APTeamsPanel.updateToggles();
         return true;
     }
 
+    private static boolean addTeam(TeamInfo team) {
+        if (!teams.containsKey(team.name)) {
+            team.members = new ArrayList<>();
+            teams.put(team.name, team);
+            ArrayList<String> keys = new ArrayList<>();
+            keys.add("spire_team_" + team.name);
+            keys.add("spire_team_" + team.name + "_players");
+            APClient.apClient.dataStorageSetNotify(keys);
+            APClient.apClient.dataStorageGet(keys);
+            Archipelago.sideBar.APTeamsPanel.teamButtons.add(new TeamButton(team));
+            return true;
+        }
+        return false;
+    }
 
-    //new HashMap<String>(Arrays.asList("red","blue","green","violet","gold","purple","pink","gray","black","white")
+    public static final ArrayList<String> teamNames = new ArrayList<>(Arrays.asList("red","blue","green","gold","purple","pink","gray","white"));
 
-    public static boolean createTeam(TeamInfo team) {
+    public static boolean createTeam() {
+        ArrayList<String> names = new ArrayList<>(teamNames);
+        names.removeAll(teams.keySet());
+        if(names.isEmpty())
+            return false;
+
+        Collections.shuffle(names);
+        TeamInfo team = new TeamInfo(names.remove(0));
+        team.teamColor = TeamManager.colorMap.get(team.name);
+
         if (teams.containsKey(team.name) || myTeam != null)
             return false;
 
         team.leader = CardCrawlGame.playerName;
 
-
-        uploadTeam(team);
+        addTeam(team);
         joinTeam(team);
+        uploadTeam(team);
 
         SetPacket addTeamPacket = new SetPacket("spire_teams", new ArrayList<>());
         addTeamPacket.addDataStorageOperation(SetPacket.Operation.ADD, Collections.singleton(team.name));
         addTeamPacket.want_reply = true;
         APClient.apClient.dataStorageSet(addTeamPacket);
+
+
         return true;
     }
 
@@ -304,7 +319,6 @@ public class TeamManager {
     public static void joinTeam(TeamInfo team) {
         if (myTeam != null || team.locked)
             return;
-
 
         myTeam = team;
         updateTeam(team);
@@ -319,26 +333,27 @@ public class TeamManager {
     }
 
     public static void leaveTeam() {
-        if (myTeam == null || myTeam.locked)
+        if (myTeam == null)
             return;
 
         while (myTeam.members.contains(CardCrawlGame.playerName))
             myTeam.members.remove(CardCrawlGame.playerName);
 
-        SetPacket removeMe = new SetPacket("spire_team_" +myTeam.name+"_players", "I matter");
-        removeMe.addDataStorageOperation(SetPacket.Operation.REPLACE, myTeam.members);
+        SetPacket removeMe = new SetPacket("spire_team_" +myTeam.name+"_players", null);
+        removeMe.addDataStorageOperation(SetPacket.Operation.REMOVE, CardCrawlGame.playerName);
         APClient.apClient.dataStorageSet(removeMe);
 
         if (myTeam.members.isEmpty()) {
             teams.remove(myTeam.name);
-            Archipelago.sideBar.APTeamsPanel.teamButtons.removeIf(teamButton -> teamButton.getName().equals(myTeam.name));
-            SetPacket deleteTeam = new SetPacket("spire_teams", "I matter");
-
-            deleteTeam.addDataStorageOperation(SetPacket.Operation.REPLACE, teams.keySet().toArray());
+            SetPacket removeTeamListing = new SetPacket("spire_teams", null);
+            removeTeamListing.want_reply = true;
+            removeTeamListing.addDataStorageOperation(SetPacket.Operation.REMOVE,myTeam.name);
+            APClient.apClient.dataStorageSet(removeTeamListing);
+            SetPacket deleteTeam = new SetPacket("spire_team_"+myTeam.name, null);
+            deleteTeam.addDataStorageOperation(SetPacket.Operation.REPLACE,null);
             APClient.apClient.dataStorageSet(deleteTeam);
         }
-
-        if (myTeam.members.size() > 0) {
+        else {
             myTeam.leader = myTeam.members.get(0);
             uploadTeam(myTeam);
         }
@@ -349,6 +364,8 @@ public class TeamManager {
     }
 
     public static void lockTeam() {
+        if(myTeam == null || myTeam.locked || myTeam.members.size() == 1)
+            return;
         myTeam.locked = true;
         uploadTeam(myTeam);
         if (myTeam.healthLink) {
@@ -408,6 +425,8 @@ public class TeamManager {
     public void bounced(BouncedEvent event) {
         if(myTeam != null && event.containsKey("spire_team_"+myTeam.name+"_locked")) {
             if(myTeam.healthLink) {
+                //no death link.. just.. no
+                DeathLink.setDeathLinkEnabled(false);
                 APClient.apClient.dataStorageSetNotify(Arrays.asList("spire_team_" + myTeam.name + "_hp", "spire_team_" + myTeam.name + "_maxhp"));
                 APClient.apClient.dataStorageGet(Arrays.asList("spire_team_" + myTeam.name + "_maxhp", "spire_team_" + myTeam.name + "_hp"));
             }
@@ -444,10 +463,13 @@ public class TeamManager {
         if (myTeam == null || !myTeam.healthLink)
             return false;
 
-        SetPacket addTeamPacket = new SetPacket("spire_team_" + myTeam.name + "_maxhp", 0);
-        addTeamPacket.addDataStorageOperation(SetPacket.Operation.ADD, hpChange);
-        addTeamPacket.want_reply = true;
-        APClient.apClient.dataStorageSet(addTeamPacket);
+        if (hpChange > 0){
+            sendDamageLink(-hpChange);
+        }
+        SetPacket maxHPpacket = new SetPacket("spire_team_" + myTeam.name + "_maxhp", 0);
+        maxHPpacket.addDataStorageOperation(SetPacket.Operation.ADD, hpChange);
+        maxHPpacket.want_reply = true;
+        APClient.apClient.dataStorageSet(maxHPpacket);
         return true;
     }
 
@@ -457,7 +479,6 @@ public class TeamManager {
             AbstractDungeon.player.isDead = true;
             AbstractDungeon.deathScreen = new DeathScreen(null);
             AbstractDungeon.screen = AbstractDungeon.CurrentScreen.DEATH;
-            TeamManager.leaveTeam();
         }
 
     }

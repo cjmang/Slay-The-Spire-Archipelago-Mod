@@ -47,7 +47,7 @@ public class APToggleButton {
         }
 
         this.enabled = !Archipelago.sideBar.APTeamsPanel.selectedTeam.locked &&
-                Archipelago.sideBar.APTeamsPanel.selectedTeam.leader.equals(CardCrawlGame.playerName);
+                CardCrawlGame.playerName.equals(Archipelago.sideBar.APTeamsPanel.selectedTeam.leader);
         switch (type) {
             case HEALTH_LINK:
                 checked = Archipelago.sideBar.APTeamsPanel.selectedTeam.healthLink;

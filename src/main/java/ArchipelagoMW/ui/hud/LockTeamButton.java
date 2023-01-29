@@ -5,10 +5,11 @@ import ArchipelagoMW.teams.TeamInfo;
 import ArchipelagoMW.teams.TeamManager;
 import ArchipelagoMW.ui.APButton;
 import com.megacrit.cardcrawl.core.CardCrawlGame;
+import com.megacrit.cardcrawl.core.Settings;
 
 public class LockTeamButton extends APButton {
     public LockTeamButton(String text) {
-        super(text, LockTeamButton::clicked);
+        super(text, 230f * Settings.scale, LockTeamButton::clicked);
     }
 
     public static void clicked(APButton button) {

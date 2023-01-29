@@ -1,8 +1,5 @@
 package ArchipelagoMW.ui;
 
-import ArchipelagoMW.ui.hud.APTeamsButton;
-import basemod.ModLabeledButton;
-import basemod.ModPanel;
 import basemod.helpers.UIElementModificationHelper;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
@@ -10,7 +7,10 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.megacrit.cardcrawl.core.CardCrawlGame;
 import com.megacrit.cardcrawl.core.Settings;
-import com.megacrit.cardcrawl.helpers.*;
+import com.megacrit.cardcrawl.helpers.FontHelper;
+import com.megacrit.cardcrawl.helpers.Hitbox;
+import com.megacrit.cardcrawl.helpers.ImageMaster;
+import com.megacrit.cardcrawl.helpers.ShaderHelper;
 import com.megacrit.cardcrawl.helpers.input.InputHelper;
 
 import java.util.function.Consumer;
@@ -28,6 +28,8 @@ public abstract class APButton {
     public String label;
     public Color color;
     public Color colorHover;
+    public Color tint;
+    public Color tintHover;
     private static final float TEXT_OFFSET = 9.0F;
     private final Texture textureLeft;
     private final Texture textureRight;
@@ -39,23 +41,36 @@ public abstract class APButton {
         this(label, -10000, -10000, Color.WHITE, Color.GREEN, c);
     }
 
-    public APButton(String label, float xPos, float yPos, Color textColor, Color textColorHover, Consumer<APButton> c) {
-        this(label, xPos, yPos, textColor, textColorHover, FontHelper.buttonLabelFont, c);
+    public APButton(String label, float fixedWidth, Consumer<APButton> c) {
+        this(label, -10000, -10000, Color.WHITE, Color.GREEN, fixedWidth, c);
     }
 
-    public APButton(String label, float xPos, float yPos, Color textColor, Color textColorHover, BitmapFont font, Consumer<APButton> c) {
+    public APButton(String label, float xPos, float yPos, Color textColor, Color textColorHover, Consumer<APButton> c) {
+        this(label, xPos, yPos, textColor, textColorHover, FontHelper.buttonLabelFont, -1, c);
+    }
+
+    public APButton(String label, float xPos, float yPos, Color textColor, Color textColorHover, float fixedWidth, Consumer<APButton> c) {
+        this(label, xPos, yPos, textColor, textColorHover, FontHelper.buttonLabelFont, fixedWidth, c);
+    }
+
+    public APButton(String label, float xPos, float yPos, Color textColor, Color textColorHover, BitmapFont font, float fixedWidth, Consumer<APButton> c) {
         this.label = label;
         this.font = font;
         this.color = textColor;
         this.colorHover = textColorHover;
+        this.tint = Color.LIGHT_GRAY;
+        this.tintHover = Color.WHITE;
         this.textureLeft = ImageMaster.loadImage("img/ButtonLeft.png");
         this.textureRight = ImageMaster.loadImage("img/ButtonRight.png");
         this.textureMiddle = ImageMaster.loadImage("img/ButtonMiddle.png");
         this.x = xPos;
         this.y = yPos;
-        this.middle_width = Math.max(0.0F, FontHelper.getSmartWidth(font, label, 9999.0F, 0.0F) - 18.0F * Settings.scale);
-        this.w = (float)(this.textureLeft.getWidth() + this.textureRight.getWidth()) * Settings.scale + this.middle_width;
-        this.h = (float)this.textureLeft.getHeight() * Settings.scale * .6f;
+        if(fixedWidth == -1)
+            this.middle_width = Math.max(0.0F, FontHelper.getSmartWidth(font, label, 9999.0F, 0.0F) - 18.0F * Settings.scale);
+        else
+            this.middle_width = Math.max(0.0F, fixedWidth - (this.textureLeft.getWidth() + this.textureRight.getWidth()) * Settings.scale);
+        this.w = (float) (this.textureLeft.getWidth() + this.textureRight.getWidth()) * Settings.scale + this.middle_width;
+        this.h = (float) this.textureLeft.getHeight() * Settings.scale * .7f;
         this.hb = new Hitbox(this.x + Settings.scale, this.y + Settings.scale, this.w - 2.0F * Settings.scale, this.h - 2.0F * Settings.scale);
         this.click = c;
     }
@@ -71,7 +86,7 @@ public abstract class APButton {
     }
 
     public void update() {
-        if(!this.enabled) {
+        if (!this.enabled) {
             this.hb.hovered = false;
             return;
         }
@@ -95,20 +110,19 @@ public abstract class APButton {
     private void onClick() {
         this.click.accept(this);
     }
+
     public void render(SpriteBatch sb) {
-        sb.setColor(Color.WHITE);
-        if(!this.enabled)
+        if (!this.enabled)
             ShaderHelper.setShader(sb, ShaderHelper.Shader.GRAYSCALE);
-        sb.draw(this.textureLeft, this.x, this.y, (float)this.textureLeft.getWidth() * Settings.scale, this.h);
-        sb.draw(this.textureMiddle, this.x + (float)this.textureLeft.getWidth() * Settings.scale, this.y, this.middle_width, this.h);
-        sb.draw(this.textureRight, this.x + (float)this.textureLeft.getWidth() * Settings.scale + this.middle_width, this.y, (float)this.textureRight.getWidth() * Settings.scale, this.h);
+        sb.setColor(this.hb.hovered ? this.tintHover: this.tint);
+        sb.draw(this.textureLeft, this.x, this.y, (float) this.textureLeft.getWidth() * Settings.scale, this.h);
+        sb.draw(this.textureMiddle, this.x + (float) this.textureLeft.getWidth() * Settings.scale, this.y, this.middle_width, this.h);
+        sb.draw(this.textureRight, this.x + (float) this.textureLeft.getWidth() * Settings.scale + this.middle_width, this.y, (float) this.textureRight.getWidth() * Settings.scale, this.h);
         this.hb.render(sb);
-        sb.setColor(Color.WHITE);
-        if (this.hb.hovered) {
-            FontHelper.renderFontCentered(sb, this.font, this.label, this.hb.cX, this.hb.cY, this.colorHover);
-        } else {
-            FontHelper.renderFontCentered(sb, this.font, this.label, this.hb.cX, this.hb.cY, this.color);
-        }
+        sb.setColor(this.tint);
+
+        FontHelper.renderFontCentered(sb, this.font, this.label, this.hb.cX, this.hb.cY, this.hb.hovered ? this.colorHover: this.color);
+
         ShaderHelper.setShader(sb, ShaderHelper.Shader.DEFAULT);
     }
 
@@ -122,11 +136,11 @@ public abstract class APButton {
     }
 
     public void setX(float xPos) {
-        this.set(xPos, this.y );
+        this.set(xPos, this.y);
     }
 
     public void setY(float yPos) {
-        this.set(this.x , yPos);
+        this.set(this.x, yPos);
     }
 
     public float getX() {

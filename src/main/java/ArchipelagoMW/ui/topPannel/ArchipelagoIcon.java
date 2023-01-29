@@ -109,7 +109,7 @@ public class ArchipelagoIcon extends TopPanelItem {
     protected void onClick() {
         // if we are disconnected, and we click the ap button try new connection.
         if (!APClient.apClient.isConnected()) {
-            APClient.newConnection(Archipelago.address, Archipelago.slotName, ConnectionPanel.passwordField);
+            APClient.newConnection(Archipelago.address, Archipelago.slotName, Archipelago.password);
         } else if (AbstractDungeon.screen == ArchipelagoRewardScreen.Enum.ARCHIPELAGO_REWARD_SCREEN) {
             AbstractDungeon.closeCurrentScreen();
         } else {

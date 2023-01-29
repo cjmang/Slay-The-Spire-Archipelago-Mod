@@ -4,15 +4,16 @@ import ArchipelagoMW.APSettings;
 import ArchipelagoMW.Archipelago;
 import ArchipelagoMW.teams.TeamManager;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.evacipated.cardcrawl.modthespire.Loader;
 import com.evacipated.cardcrawl.modthespire.lib.*;
 import com.megacrit.cardcrawl.core.CardCrawlGame;
 import com.megacrit.cardcrawl.core.Settings;
 import com.megacrit.cardcrawl.dungeons.AbstractDungeon;
 import com.megacrit.cardcrawl.neow.NeowEvent;
 import com.megacrit.cardcrawl.rooms.AbstractRoom;
+import downfall.events.HeartEvent;
 import javassist.CtBehavior;
 
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -52,9 +53,12 @@ public class SideBar {
     public final CopyOnWriteArrayList<PlayerPanel> playerPanels = new CopyOnWriteArrayList<>();
 
     // Group UI
-    public boolean showJoinGroup = true;
+    public boolean showTeamButton = true;
     public APTeamsButton APTeamsButton;
-    public boolean showJoinGroupPanel = false;
+    public boolean showTeamPanel = false;
+
+    public static boolean useTeams = false;
+
     public APTeamsPanel APTeamsPanel;
 
     private final float x;
@@ -76,12 +80,15 @@ public class SideBar {
             player.update();
         }
 
-        showJoinGroup = AbstractDungeon.currMapNode.room.event instanceof NeowEvent;
-        if (showJoinGroup && !AbstractDungeon.isScreenUp) {
+        if (Loader.isModLoaded("downfall"))
+            showTeamButton = AbstractDungeon.currMapNode.room.event instanceof NeowEvent || AbstractDungeon.currMapNode.room.event instanceof HeartEvent;
+        else
+            showTeamButton = AbstractDungeon.currMapNode.room.event instanceof NeowEvent;
+        if (showTeamButton && !AbstractDungeon.isScreenUp && useTeams) {
             APTeamsButton.update();
         }
 
-        if (showJoinGroupPanel && !AbstractDungeon.isScreenUp) {
+        if (showTeamPanel && !AbstractDungeon.isScreenUp) {
             APTeamsPanel.update();
         }
     }
@@ -101,6 +108,7 @@ public class SideBar {
             playerPanel.setPos(x, y - 80 * Settings.scale - (85 * Math.min(i, 5) * Settings.scale));
 
             if(playerPanel.getPlayer().getName().equals(CardCrawlGame.playerName)) {
+                i++;
                 playerPanel.shouldRender = true;
                 continue;
             }
@@ -133,13 +141,13 @@ public class SideBar {
 
     public void render(SpriteBatch sb) {
         renderPlayers(sb);
-        if (showJoinGroup) {
+        if (showTeamButton && useTeams) {
             APTeamsButton.render(sb);
         }
     }
 
     public void topRender(SpriteBatch sb) {
-        if (showJoinGroup && showJoinGroupPanel && !AbstractDungeon.isScreenUp) {
+        if (showTeamButton && showTeamPanel && !AbstractDungeon.isScreenUp) {
             APTeamsPanel.render(sb);
         }
     }

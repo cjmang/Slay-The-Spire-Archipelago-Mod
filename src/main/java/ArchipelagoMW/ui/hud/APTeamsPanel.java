@@ -24,7 +24,7 @@ public class APTeamsPanel {
     private final InteractButton interactButton;
     private final LockTeamButton lockTeamButton;
 
-    public CopyOnWriteArrayList<TeamButton> teamButtons;
+    public ArrayList<TeamButton> teamButtons;
 
     public TeamInfo selectedTeam;
     
@@ -44,7 +44,7 @@ public class APTeamsPanel {
         createButton = new CreateButton("+");
         interactButton = new InteractButton("Join Team");
         lockTeamButton = new LockTeamButton("Lock Team");
-        teamButtons = new CopyOnWriteArrayList<>();
+        teamButtons = new ArrayList<>();
 
         settings.add(new APToggleButton("Health Link",APToggleButton.CheckBoxType.HEALTH_LINK));
         settings.add(new APToggleButton("Gold Link",APToggleButton.CheckBoxType.GOLD_LINK));
@@ -71,6 +71,8 @@ public class APTeamsPanel {
 
         interactButton.set(TEAM_INFO_X + 15f * Settings.scale,TEAM_INFO_Y - 520f * Settings.scale);
         lockTeamButton.set(TEAM_INFO_X + 15f * Settings.scale,TEAM_INFO_Y - 465f * Settings.scale);
+
+        createButton.set(this.x + 150f * Settings.scale, this.y - 515f * Settings.scale);
     }
 
     public void update() {
@@ -84,24 +86,26 @@ public class APTeamsPanel {
 
         if(TeamManager.myTeam != null) {
             interactButton.setLabel("Leave Team");
+            interactButton.enabled = !TeamManager.myTeam.locked;
+            lockTeamButton.enabled = !TeamManager.myTeam.locked && TeamManager.myTeam.members.size() > 1;
             createButton.enabled = false;
             createButton.hb.hovered = false;
-
         } else {
+            if(selectedTeam != null)
+                interactButton.enabled = !selectedTeam.locked;
+            else
+                interactButton.enabled = false;
             interactButton.setLabel("Join Team");
             createButton.enabled = true;
         }
         if (selectedTeam != null) {
-            if (selectedTeam.leader.equals(CardCrawlGame.playerName)) {
+            if (CardCrawlGame.playerName.equals(selectedTeam.leader)) {
                 lockTeamButton.update();
             }
-
-            interactButton.enabled = !selectedTeam.locked;
             interactButton.update();
         }
 
 
-        createButton.set(this.x + 125f * Settings.scale, this.y - 80f * Settings.scale - createButton.getHeight() - (createButton.getHeight() + 5f * Settings.scale) * teamButtons.size() );
         createButton.update();
 
 
@@ -145,7 +149,7 @@ public class APTeamsPanel {
 
             interactButton.render(sb);
 
-            if(selectedTeam.leader.equals(CardCrawlGame.playerName))
+            if(CardCrawlGame.playerName.equals(selectedTeam.leader))
                 lockTeamButton.render(sb);
 
             float nameStep = FontHelper.getHeight(FontHelper.leaderboardFont) + 12f * Settings.scale;

@@ -2,6 +2,7 @@ package ArchipelagoMW.ui.connection;
 
 import ArchipelagoMW.APClient;
 import ArchipelagoMW.Archipelago;
+import ArchipelagoMW.ui.mainMenu.NewMenuButtons;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -38,9 +39,10 @@ public class ConnectionInfoScreen {
     private float waitTimer;
 
 
-    public final ConnectionPanel addressPanel = new ConnectionPanel();
+    public final ConnectionPanel addressPanel;
 
     public ConnectionInfoScreen() {
+        addressPanel = new ConnectionPanel();
     }
 
     public void open() {
@@ -83,8 +85,8 @@ public class ConnectionInfoScreen {
                 Gdx.input.setInputProcessor(new ScrollInputProcessor());
                 confirmButton.hb.clicked = false;
                 ConnectionPanel.connectionResultText = TEXT[5];
-                Archipelago.setConnectionInfo(ConnectionPanel.addressField, ConnectionPanel.slotNameField, ConnectionPanel.passwordField);
-                APClient.newConnection(ConnectionPanel.addressField, ConnectionPanel.slotNameField, ConnectionPanel.passwordField);
+                Archipelago.setConnectionInfo(NewMenuButtons.connectionInfoScreen.addressPanel.addressTextBox.getText(), NewMenuButtons.connectionInfoScreen.addressPanel.slotNameTextBox.getText(), NewMenuButtons.connectionInfoScreen.addressPanel.passwordTextBox.getText());
+                APClient.newConnection(Archipelago.address, Archipelago.slotName, Archipelago.password.isEmpty() ? null : Archipelago.password);
             }
         }
 

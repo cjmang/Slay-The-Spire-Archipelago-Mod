@@ -1,6 +1,7 @@
 package ArchipelagoMW.util;
 
 import ArchipelagoMW.APClient;
+import ArchipelagoMW.teams.TeamManager;
 import basemod.ReflectionHacks;
 import com.evacipated.cardcrawl.modthespire.Loader;
 import com.evacipated.cardcrawl.modthespire.lib.*;
@@ -137,6 +138,7 @@ public class DeathLinkHelper {
     @SpirePatch(clz = DeathScreen.class, method = SpirePatch.CONSTRUCTOR)
     public static class death {
         public static void Postfix(DeathScreen __instance) {
+            TeamManager.leaveTeam();
             if (GameOverScreen.isVictory || update.death)
                 return;
 

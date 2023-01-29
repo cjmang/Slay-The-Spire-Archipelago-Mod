@@ -59,5 +59,6 @@ public class PlayerInfo {
         this.maxHealth = player.maxHealth;
         this.team = player.team;
         this.teamColor = player.teamColor;
+        this.timestamp = player.timestamp;
     }
 }

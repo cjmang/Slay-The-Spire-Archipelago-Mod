@@ -7,6 +7,7 @@ import ArchipelagoMW.SlotData;
 import ArchipelagoMW.patches.SavePatch;
 import ArchipelagoMW.ui.RewardMenu.ArchipelagoRewardScreen;
 import ArchipelagoMW.ui.connection.ConnectionPanel;
+import ArchipelagoMW.ui.hud.SideBar;
 import ArchipelagoMW.util.DeathLinkHelper;
 import com.evacipated.cardcrawl.modthespire.Loader;
 import com.megacrit.cardcrawl.characters.AbstractPlayer;
@@ -20,7 +21,10 @@ import downfall.patches.EvilModeCharacterSelect;
 import gg.archipelago.client.events.ArchipelagoEventListener;
 import gg.archipelago.client.events.ConnectionResultEvent;
 import gg.archipelago.client.helper.DeathLink;
+import gg.archipelago.client.network.client.SetPacket;
+import gg.archipelago.client.parts.Version;
 
+import java.util.Arrays;
 import java.util.Collections;
 
 public class ConnectionResult {
@@ -43,7 +47,6 @@ public class ConnectionResult {
                 break;
             case InvalidPassword:
                 msg = "Invalid Password";
-                ConnectionPanel.showPassword = true;
                 break;
             case IncompatibleVersion:
                 msg = "Server Rejected our connection due to an incompatible communication protocol.";
@@ -51,6 +54,7 @@ public class ConnectionResult {
             default:
                 msg = "Unknown Error";
         }
+        SideBar.useTeams = APClient.apClient.getRoomInfo().version.compareTo(new Version(0, 3, 8)) <= 0;
         ConnectionPanel.connectionResultText = msg;
 
         if (event.getResult() != gg.archipelago.client.network.ConnectionResult.Success)
@@ -69,47 +73,47 @@ public class ConnectionResult {
         character = CardCrawlGame.characterManager.getCharacter(AbstractPlayer.PlayerClass.IRONCLAD);
         switch (slotData.character) {
             case "0":
-                slotData.character = "The Ironclad";
+                slotData.character = "IRONCLAD";
                 break;
             case "1":
-                slotData.character = "The Silent";
+                slotData.character = "THE_SILENT";
                 break;
             case "2":
-                slotData.character = "The Defect";
+                slotData.character = "DEFECT";
                 break;
             case "3":
-                slotData.character = "The Watcher";
+                slotData.character = "WATCHER";
                 break;
             case "4":
-                slotData.character = "The Hermit";
+                slotData.character = "HERMIT";
                 break;
             case "5":
-                slotData.character = "The Slime Boss";
+                slotData.character = "SLIMEBOUND";
                 break;
             case "6":
-                slotData.character = "The Guardian";
+                slotData.character = "GUARDIAN";
                 break;
             case "7":
-                slotData.character = "The Hexaghost";
+                slotData.character = "THE_SPIRIT";
                 break;
             case "8":
-                slotData.character = "The Champ";
+                slotData.character = "THE_CHAMP";
                 break;
             case "9":
-                slotData.character = "The Gremlins";
+                slotData.character = "GREMLIN";
                 break;
             case "10":
-                slotData.character = "The Automaton";
+                slotData.character = "THE_AUTOMATON";
                 break;
             case "11":
-                slotData.character = "The Snecko";
+                slotData.character = "THE_SNECKO";
                 break;
             case "12":
                 character = CardCrawlGame.characterManager.getRandomCharacter(new Random());
         }
 
         for (AbstractPlayer ch : CardCrawlGame.characterManager.getAllCharacters()) {
-            if (ch.title.equalsIgnoreCase(slotData.character)) {
+            if (ch.chosenClass.name().equalsIgnoreCase(slotData.character)) {
                 character = ch;
                 break;
             }

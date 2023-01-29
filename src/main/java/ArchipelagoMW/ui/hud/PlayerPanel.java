@@ -15,6 +15,8 @@ import com.megacrit.cardcrawl.helpers.HitboxListener;
 import com.megacrit.cardcrawl.helpers.ImageMaster;
 import com.megacrit.cardcrawl.helpers.input.InputHelper;
 
+import java.util.Set;
+
 public class PlayerPanel implements Comparable<PlayerPanel>, HitboxListener {
 
     public boolean shouldRender = false;
@@ -94,19 +96,19 @@ public class PlayerPanel implements Comparable<PlayerPanel>, HitboxListener {
         }
 
         //draw name
-        FontHelper.renderSmartText(sb, FontHelper.topPanelAmountFont, player.displayName, currentX + 12f, currentY + APTextures.PLAYER_PANEL.getHeight() * Settings.scale - APTextures.TEAM_BAR.getHeight() * barHeightMod - 5f, Settings.CREAM_COLOR);
+        FontHelper.renderSmartText(sb, FontHelper.topPanelAmountFont, player.displayName, currentX + 12f * Settings.scale, currentY + APTextures.PLAYER_PANEL.getHeight() * Settings.scale - APTextures.TEAM_BAR.getHeight() * barHeightMod - 3f * Settings.scale, Settings.CREAM_COLOR);
 
         //draw health
-        sb.draw(ImageMaster.TP_HP, currentX + 5f, currentY, ICON_SIZE, ICON_SIZE);
-        FontHelper.renderSmartText(sb, FontHelper.topPanelAmountFont, Integer.toString(player.health), currentX + 34f, currentY + 23f, Settings.RED_TEXT_COLOR);
+        sb.draw(ImageMaster.TP_HP, currentX + 5f * Settings.scale, currentY + 3f * Settings.scale, ICON_SIZE, ICON_SIZE);
+        FontHelper.renderSmartText(sb, FontHelper.topPanelAmountFont, Integer.toString(player.health), currentX + 40f * Settings.scale, currentY + 30f * Settings.scale, Settings.RED_TEXT_COLOR);
 
         //draw gold
-        sb.draw(ImageMaster.TP_GOLD, currentX + 74f, currentY, ICON_SIZE, ICON_SIZE);
-        FontHelper.renderSmartText(sb, FontHelper.topPanelAmountFont, Integer.toString(player.gold), currentX + 104f, currentY + 23f, Settings.GOLD_COLOR);
+        sb.draw(ImageMaster.TP_GOLD, currentX + 130f * Settings.scale - ICON_SIZE, currentY + 3f * Settings.scale, ICON_SIZE, ICON_SIZE);
+        FontHelper.renderSmartText(sb, FontHelper.topPanelAmountFont, Integer.toString(player.gold), currentX + 130f * Settings.scale, currentY + 30f * Settings.scale, Settings.GOLD_COLOR);
 
         //draw floor
-        sb.draw(ImageMaster.TP_FLOOR, currentX + 163f, currentY, ICON_SIZE, ICON_SIZE);
-        FontHelper.renderSmartText(sb, FontHelper.topPanelAmountFont, Integer.toString(player.floor), currentX + 196f, currentY + 23f, Settings.CREAM_COLOR);
+        sb.draw(ImageMaster.TP_FLOOR, currentX + 250f * Settings.scale - ICON_SIZE, currentY + 3f * Settings.scale, ICON_SIZE, ICON_SIZE);
+        FontHelper.renderSmartText(sb, FontHelper.topPanelAmountFont, Integer.toString(player.floor), currentX + 250f * Settings.scale, currentY + 30f * Settings.scale, Settings.CREAM_COLOR);
 
         this.hb.render(sb);
     }

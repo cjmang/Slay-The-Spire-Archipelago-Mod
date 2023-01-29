@@ -19,11 +19,11 @@ public class VictoryScreenPatch {
 
         @SpirePostfixPatch
         public static void Postfix() {
-            if (!GameOverScreen.isVictory)
+            // check if this is a post-act3 death which the "isVictory" flag tracks
+            // if we should be finishing final act, this is not a victory regardless of act3 boss's death
+            if (!GameOverScreen.isVictory || APClient.slotData.finalAct == 1)
                 return;
-            // don't send victory if we are in the beyond victory screen and we are on a heart run.
-            if (CardCrawlGame.dungeon instanceof TheBeyond && APClient.slotData.finalAct == 1)
-                return;
+
 
             APClient.apClient.setGameState(ClientStatus.CLIENT_GOAL);
             LocationTracker.forfeit();
@@ -31,7 +31,7 @@ public class VictoryScreenPatch {
         }
     }
 
-    @SpirePatch(clz = VictoryScreen.class, method = "<ctor>")
+    @SpirePatch(clz = VictoryScreen.class, method = SpirePatch.CONSTRUCTOR)
     public static class TrueVictoryPatch {
 
         @SpirePrefixPatch

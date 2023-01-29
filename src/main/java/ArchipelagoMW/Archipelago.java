@@ -1,14 +1,15 @@
 package ArchipelagoMW;
 
 import ArchipelagoMW.patches.RewardItemPatch;
+import ArchipelagoMW.teams.TeamManager;
 import ArchipelagoMW.ui.RewardMenu.ArchipelagoRewardScreen;
 import ArchipelagoMW.ui.RewardMenu.BossRelicRewardScreen;
 import ArchipelagoMW.ui.hud.SideBar;
 import ArchipelagoMW.ui.topPannel.ArchipelagoIcon;
-import ArchipelagoMW.ui.topPannel.TestButton;
 import ArchipelagoMW.util.APRewardSave;
 import basemod.BaseMod;
 import basemod.ModLabel;
+import basemod.ModLabeledButton;
 import basemod.ModPanel;
 import basemod.abstracts.CustomSavableRaw;
 import basemod.interfaces.EditStringsSubscriber;
@@ -33,7 +34,6 @@ import org.apache.logging.log4j.Logger;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Properties;
 
 
 @SpireInitializer
@@ -42,10 +42,10 @@ public class Archipelago implements
         PostInitializeSubscriber {
 
     public static final Logger logger = LogManager.getLogger(Archipelago.class.getName());
-    private static final String modID = "ArchipelagoMW";
-    private static final String MODNAME = "Archipelago Multi-World";
-    private static final String AUTHOR = "Kono Tyran & Mavelovent";
-    private static final String DESCRIPTION = "An Archipelago multiworld mod.";
+    public static final String modID = "ArchipelagoMW";
+    public static final String MODNAME = "Archipelago Multi-World";
+    public static final String AUTHOR = "Kono Tyran & Mavelovent";
+    public static final String DESCRIPTION = "An Archipelago multiworld mod.";
 
     public static BossRelicRewardScreen bossRelicRewardScreen;
 
@@ -63,6 +63,7 @@ public class Archipelago implements
         logger.info("Done subscribing");
 
         APSettings.loadSettings();
+        Runtime.getRuntime().addShutdownHook(new Thread(TeamManager::leaveTeam));
     }
 
     public static String getModID() {
@@ -89,41 +90,14 @@ public class Archipelago implements
         //initalize textures
         APTextures.initialize();
 
+        //initialize Mod Menu and settings.
+        APSettings.initialize();
 
-        // Create the Mod Menu
-        ModPanel settingsPanel = new ModPanel();
-
-        int configPos = 800;
-        int configStep = 40;
-        configPos -= 90;
-        ModLabel validLabel = new ModLabel("Valid Characters:", 350.0F, (float) configPos, Settings.CREAM_COLOR, FontHelper.charDescFont, settingsPanel, (label) -> {
-        });
-        settingsPanel.addUIElement(validLabel);
-
-        String[] titles = BaseMod.getModdedCharacters().stream().map(p -> p.title).toArray(String[]::new);
-
-        int chunkSize = 4;
-        int remainder = titles.length % chunkSize;
-        int chunks = titles.length / chunkSize + (remainder > 1 ? 1 : 0);
-        for (int i = 0; i <= chunks; i++) {
-            configPos -= configStep;
-            String[] line;
-            if (i == chunks && remainder > 0) {
-                line = Arrays.copyOfRange(titles, chunks * chunkSize, titles.length);
-            } else {
-                line = Arrays.copyOfRange(titles, i * chunkSize, i * chunkSize + chunkSize);
-            }
-            ModLabel lineLabel = new ModLabel("\"" + String.join("\", \"", line) + "\"", 350.0F, (float) configPos, Settings.CREAM_COLOR, FontHelper.charDescFont, settingsPanel, (label) -> {
-            });
-            settingsPanel.addUIElement(lineLabel);
-        }
-
-
-        BaseMod.registerModBadge(APTextures.AP_BADGE, MODNAME, AUTHOR, DESCRIPTION, settingsPanel);
         BaseMod.addTopPanelItem(new ArchipelagoIcon());
-        BaseMod.addTopPanelItem(new TestButton());
+        //BaseMod.addTopPanelItem(new TestButton());
 
-        Type rewardSaveList = new TypeToken<ArrayList<APRewardSave>>() {}.getType();
+        Type rewardSaveList = new TypeToken<ArrayList<APRewardSave>>() {
+        }.getType();
 
         BaseMod.addCustomScreen(new ArchipelagoRewardScreen());
         BaseMod.addSaveField("ap_rewards", new CustomSavableRaw() {

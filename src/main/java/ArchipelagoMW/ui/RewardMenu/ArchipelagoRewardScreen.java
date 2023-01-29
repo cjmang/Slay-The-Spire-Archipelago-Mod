@@ -160,6 +160,9 @@ public class ArchipelagoRewardScreen  extends CustomScreen {
         } else if(previousScreen != null && previousScreen != AbstractDungeon.CurrentScreen.NONE) {
                 AbstractDungeon.previousScreen = previousScreen;
                 previousScreen = null;
+        } else if(AbstractDungeon.getCurrRoom().phase == AbstractRoom.RoomPhase.COMPLETE) {
+            AbstractDungeon.previousScreen = AbstractDungeon.CurrentScreen.MAP;
+            AbstractDungeon.dungeonMapScreen.open(false);
         } else {
             AbstractDungeon.previousScreen = null;
         }
