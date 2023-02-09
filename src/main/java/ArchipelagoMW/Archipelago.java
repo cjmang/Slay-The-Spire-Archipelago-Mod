@@ -8,9 +8,6 @@ import ArchipelagoMW.ui.hud.SideBar;
 import ArchipelagoMW.ui.topPannel.ArchipelagoIcon;
 import ArchipelagoMW.util.APRewardSave;
 import basemod.BaseMod;
-import basemod.ModLabel;
-import basemod.ModLabeledButton;
-import basemod.ModPanel;
 import basemod.abstracts.CustomSavableRaw;
 import basemod.interfaces.EditStringsSubscriber;
 import basemod.interfaces.PostInitializeSubscriber;
@@ -20,9 +17,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import com.google.gson.reflect.TypeToken;
-import com.megacrit.cardcrawl.core.Settings;
 import com.megacrit.cardcrawl.helpers.CardLibrary;
-import com.megacrit.cardcrawl.helpers.FontHelper;
 import com.megacrit.cardcrawl.helpers.PotionHelper;
 import com.megacrit.cardcrawl.helpers.RelicLibrary;
 import com.megacrit.cardcrawl.localization.UIStrings;
@@ -33,7 +28,6 @@ import org.apache.logging.log4j.Logger;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
-import java.util.Arrays;
 
 
 @SpireInitializer
@@ -72,7 +66,7 @@ public class Archipelago implements
 
     @SuppressWarnings("unused")
     public static void initialize() {
-        logger.info("========================= Initializing Archipelago Multi-World. =========================");
+        logger.info("========================= Initializing Archipelago Multi-World Version 1.6. =========================");
         new Archipelago();
         logger.info("=========================  Archipelago Multi-World Initialized. =========================");
     }
