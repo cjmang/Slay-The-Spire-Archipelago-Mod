@@ -84,6 +84,10 @@ public class SideBar {
             showTeamButton = AbstractDungeon.currMapNode.room.event instanceof NeowEvent || AbstractDungeon.currMapNode.room.event instanceof HeartEvent;
         else
             showTeamButton = AbstractDungeon.currMapNode.room.event instanceof NeowEvent;
+
+        //just disable it for now
+        showTeamButton = false;
+
         if (showTeamButton && !AbstractDungeon.isScreenUp && useTeams) {
             APTeamsButton.update();
         }
