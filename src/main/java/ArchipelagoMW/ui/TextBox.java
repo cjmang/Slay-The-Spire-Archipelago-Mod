@@ -126,7 +126,11 @@ public class TextBox implements InputProcessor, HitboxListener {
 
         if (InputHelper.isPasteJustPressed()) {
             Clipboard clipBoard = Gdx.app.getClipboard();
-            String pasteText = clipBoard.getContents();
+            StringBuilder pasteText = new StringBuilder();
+            for (char c : clipBoard.getContents().toCharArray()) {
+                if (font.getData().hasGlyph(c))
+                    pasteText.append(c);
+            }
             text += pasteText;
             return true;
         }
@@ -136,7 +140,7 @@ public class TextBox implements InputProcessor, HitboxListener {
             return true;
         }
 
-        if (Character.isIdentifierIgnorable(character) || Character.isISOControl(character))
+        if (Character.isIdentifierIgnorable(character) || Character.isISOControl(character) || !font.getData().hasGlyph(character))
             return false;
         text += input;
         return true;

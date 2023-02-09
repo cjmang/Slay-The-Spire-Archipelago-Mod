@@ -3,6 +3,8 @@ package ArchipelagoMW.ui.connection;
 import ArchipelagoMW.Archipelago;
 import ArchipelagoMW.patches.ConfirmPopupPatch;
 import ArchipelagoMW.ui.TextBox;
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -10,6 +12,7 @@ import com.megacrit.cardcrawl.core.CardCrawlGame;
 import com.megacrit.cardcrawl.core.Settings;
 import com.megacrit.cardcrawl.helpers.FontHelper;
 import com.megacrit.cardcrawl.helpers.ImageMaster;
+import com.megacrit.cardcrawl.helpers.input.InputHelper;
 import com.megacrit.cardcrawl.localization.UIStrings;
 import com.megacrit.cardcrawl.screens.options.ConfirmPopup;
 import org.apache.logging.log4j.LogManager;
@@ -71,6 +74,15 @@ public class ConnectionPanel {
 
     public void update() {
         if (!resumeSave.shown) {
+            if(Gdx.input.isKeyJustPressed(Input.Keys.TAB)) {
+                if (Gdx.input.getInputProcessor().equals(addressTextBox)) {
+                    Gdx.input.setInputProcessor(slotNameTextBox);
+                } else if (Gdx.input.getInputProcessor().equals(slotNameTextBox)) {
+                    Gdx.input.setInputProcessor(passwordTextBox);
+                } else if (Gdx.input.getInputProcessor().equals(passwordTextBox)) {
+                    Gdx.input.setInputProcessor(addressTextBox);
+                }
+            }
             addressTextBox.update();
             slotNameTextBox.update();
             passwordTextBox.update();
