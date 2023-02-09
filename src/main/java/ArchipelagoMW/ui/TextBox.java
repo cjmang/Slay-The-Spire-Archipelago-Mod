@@ -64,7 +64,6 @@ public class TextBox implements InputProcessor, HitboxListener {
             tint = Color.WHITE;
         }
     }
-
     public void render(SpriteBatch sb) {
         sb.setColor(tint);
         // render background box
@@ -86,6 +85,11 @@ public class TextBox implements InputProcessor, HitboxListener {
                 false
         );
 
+
+        if(text == null) {
+            hb.render(sb);
+            return;
+        }
         // render current input
         FontHelper.renderFont(sb,
                 font,
@@ -193,5 +197,9 @@ public class TextBox implements InputProcessor, HitboxListener {
 
     public String getText() {
         return text;
+    }
+
+    public void setText(String text) {
+        this.text = text;
     }
 }

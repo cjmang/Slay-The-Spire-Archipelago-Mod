@@ -1,5 +1,6 @@
 package ArchipelagoMW.ui.connection;
 
+import ArchipelagoMW.APSettings;
 import ArchipelagoMW.Archipelago;
 import ArchipelagoMW.patches.ConfirmPopupPatch;
 import ArchipelagoMW.ui.TextBox;
@@ -64,10 +65,13 @@ public class ConnectionPanel {
         this.uiColor = new Color(1.0F, 1.0F, 1.0F, 1.0F);// 37
 
         addressTextBox = new TextBox(OPTION_X + addressOffset, currentY, PANEL_WIDTH * .85f - addressOffset);
+        addressTextBox.setText(APSettings.address);
         currentY -= stepY;
         slotNameTextBox = new TextBox(OPTION_X + slotNameOffset, currentY, PANEL_WIDTH * .85f - slotNameOffset);
+        slotNameTextBox.setText(APSettings.slot);
         currentY -= stepY;
         passwordTextBox = new TextBox(OPTION_X + passwordOffset, currentY, PANEL_WIDTH * .85f - passwordOffset);
+        passwordTextBox.setText(APSettings.password);
         currentY -= stepY;
         resumeSave = new ConfirmPopup("Resume?", "Archipelago Save Detected would you like to resume?", ConfirmPopupPatch.AP_SAVE_RESUME);
     }

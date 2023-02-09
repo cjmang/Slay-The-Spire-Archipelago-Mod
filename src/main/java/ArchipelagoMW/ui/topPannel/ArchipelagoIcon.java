@@ -53,7 +53,11 @@ public class ArchipelagoIcon extends TopPanelItem {
                 && AbstractDungeon.screen != AbstractDungeon.CurrentScreen.CHOOSE_ONE
                 && AbstractDungeon.previousScreen != AbstractDungeon.CurrentScreen.CHOOSE_ONE
                 && AbstractDungeon.screen != AbstractDungeon.CurrentScreen.HAND_SELECT
-                && AbstractDungeon.previousScreen != AbstractDungeon.CurrentScreen.HAND_SELECT)
+                && AbstractDungeon.previousScreen != AbstractDungeon.CurrentScreen.HAND_SELECT
+                && AbstractDungeon.screen != AbstractDungeon.CurrentScreen.GRID
+                && AbstractDungeon.previousScreen != AbstractDungeon.CurrentScreen.GRID
+                && AbstractDungeon.screen != AbstractDungeon.CurrentScreen.INPUT_SETTINGS
+                && AbstractDungeon.previousScreen != AbstractDungeon.CurrentScreen.INPUT_SETTINGS)
                 || AbstractDungeon.getCurrRoom().phase.equals(AbstractRoom.RoomPhase.COMPLETE)
         );
 

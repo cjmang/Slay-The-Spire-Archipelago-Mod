@@ -15,7 +15,12 @@ import java.util.Properties;
 public class APSettings {
 
     public static FilterType playerFilter;
+    public static String address;
+    public static String slot;
+    public static String password;
     private static final String PLAYER_FILTER_KEY = "PlayerFilter";
+    private static final String CONNECT_SCREEN_ADDRESS_KEY = "ConnectAddress";
+    private static final String CONNECT_SCREEN_SLOT_KEY = "ConnectSlot";
 
 
     public enum FilterType {
@@ -30,10 +35,15 @@ public class APSettings {
 
     public static void loadSettings() {
         defaultSettings.setProperty(PLAYER_FILTER_KEY, "RECENT");
+        defaultSettings.setProperty(CONNECT_SCREEN_ADDRESS_KEY, "Archipelago.gg");
+        defaultSettings.setProperty(CONNECT_SCREEN_SLOT_KEY, "");
 
         try {
             config = new SpireConfig(Archipelago.getModID(), "archipelagoConfig", defaultSettings);
             playerFilter = FilterType.valueOf(config.getString(PLAYER_FILTER_KEY));
+            address = config.getString(CONNECT_SCREEN_ADDRESS_KEY);
+            slot = config.getString(CONNECT_SCREEN_SLOT_KEY);
+            password = "";
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -125,6 +135,8 @@ public class APSettings {
 
     public static void saveSettings() {
         config.setString(PLAYER_FILTER_KEY, playerFilter.toString());
+        config.setString(CONNECT_SCREEN_ADDRESS_KEY, address);
+        config.setString(CONNECT_SCREEN_SLOT_KEY, slot);
         try {
             config.save();
         } catch (IOException ignored) {

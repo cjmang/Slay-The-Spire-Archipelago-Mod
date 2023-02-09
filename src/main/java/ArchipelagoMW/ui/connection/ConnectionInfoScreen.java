@@ -1,6 +1,7 @@
 package ArchipelagoMW.ui.connection;
 
 import ArchipelagoMW.APClient;
+import ArchipelagoMW.APSettings;
 import ArchipelagoMW.Archipelago;
 import ArchipelagoMW.ui.mainMenu.NewMenuButtons;
 import com.badlogic.gdx.Gdx;
@@ -85,6 +86,10 @@ public class ConnectionInfoScreen {
                 Gdx.input.setInputProcessor(new ScrollInputProcessor());
                 confirmButton.hb.clicked = false;
                 ConnectionPanel.connectionResultText = TEXT[5];
+                APSettings.address = addressPanel.addressTextBox.getText();
+                APSettings.slot = addressPanel.slotNameTextBox.getText();
+                APSettings.password = addressPanel.passwordTextBox.getText();
+                APSettings.saveSettings();
                 Archipelago.setConnectionInfo(NewMenuButtons.connectionInfoScreen.addressPanel.addressTextBox.getText(), NewMenuButtons.connectionInfoScreen.addressPanel.slotNameTextBox.getText(), NewMenuButtons.connectionInfoScreen.addressPanel.passwordTextBox.getText());
                 APClient.newConnection(Archipelago.address, Archipelago.slotName, Archipelago.password.isEmpty() ? null : Archipelago.password);
             }
