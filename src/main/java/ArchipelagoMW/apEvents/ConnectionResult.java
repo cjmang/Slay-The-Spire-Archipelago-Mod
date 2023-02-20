@@ -21,10 +21,8 @@ import downfall.patches.EvilModeCharacterSelect;
 import gg.archipelago.client.events.ArchipelagoEventListener;
 import gg.archipelago.client.events.ConnectionResultEvent;
 import gg.archipelago.client.helper.DeathLink;
-import gg.archipelago.client.network.client.SetPacket;
 import gg.archipelago.client.parts.Version;
 
-import java.util.Arrays;
 import java.util.Collections;
 
 public class ConnectionResult {
@@ -121,6 +119,9 @@ public class ConnectionResult {
         LocationTracker.reset();
         ArchipelagoRewardScreen.rewards.clear();
         ArchipelagoRewardScreen.receivedItemsIndex = 0;
+        ArchipelagoRewardScreen.apRareReward = false;
+        ArchipelagoRewardScreen.apReward= false;
+        ArchipelagoRewardScreen.APScreen= false;
         LocationTracker.scoutAllLocations();
         DataStorageGet.loadRequestId = APClient.apClient.dataStorageGet(Collections.singleton(SavePatch.AP_SAVE_STRING));
     }
@@ -143,7 +144,7 @@ public class ConnectionResult {
                 DeathLink.setDeathLinkEnabled(true);
             }
 
-            DeathLinkHelper.update.death = false;
+            DeathLinkHelper.update.sendDeath = false;
 
 
             CardCrawlGame.mainMenuScreen.isFadingOut = true;

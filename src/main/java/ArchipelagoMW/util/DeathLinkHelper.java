@@ -26,7 +26,7 @@ import java.util.Map;
 
 public class DeathLinkHelper {
 
-    public float damagePercent = 0;
+    public static float damagePercent = 0;
 
     public DeathLinkHelper(int deathLink) {
         damagePercent = deathLink / 100f;
@@ -44,7 +44,7 @@ public class DeathLinkHelper {
     public static class update {
         public static int pendingDamage = 0;
         public static String cause;
-        public static boolean death = false;
+        public static boolean sendDeath = true;
 
         public static void Prefix() {
             if (pendingDamage <= 0)
@@ -109,10 +109,12 @@ public class DeathLinkHelper {
             if (AbstractDungeon.player.currentHealth <= 0 && !AbstractDungeon.player.isDead) {
                 AbstractDungeon.player.currentHealth = 0;
                 AbstractDungeon.player.isDead = true;
-                death = true;
+                sendDeath = false;
                 AbstractDungeon.deathScreen = new DeathScreen(null);
                 ReflectionHacks.setPrivate(AbstractDungeon.deathScreen, DeathScreen.class, "deathText", cause);
                 AbstractDungeon.screen = AbstractDungeon.CurrentScreen.DEATH;
+            } else {
+                sendDeath = true;
             }
             pendingDamage = 0;
         }
@@ -122,7 +124,7 @@ public class DeathLinkHelper {
     public static class abandon {
         @SpireInsertPatch(locator = Locator.class)
         public static void Insert() {
-            update.death = true;
+            update.sendDeath = false;
         }
 
         private static class Locator extends SpireInsertLocator {
@@ -139,7 +141,7 @@ public class DeathLinkHelper {
     public static class death {
         public static void Postfix(DeathScreen __instance) {
             TeamManager.leaveTeam();
-            if (GameOverScreen.isVictory || update.death)
+            if (GameOverScreen.isVictory || !update.sendDeath || damagePercent <= 0)
                 return;
 
             MonsterGroup monsters = ReflectionHacks.getPrivate(__instance, DeathScreen.class, "monsters");
