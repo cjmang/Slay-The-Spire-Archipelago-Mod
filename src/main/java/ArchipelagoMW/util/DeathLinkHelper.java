@@ -141,12 +141,15 @@ public class DeathLinkHelper {
     public static class death {
         public static void Postfix(DeathScreen __instance) {
             TeamManager.leaveTeam();
-            if (GameOverScreen.isVictory || !update.sendDeath || damagePercent <= 0)
+            if (GameOverScreen.isVictory || !update.sendDeath || damagePercent <= 0) {
+                APClient.apClient.disconnect();
                 return;
+            }
 
             MonsterGroup monsters = ReflectionHacks.getPrivate(__instance, DeathScreen.class, "monsters");
             if (monsters == null) {
                 DeathLink.SendDeathLink(APClient.apClient.getAlias(), null);
+                APClient.apClient.disconnect();
                 return;
             }
             HashMap<String, Integer> mobs = new HashMap<>();
@@ -172,9 +175,11 @@ public class DeathLinkHelper {
                     }
                 }
                 DeathLink.SendDeathLink(APClient.apClient.getAlias(), APClient.apClient.getAlias() + " was slaughtered by " + sb);
+                APClient.apClient.disconnect();
                 return;
             }
             DeathLink.SendDeathLink(APClient.apClient.getAlias(), null);
+            APClient.apClient.disconnect();
         }
     }
 }

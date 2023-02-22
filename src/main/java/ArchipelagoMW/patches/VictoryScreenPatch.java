@@ -27,7 +27,7 @@ public class VictoryScreenPatch {
 
             APClient.apClient.setGameState(ClientStatus.CLIENT_GOAL);
             LocationTracker.forfeit();
-
+            APClient.apClient.disconnect();
         }
     }
 
@@ -38,6 +38,7 @@ public class VictoryScreenPatch {
         public static void Prefix() {
             APClient.apClient.setGameState(ClientStatus.CLIENT_GOAL);
             LocationTracker.forfeit();
+            APClient.apClient.disconnect();
         }
     }
 }

@@ -40,10 +40,10 @@ public class ConnectionInfoScreen {
     private float waitTimer;
 
 
-    public final ConnectionPanel addressPanel;
+    public final ConnectionPanel connectionPanel;
 
     public ConnectionInfoScreen() {
-        addressPanel = new ConnectionPanel();
+        connectionPanel = new ConnectionPanel();
     }
 
     public void open() {
@@ -71,12 +71,13 @@ public class ConnectionInfoScreen {
     //update when something happens on our screen.
     public void update() {
 
-        if(!addressPanel.resumeSave.shown) {
+        if(!connectionPanel.resumeSave.shown) {
             //back button
             backButton.update();
             if (backButton.hb.clicked || InputHelper.pressedEscape) {
                 backButton.hb.clicked = false;
                 InputHelper.pressedEscape = false;
+                APClient.apClient.disconnect();
                 backToMenu();
             }
 
@@ -86,17 +87,17 @@ public class ConnectionInfoScreen {
                 Gdx.input.setInputProcessor(new ScrollInputProcessor());
                 confirmButton.hb.clicked = false;
                 ConnectionPanel.connectionResultText = TEXT[5];
-                APSettings.address = addressPanel.addressTextBox.getText();
-                APSettings.slot = addressPanel.slotNameTextBox.getText();
-                APSettings.password = addressPanel.passwordTextBox.getText();
+                APSettings.address = connectionPanel.addressTextBox.getText();
+                APSettings.slot = connectionPanel.slotNameTextBox.getText();
+                APSettings.password = connectionPanel.passwordTextBox.getText();
                 APSettings.saveSettings();
-                Archipelago.setConnectionInfo(NewMenuButtons.connectionInfoScreen.addressPanel.addressTextBox.getText(), NewMenuButtons.connectionInfoScreen.addressPanel.slotNameTextBox.getText(), NewMenuButtons.connectionInfoScreen.addressPanel.passwordTextBox.getText());
+                Archipelago.setConnectionInfo(NewMenuButtons.connectionInfoScreen.connectionPanel.addressTextBox.getText(), NewMenuButtons.connectionInfoScreen.connectionPanel.slotNameTextBox.getText(), NewMenuButtons.connectionInfoScreen.connectionPanel.passwordTextBox.getText());
                 APClient.newConnection(Archipelago.address, Archipelago.slotName, Archipelago.password.isEmpty() ? null : Archipelago.password);
             }
         }
 
         //pass the update to our address panel.
-        addressPanel.update();
+        connectionPanel.update();
 
     }
 
@@ -107,8 +108,8 @@ public class ConnectionInfoScreen {
                 Settings.HEIGHT - 70.0f * Settings.yScale,
                 Settings.GOLD_COLOR);
 
-        this.addressPanel.render(sb);
-        if(!addressPanel.resumeSave.shown) {
+        this.connectionPanel.render(sb);
+        if(!connectionPanel.resumeSave.shown) {
             this.backButton.render(sb);
             this.confirmButton.render(sb);
         }
