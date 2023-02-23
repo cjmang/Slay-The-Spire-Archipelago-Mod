@@ -1,7 +1,7 @@
 package ArchipelagoMW.ui.mainMenu;
 
 import ArchipelagoMW.Archipelago;
-import ArchipelagoMW.ui.connection.ConnectionInfoScreen;
+import ArchipelagoMW.ui.connection.ArchipelagoPreGameScreen;
 import com.evacipated.cardcrawl.modthespire.lib.SpireEnum;
 import com.evacipated.cardcrawl.modthespire.lib.SpirePatch;
 import com.megacrit.cardcrawl.core.CardCrawlGame;
@@ -11,14 +11,14 @@ import org.apache.logging.log4j.Logger;
 
 import java.lang.reflect.Field;
 
-public class NewMenuButtons {
+public class ArchipelagoMainMenuButton {
 
-    private static final Logger logger = LogManager.getLogger(NewMenuButtons.class.getName()); // This is our logger! It prints stuff out in the console.
+    private static final Logger logger = LogManager.getLogger(ArchipelagoMainMenuButton.class.getName()); // This is our logger! It prints stuff out in the console.
 
     @SpireEnum
     static MenuButton.ClickResult ARCHIPELAGO;
 
-    static public ConnectionInfoScreen connectionInfoScreen = null;
+    static public ArchipelagoPreGameScreen archipelagoPreGameScreen = null;
 
 
     //set the text for our new button
@@ -42,15 +42,15 @@ public class NewMenuButtons {
     public static class ButtonEffect {
         public static void Postfix(MenuButton button) {
             if (button.result == ARCHIPELAGO) {
-                NewMenuButtons.openConnectionInfo();
+                ArchipelagoMainMenuButton.openConnectionInfo();
             }
         }
     }
 
     public static void openConnectionInfo() {
         logger.info("I should be opening the connection window now...");
-        connectionInfoScreen = new ConnectionInfoScreen();
-        connectionInfoScreen.open();
+        archipelagoPreGameScreen = new ArchipelagoPreGameScreen();
+        archipelagoPreGameScreen.open();
     }
 
 }

@@ -82,7 +82,7 @@ public class PlayerManager {
         private static class Locator extends SpireInsertLocator {
             @Override
             public int[] Locate(CtBehavior ctBehavior) throws Exception {
-                Matcher match = new Matcher.FieldAccessMatcher(AbstractPlayer.class,"gold");
+                Matcher match = new Matcher.FieldAccessMatcher(AbstractPlayer.class, "gold");
                 return LineFinder.findInOrder(ctBehavior, match);
             }
         }
@@ -100,7 +100,7 @@ public class PlayerManager {
         private static class Locator extends SpireInsertLocator {
             @Override
             public int[] Locate(CtBehavior ctBehavior) throws Exception {
-                Matcher match = new Matcher.FieldAccessMatcher(AbstractPlayer.class,"gold");
+                Matcher match = new Matcher.FieldAccessMatcher(AbstractPlayer.class, "gold");
                 return LineFinder.findInOrder(ctBehavior, match);
             }
         }
@@ -191,6 +191,8 @@ public class PlayerManager {
     private static final Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
 
     public static void sendUpdate() {
+        if (!CardCrawlGame.isInARun())
+            return;
         PlayerInfo playerInfo = new PlayerInfo(CardCrawlGame.playerName, AbstractDungeon.player.currentHealth, AbstractDungeon.player.maxHealth, AbstractDungeon.floorNum, AbstractDungeon.player.gold);
         if (TeamManager.myTeam != null) {
             playerInfo.teamColor = TeamManager.myTeam.teamColor;
@@ -233,7 +235,7 @@ public class PlayerManager {
     @ArchipelagoEventListener
     public void dataReceived(SetReplyEvent event) {
         String[] key = event.key.split("_");
-        if (key[1].startsWith("team"))
+        if (!key[1].startsWith("player"))
             return;
         if (event.getRequestID() == playerListRequest) {
             ArrayList<String> playerNames = event.getValueAsObject(arrayListString);
@@ -278,6 +280,7 @@ public class PlayerManager {
                 found = true;
                 oldPlayer.update(newPlayer);
                 oldPlayer.dirty = true;
+                newPlayer = oldPlayer;
             }
         }
         if (!found) {
@@ -285,6 +288,13 @@ public class PlayerManager {
             players.put(newPlayer.getName(), newPlayer);
             Archipelago.sideBar.playerPanels.add(new PlayerPanel(newPlayer));
         }
-
+        if (
+                TeamManager.myTeam != null
+                        && !TeamManager.myTeam.affectsApplied
+                        && TeamManager.myTeam.name.equals(newPlayer.team)
+                        && TeamManager.myTeam.leader.equals(CardCrawlGame.playerName)
+        ) {
+            TeamManager.applyTeamAffects();
+        }
     }
 }

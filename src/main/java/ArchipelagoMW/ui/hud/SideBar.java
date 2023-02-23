@@ -36,11 +36,6 @@ public class SideBar {
             Archipelago.sideBar.render(sb);
         }
 
-        @SpirePostfixPatch
-        public static void postfix(AbstractDungeon __instance, SpriteBatch sb) {
-            Archipelago.sideBar.topRender(sb);
-        }
-
         private static class Locator extends SpireInsertLocator {
             @Override
             public int[] Locate(CtBehavior ctBehavior) throws Exception {
@@ -54,12 +49,9 @@ public class SideBar {
 
     // Group UI
     public boolean showTeamButton = true;
-    public APTeamsButton APTeamsButton;
     public boolean showTeamPanel = false;
 
     public static boolean useTeams = false;
-
-    public APTeamsPanel APTeamsPanel;
 
     private final float x;
     private final float y;
@@ -68,11 +60,6 @@ public class SideBar {
         this.x = 0;
         this.y = Settings.HEIGHT - (280f * Settings.scale);
 
-        APTeamsButton = new APTeamsButton("Teams");
-        APTeamsButton.set(x + PlayerPanel.getWidth() - APTeamsButton.getWidth(), y);
-
-        APTeamsPanel = new APTeamsPanel();
-        APTeamsPanel.setPos(this.x + PlayerPanel.getWidth() + 5f * Settings.scale, y);
     }
 
     public void update() {
@@ -87,14 +74,6 @@ public class SideBar {
 
         //just disable it for now
         showTeamButton = false;
-
-        if (showTeamButton && !AbstractDungeon.isScreenUp && useTeams) {
-            APTeamsButton.update();
-        }
-
-        if (showTeamPanel && !AbstractDungeon.isScreenUp) {
-            APTeamsPanel.update();
-        }
     }
 
 
@@ -145,15 +124,6 @@ public class SideBar {
 
     public void render(SpriteBatch sb) {
         renderPlayers(sb);
-        if (showTeamButton && useTeams) {
-            APTeamsButton.render(sb);
-        }
-    }
-
-    public void topRender(SpriteBatch sb) {
-        if (showTeamButton && showTeamPanel && !AbstractDungeon.isScreenUp) {
-            APTeamsPanel.render(sb);
-        }
     }
 
     public void renderPlayers(SpriteBatch sb) {

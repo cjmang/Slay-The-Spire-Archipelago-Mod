@@ -1,4 +1,4 @@
-package ArchipelagoMW.ui;
+package ArchipelagoMW.ui.Components;
 
 import basemod.helpers.UIElementModificationHelper;
 import com.badlogic.gdx.graphics.Color;

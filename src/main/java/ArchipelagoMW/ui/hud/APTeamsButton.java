@@ -1,7 +1,7 @@
 package ArchipelagoMW.ui.hud;
 
 import ArchipelagoMW.Archipelago;
-import ArchipelagoMW.ui.APButton;
+import ArchipelagoMW.ui.Components.APButton;
 
 public class APTeamsButton extends APButton {
     public APTeamsButton(String text) {

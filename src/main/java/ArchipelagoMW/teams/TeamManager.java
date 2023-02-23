@@ -1,8 +1,9 @@
 package ArchipelagoMW.teams;
 
 import ArchipelagoMW.APClient;
-import ArchipelagoMW.Archipelago;
-import ArchipelagoMW.ui.hud.TeamButton;
+import ArchipelagoMW.apEvents.ConnectionResult;
+import ArchipelagoMW.ui.Components.APChest;
+import ArchipelagoMW.ui.hud.APTeamsPanel;
 import com.badlogic.gdx.graphics.Color;
 import com.evacipated.cardcrawl.modthespire.lib.*;
 import com.google.gson.Gson;
@@ -50,7 +51,7 @@ public class TeamManager {
         @SpirePostfixPatch
         public static void Postfix(AbstractDungeon __instance) {
             if(__instance instanceof Exordium)
-                initialLoad();
+                PlayerManager.sendUpdate();
         }
     }
 
@@ -59,11 +60,11 @@ public class TeamManager {
         @SpirePostfixPatch
         public static void Postfix(AbstractDungeon __instance) {
             if(__instance instanceof Exordium)
-                initialLoad();
+                PlayerManager.sendUpdate();
         }
     }
 
-    @SpirePatch(clz = AbstractDungeon.class, method = "update")
+    @SpirePatch(clz = CardCrawlGame.class, method = "update")
     public static class update {
         @SpirePrefixPatch
         public static void Prefix() {
@@ -83,8 +84,8 @@ public class TeamManager {
     private static final Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
 
     public static void initialLoad() {
-        Archipelago.sideBar.APTeamsPanel.teamButtons.clear();
-        Archipelago.sideBar.APTeamsPanel.selectedTeam = null;
+        APTeamsPanel.teamButtons.clear();
+        APTeamsPanel.selectedTeam = null;
         teams.clear();
         myTeam = null;
 
@@ -108,8 +109,8 @@ public class TeamManager {
 
             if (key.length == 3 && key[1].equals("team")) { // spire_team_{name}
                 if (!updateTeam(gson.fromJson((String) event.data.get(stringKey), TeamInfo.class))) {
-                    if(Archipelago.sideBar.APTeamsPanel.selectedTeam != null && Archipelago.sideBar.APTeamsPanel.selectedTeam.name.equals(key[2])) {
-                        Archipelago.sideBar.APTeamsPanel.selectedTeam = null;
+                    if(APTeamsPanel.selectedTeam != null && APTeamsPanel.selectedTeam.name.equals(key[2])) {
+                        APTeamsPanel.selectedTeam = null;
                     }
                 }
             }
@@ -185,7 +186,6 @@ public class TeamManager {
                 }
             }
 
-
             for (String teamName : teamNames) {
                 newTeams.add(new TeamInfo(teamName));
             }
@@ -249,7 +249,7 @@ public class TeamManager {
             checkIfDead();
             checkIfDead = false;
         }
-        Archipelago.sideBar.APTeamsPanel.teamButtons.removeIf(teamButton -> !teams.containsKey(teamButton.getName()));
+        APTeamsPanel.teamButtons.removeIf(teamButton -> !teams.containsKey(teamButton.getName()));
     }
 
     public static void uploadTeam(TeamInfo team) {
@@ -264,9 +264,13 @@ public class TeamManager {
             return false;
 
         TeamInfo oldTeam = teams.get(team.name);
+        if(!oldTeam.locked && team.locked) {
+            // initiate game start!
+            ConnectionResult.start();
+        }
         oldTeam.update(team);
-        if (Archipelago.sideBar.APTeamsPanel.selectedTeam != null && Archipelago.sideBar.APTeamsPanel.selectedTeam.equals(oldTeam))
-            Archipelago.sideBar.APTeamsPanel.updateToggles();
+        if (APTeamsPanel.selectedTeam != null && APTeamsPanel.selectedTeam.equals(oldTeam))
+            APTeamsPanel.updateToggles();
         return true;
     }
 
@@ -279,7 +283,7 @@ public class TeamManager {
             keys.add("spire_team_" + team.name + "_players");
             APClient.apClient.dataStorageSetNotify(keys);
             APClient.apClient.dataStorageGet(keys);
-            Archipelago.sideBar.APTeamsPanel.teamButtons.add(new TeamButton(team));
+            APTeamsPanel.teamButtons.add(new APChest.TeamButton(team));
             return true;
         }
         return false;
@@ -322,7 +326,7 @@ public class TeamManager {
 
         myTeam = team;
         updateTeam(team);
-        Archipelago.sideBar.APTeamsPanel.selectedTeam = team;
+        APTeamsPanel.selectedTeam = team;
 
         SetPacket addTeamPacket = new SetPacket("spire_team_" + team.name + "_players", new ArrayList<>());
         addTeamPacket.addDataStorageOperation(SetPacket.Operation.ADD, Collections.singleton(CardCrawlGame.playerName));
@@ -357,17 +361,26 @@ public class TeamManager {
             myTeam.leader = myTeam.members.get(0);
             uploadTeam(myTeam);
         }
-        if (Archipelago.sideBar.APTeamsPanel.selectedTeam == myTeam)
-            Archipelago.sideBar.APTeamsPanel.selectedTeam = null;
+        if (APTeamsPanel.selectedTeam == myTeam)
+            APTeamsPanel.selectedTeam = null;
         myTeam = null;
         PlayerManager.sendUpdate();
     }
 
     public static void lockTeam() {
-        if(myTeam == null || myTeam.locked || myTeam.members.size() == 1)
+        if(myTeam == null)
             return;
+
         myTeam.locked = true;
         uploadTeam(myTeam);
+    }
+
+    public static void applyTeamAffects() {
+        if(myTeam == null)
+            return;
+
+        if(myTeam.members.stream().anyMatch(member -> !PlayerManager.players.containsKey(member))) return;
+
         if (myTeam.healthLink) {
             //INITALIZE PAIN!
 
@@ -399,6 +412,8 @@ public class TeamManager {
             APClient.apClient.dataStorageSet(initMaxHp);
 
             APClient.apClient.dataStorageGet(Arrays.asList("spire_team_" +myTeam.name+"_maxhp","spire_team_" +myTeam.name+"_hp"));
+
+            myTeam.affectsApplied = true;
         }
 
         if(myTeam.goldLink) {
@@ -474,6 +489,8 @@ public class TeamManager {
     }
 
     public static void checkIfDead() {
+        if(!CardCrawlGame.isInARun())
+            return;
         if (AbstractDungeon.player.currentHealth <= 0 && !AbstractDungeon.player.isDead) {
             AbstractDungeon.player.currentHealth = 0;
             AbstractDungeon.player.isDead = true;

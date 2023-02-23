@@ -1,7 +1,8 @@
 package ArchipelagoMW.apEvents;
 
 import ArchipelagoMW.patches.SavePatch;
-import ArchipelagoMW.ui.mainMenu.NewMenuButtons;
+import ArchipelagoMW.ui.connection.ArchipelagoPreGameScreen;
+import ArchipelagoMW.ui.mainMenu.ArchipelagoMainMenuButton;
 import gg.archipelago.client.events.ArchipelagoEventListener;
 import gg.archipelago.client.events.RetrievedEvent;
 
@@ -14,9 +15,9 @@ public class DataStorageGet {
         if (event.getRequestID() == loadRequestId) {
             if (event.getString(SavePatch.AP_SAVE_STRING) != null && !event.getString(SavePatch.AP_SAVE_STRING).isEmpty()) {
                 SavePatch.compressedSave = event.getString(SavePatch.AP_SAVE_STRING);
-                NewMenuButtons.connectionInfoScreen.connectionPanel.resumeSave.show();
+                ArchipelagoMainMenuButton.archipelagoPreGameScreen.connectionPanel.resumeSave.show();
             } else {
-                ConnectionResult.start();
+                ArchipelagoMainMenuButton.archipelagoPreGameScreen.screen = ArchipelagoPreGameScreen.APScreen.team;
             }
         }
     }

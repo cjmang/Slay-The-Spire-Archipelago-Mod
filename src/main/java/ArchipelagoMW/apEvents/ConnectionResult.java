@@ -5,6 +5,8 @@ import ArchipelagoMW.Archipelago;
 import ArchipelagoMW.LocationTracker;
 import ArchipelagoMW.SlotData;
 import ArchipelagoMW.patches.SavePatch;
+import ArchipelagoMW.teams.PlayerManager;
+import ArchipelagoMW.teams.TeamManager;
 import ArchipelagoMW.ui.RewardMenu.ArchipelagoRewardScreen;
 import ArchipelagoMW.ui.connection.ConnectionPanel;
 import ArchipelagoMW.ui.hud.SideBar;
@@ -123,6 +125,8 @@ public class ConnectionResult {
         ArchipelagoRewardScreen.apReward= false;
         ArchipelagoRewardScreen.APScreen= false;
         LocationTracker.scoutAllLocations();
+        TeamManager.initialLoad();
+        PlayerManager.initialLoad();
         DataStorageGet.loadRequestId = APClient.apClient.dataStorageGet(Collections.singleton(SavePatch.AP_SAVE_STRING));
     }
 
@@ -146,10 +150,6 @@ public class ConnectionResult {
 
             DeathLinkHelper.update.sendDeath = false;
 
-
-            CardCrawlGame.mainMenuScreen.isFadingOut = true;
-            CardCrawlGame.mainMenuScreen.fadeOutMusic();
-
             Settings.isFinalActAvailable = (APClient.slotData.finalAct == 1);
             SeedHelper.setSeed(APClient.slotData.seed);
 
@@ -160,6 +160,9 @@ public class ConnectionResult {
             Settings.seedSet = true;
 
             CardCrawlGame.mainMenuScreen.screen = MainMenuScreen.CurScreen.MAIN_MENU;
+            CardCrawlGame.mainMenuScreen.isFadingOut = true;
+            CardCrawlGame.mainMenuScreen.fadeOutMusic();
+
         } catch (Exception e) {
             e.printStackTrace();
         }

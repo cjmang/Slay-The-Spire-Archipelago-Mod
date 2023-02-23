@@ -1,6 +1,6 @@
 package ArchipelagoMW.patches;
 
-import ArchipelagoMW.ui.APChest;
+import ArchipelagoMW.ui.Components.APChest;
 import com.evacipated.cardcrawl.modthespire.lib.*;
 import com.megacrit.cardcrawl.rooms.TreasureRoomBoss;
 import javassist.CtBehavior;

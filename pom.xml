@@ -6,7 +6,7 @@
     <groupId>gg.archipelago</groupId>
     <artifactId>ArchipelagoMW</artifactId> <!--Keep a note of this one: this is the ID used in the "auto add cards" method-->
     <name>Archipelago Multi-World</name>
-    <version>0.1.8</version>
+    <version>0.1.9-beta</version>
     <description>Archipelago Multi-World Integration into Slay the Spire</description>
 
     <properties>

@@ -28,6 +28,7 @@ public class TeamInfo {
 
     @Expose
     public boolean locked;
+    public boolean affectsApplied = false;
 
     public TeamInfo(String name) {
         this.name = name;

@@ -1,6 +1,8 @@
 package ArchipelagoMW.patches;
 
 import ArchipelagoMW.apEvents.ConnectionResult;
+import ArchipelagoMW.ui.connection.ArchipelagoPreGameScreen;
+import ArchipelagoMW.ui.mainMenu.ArchipelagoMainMenuButton;
 import com.evacipated.cardcrawl.modthespire.lib.SpireEnum;
 import com.evacipated.cardcrawl.modthespire.lib.SpirePatch;
 import com.evacipated.cardcrawl.modthespire.lib.SpirePostfixPatch;
@@ -37,7 +39,7 @@ public class ConfirmPopupPatch {
         @SpirePostfixPatch
         public static void Postfix(ConfirmPopup __instance, ConfirmPopup.ConfirmType ___type) {
             if (___type == AP_SAVE_RESUME) {
-                ConnectionResult.start();
+                ArchipelagoMainMenuButton.archipelagoPreGameScreen.screen = ArchipelagoPreGameScreen.APScreen.team;
             }
         }
     }

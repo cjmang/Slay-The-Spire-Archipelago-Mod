@@ -1,8 +1,7 @@
 package ArchipelagoMW.ui.hud;
 
-import ArchipelagoMW.Archipelago;
 import ArchipelagoMW.teams.TeamManager;
-import ArchipelagoMW.ui.APButton;
+import ArchipelagoMW.ui.Components.APButton;
 import com.megacrit.cardcrawl.core.Settings;
 
 public class InteractButton extends APButton {
@@ -12,8 +11,8 @@ public class InteractButton extends APButton {
     }
 
     public static void clicked(APButton button) {
-        if (TeamManager.myTeam == null && Archipelago.sideBar.APTeamsPanel.selectedTeam != null)
-            TeamManager.joinTeam(Archipelago.sideBar.APTeamsPanel.selectedTeam);
+        if (TeamManager.myTeam == null && APTeamsPanel.selectedTeam != null)
+            TeamManager.joinTeam(APTeamsPanel.selectedTeam);
         else if (TeamManager.myTeam != null && !TeamManager.myTeam.locked)
             TeamManager.leaveTeam();
 
