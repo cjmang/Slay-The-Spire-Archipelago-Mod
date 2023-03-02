@@ -118,6 +118,7 @@ public class ArchipelagoPreGameScreen {
                 connectionPanel.update();
                 break;
             case team:
+                ConnectionResult.start();
                 teamPanel.update();
                 break;
         }
