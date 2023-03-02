@@ -2,6 +2,7 @@ package ArchipelagoMW.ui.hud;
 
 import ArchipelagoMW.teams.TeamManager;
 import ArchipelagoMW.ui.Components.APButton;
+import ArchipelagoMW.ui.connection.APTeamsPanel;
 import com.megacrit.cardcrawl.core.Settings;
 
 public class InteractButton extends APButton {

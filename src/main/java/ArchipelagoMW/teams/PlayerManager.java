@@ -166,7 +166,7 @@ public class PlayerManager {
     public static class decreaseMaxHealth {
 
         @SpireInsertPatch(locator = Locator.class)
-        public static void Postfix(AbstractCreature __instance, int amount) {
+        public static void insert(AbstractCreature __instance, int amount) {
             if (__instance instanceof AbstractPlayer) {
                 sendUpdate();
                 if (TeamManager.sendMaxHPLink(-amount)) {

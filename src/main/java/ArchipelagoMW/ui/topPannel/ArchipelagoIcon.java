@@ -46,8 +46,9 @@ public class ArchipelagoIcon extends TopPanelItem {
     @Override
     public void update() {
         super.update();
-        setClickable((AbstractDungeon.screen != AbstractDungeon.CurrentScreen.COMBAT_REWARD
-                && AbstractDungeon.previousScreen != AbstractDungeon.CurrentScreen.COMBAT_REWARD
+        setClickable(((AbstractDungeon.screen != AbstractDungeon.CurrentScreen.COMBAT_REWARD
+                && AbstractDungeon.previousScreen != AbstractDungeon.CurrentScreen.COMBAT_REWARD)
+                || AbstractDungeon.getCurrRoom().phase.equals(AbstractRoom.RoomPhase.COMPLETE))
                 && AbstractDungeon.screen != AbstractDungeon.CurrentScreen.CARD_REWARD
                 && AbstractDungeon.previousScreen != AbstractDungeon.CurrentScreen.CARD_REWARD
                 && AbstractDungeon.screen != AbstractDungeon.CurrentScreen.CHOOSE_ONE
@@ -57,8 +58,7 @@ public class ArchipelagoIcon extends TopPanelItem {
                 && AbstractDungeon.screen != AbstractDungeon.CurrentScreen.GRID
                 && AbstractDungeon.previousScreen != AbstractDungeon.CurrentScreen.GRID
                 && AbstractDungeon.screen != AbstractDungeon.CurrentScreen.INPUT_SETTINGS
-                && AbstractDungeon.previousScreen != AbstractDungeon.CurrentScreen.INPUT_SETTINGS)
-                || AbstractDungeon.getCurrRoom().phase.equals(AbstractRoom.RoomPhase.COMPLETE)
+                && AbstractDungeon.previousScreen != AbstractDungeon.CurrentScreen.INPUT_SETTINGS
         );
 
         if (APInputActionSet.apmenu.isJustPressed() && isClickable()) {

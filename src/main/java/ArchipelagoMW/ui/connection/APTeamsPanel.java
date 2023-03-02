@@ -1,10 +1,12 @@
-package ArchipelagoMW.ui.hud;
+package ArchipelagoMW.ui.connection;
 
 import ArchipelagoMW.APTextures;
 import ArchipelagoMW.teams.TeamInfo;
 import ArchipelagoMW.teams.TeamManager;
-import ArchipelagoMW.ui.Components.APChest;
-import ArchipelagoMW.ui.Components.TextBox;
+import ArchipelagoMW.ui.Components.APToggleButton;
+import ArchipelagoMW.ui.Components.TeamButton;
+import ArchipelagoMW.ui.hud.CreateButton;
+import ArchipelagoMW.ui.hud.InteractButton;
 import ArchipelagoMW.ui.mainMenu.ArchipelagoMainMenuButton;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
@@ -26,7 +28,7 @@ public class APTeamsPanel {
     private final InteractButton interactButton;
     //private final LockTeamButton lockTeamButton;
 
-    static public ArrayList<APChest.TeamButton> teamButtons = new ArrayList<>();
+    static public ArrayList<TeamButton> teamButtons = new ArrayList<>();
 
     static public TeamInfo selectedTeam;
 
@@ -39,7 +41,7 @@ public class APTeamsPanel {
 
     float toggleX;
 
-    static ArrayList<TextBox.APToggleButton> settings = new ArrayList<>();
+    static ArrayList<APToggleButton> settings = new ArrayList<>();
 
 
     public APTeamsPanel() {
@@ -50,9 +52,9 @@ public class APTeamsPanel {
         settings = new ArrayList<>();
         selectedTeam = null;
 
-        settings.add(new TextBox.APToggleButton("Health Link", TextBox.APToggleButton.CheckBoxType.HEALTH_LINK));
-        settings.add(new TextBox.APToggleButton("Gold Link", TextBox.APToggleButton.CheckBoxType.GOLD_LINK));
-        settings.add(new TextBox.APToggleButton("Potion Link", TextBox.APToggleButton.CheckBoxType.POTION_LINK));
+        settings.add(new APToggleButton("Health Link", APToggleButton.CheckBoxType.HEALTH_LINK));
+        settings.add(new APToggleButton("Gold Link", APToggleButton.CheckBoxType.GOLD_LINK));
+        //settings.add(new APToggleButton("Potion Link", APToggleButton.CheckBoxType.POTION_LINK));
 
     }
 
@@ -66,7 +68,7 @@ public class APTeamsPanel {
         float toggleYStart = this.y - 90f * Settings.scale;
 
         for (int i = 0; i < settings.size(); i++) {
-            TextBox.APToggleButton toggle = settings.get(i);
+            APToggleButton toggle = settings.get(i);
             toggle.setPos(toggleX, toggleYStart - (35f * Settings.scale * i));
         }
 
@@ -83,7 +85,7 @@ public class APTeamsPanel {
 
         teamButtons.removeIf(teamButton -> !TeamManager.teams.containsKey(teamButton.getName()));
         for (int i = 0; i < teamButtons.size(); i++) {
-            APChest.TeamButton teamButton = teamButtons.get(i);
+            TeamButton teamButton = teamButtons.get(i);
             teamButton.set(this.x + 60f * Settings.scale, this.y - 80f * Settings.scale - teamButton.getHeight() - (teamButton.getHeight() + 5f * Settings.scale) * i);
             teamButton.update();
         }
@@ -92,19 +94,21 @@ public class APTeamsPanel {
 
         if (TeamManager.myTeam != null) {
             interactButton.setLabel("Leave Team");
-            interactButton.enabled = !TeamManager.myTeam.locked;
-            //lockTeamButton.enabled = !TeamManager.myTeam.locked && TeamManager.myTeam.members.size() > 1;
+            if(TeamManager.myTeam.members == null)
+                TeamManager.myTeam.members = new ArrayList<>();
             ArchipelagoMainMenuButton.archipelagoPreGameScreen.confirmButton.isDisabled = !CardCrawlGame.playerName.equals(TeamManager.myTeam.leader) || TeamManager.myTeam.members.size() <= 1;
             createButton.enabled = false;
             createButton.hb.hovered = false;
         } else {
-            if (selectedTeam != null)
-                interactButton.enabled = !selectedTeam.locked;
-            else
-                interactButton.enabled = false;
             interactButton.setLabel("Join Team");
             createButton.enabled = true;
         }
+
+        if (selectedTeam != null)
+            interactButton.enabled = !selectedTeam.locked;
+        else
+            interactButton.enabled = false;
+
         if (selectedTeam != null) {
 //            if (CardCrawlGame.playerName.equals(selectedTeam.leader)) {
 //                lockTeamButton.update();
@@ -114,7 +118,7 @@ public class APTeamsPanel {
 
         createButton.update();
 
-        for (TextBox.APToggleButton toggle : settings) {
+        for (APToggleButton toggle : settings) {
             toggle.update();
         }
     }
@@ -139,7 +143,7 @@ public class APTeamsPanel {
         FontHelper.renderFontCentered(sb, FontHelper.charTitleFont, "Settings", TEAM_INFO_X + 138f * Settings.scale, titleY, Settings.CREAM_COLOR);
         FontHelper.renderFontCentered(sb, FontHelper.charTitleFont, "Members", TEAM_MEMBERS_X + 0f * Settings.scale, titleY, Settings.CREAM_COLOR);
 
-        for (APChest.TeamButton teamButton : teamButtons) {
+        for (TeamButton teamButton : teamButtons) {
             teamButton.render(sb);
         }
 
@@ -148,7 +152,7 @@ public class APTeamsPanel {
         if (selectedTeam != null) {
             sb.setColor(Color.WHITE);
 
-            for (TextBox.APToggleButton toggle : settings) {
+            for (APToggleButton toggle : settings) {
                 toggle.render(sb);
             }
 
@@ -172,7 +176,7 @@ public class APTeamsPanel {
     }
 
     public static void updateToggles() {
-        for (TextBox.APToggleButton setting : settings) {
+        for (APToggleButton setting : settings) {
             setting.updateToggle();
         }
     }

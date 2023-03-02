@@ -13,6 +13,7 @@ import ArchipelagoMW.ui.hud.SideBar;
 import ArchipelagoMW.util.DeathLinkHelper;
 import com.evacipated.cardcrawl.modthespire.Loader;
 import com.megacrit.cardcrawl.characters.AbstractPlayer;
+import com.megacrit.cardcrawl.characters.Ironclad;
 import com.megacrit.cardcrawl.core.CardCrawlGame;
 import com.megacrit.cardcrawl.core.Settings;
 import com.megacrit.cardcrawl.dungeons.AbstractDungeon;
@@ -54,7 +55,6 @@ public class ConnectionResult {
             default:
                 msg = "Unknown Error";
         }
-        SideBar.useTeams = APClient.apClient.getRoomInfo().version.compareTo(new Version(0, 3, 8)) <= 0;
         ConnectionPanel.connectionResultText = msg;
 
         if (event.getResult() != gg.archipelago.client.network.ConnectionResult.Success)
@@ -73,16 +73,16 @@ public class ConnectionResult {
         character = CardCrawlGame.characterManager.getCharacter(AbstractPlayer.PlayerClass.IRONCLAD);
         switch (slotData.character) {
             case "0":
-                slotData.character = "IRONCLAD";
+                slotData.character = AbstractPlayer.PlayerClass.IRONCLAD.name();
                 break;
             case "1":
-                slotData.character = "THE_SILENT";
+                slotData.character = AbstractPlayer.PlayerClass.THE_SILENT.name();
                 break;
             case "2":
-                slotData.character = "DEFECT";
+                slotData.character = AbstractPlayer.PlayerClass.DEFECT.name();;
                 break;
             case "3":
-                slotData.character = "WATCHER";
+                slotData.character = AbstractPlayer.PlayerClass.WATCHER.name();;
                 break;
             case "4":
                 slotData.character = "HERMIT";

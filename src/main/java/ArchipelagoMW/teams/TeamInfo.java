@@ -31,7 +31,12 @@ public class TeamInfo {
     public boolean affectsApplied = false;
 
     public TeamInfo(String name) {
+        this();
         this.name = name;
+    }
+
+    public TeamInfo() {
+        members = new ArrayList<>();
     }
 
     public void update(TeamInfo team) {

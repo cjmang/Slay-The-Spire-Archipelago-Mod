@@ -2,8 +2,8 @@ package ArchipelagoMW.teams;
 
 import ArchipelagoMW.APClient;
 import ArchipelagoMW.apEvents.ConnectionResult;
-import ArchipelagoMW.ui.Components.APChest;
-import ArchipelagoMW.ui.hud.APTeamsPanel;
+import ArchipelagoMW.ui.Components.TeamButton;
+import ArchipelagoMW.ui.connection.APTeamsPanel;
 import com.badlogic.gdx.graphics.Color;
 import com.evacipated.cardcrawl.modthespire.lib.*;
 import com.google.gson.Gson;
@@ -45,24 +45,6 @@ public class TeamManager {
         put("black",Color.BLACK);
         put("white",Color.WHITE);
     }};
-
-    @SpirePatch(clz = AbstractDungeon.class, method = SpirePatch.CONSTRUCTOR, paramtypez = {String.class, AbstractPlayer.class, SaveFile.class})
-    public static class LoadConstructor {
-        @SpirePostfixPatch
-        public static void Postfix(AbstractDungeon __instance) {
-            if(__instance instanceof Exordium)
-                PlayerManager.sendUpdate();
-        }
-    }
-
-    @SpirePatch(clz = AbstractDungeon.class, method = SpirePatch.CONSTRUCTOR, paramtypez = {String.class, String.class, AbstractPlayer.class, ArrayList.class})
-    public static class GenerateConstructor {
-        @SpirePostfixPatch
-        public static void Postfix(AbstractDungeon __instance) {
-            if(__instance instanceof Exordium)
-                PlayerManager.sendUpdate();
-        }
-    }
 
     @SpirePatch(clz = CardCrawlGame.class, method = "update")
     public static class update {
@@ -108,11 +90,7 @@ public class TeamManager {
                 return;
 
             if (key.length == 3 && key[1].equals("team")) { // spire_team_{name}
-                if (!updateTeam(gson.fromJson((String) event.data.get(stringKey), TeamInfo.class))) {
-                    if(APTeamsPanel.selectedTeam != null && APTeamsPanel.selectedTeam.name.equals(key[2])) {
-                        APTeamsPanel.selectedTeam = null;
-                    }
-                }
+                updateTeam(gson.fromJson((String) event.data.get(stringKey), TeamInfo.class));
             }
             if (key.length == 4 && key[3].equals("players")) { // spire_team_{name}_players
                 ArrayList<String> players = event.getValueAsObject(stringKey, arrayListString);
@@ -121,6 +99,8 @@ public class TeamManager {
                     removeMe.addDataStorageOperation(SetPacket.Operation.REMOVE,CardCrawlGame.playerName);
                     APClient.apClient.dataStorageSet(removeMe);
                     if (players.isEmpty()) {
+                        if(APTeamsPanel.selectedTeam != null && APTeamsPanel.selectedTeam.name.equals(key[2]))
+                            APTeamsPanel.selectedTeam = null;
                         teams.remove(key[2]);
                         SetPacket deleteTeam = new SetPacket("spire_teams", "I matter");
                         deleteTeam.want_reply = true;
@@ -182,6 +162,8 @@ public class TeamManager {
             // remove known teams from our list of teamNames while also removing all known teams that are not in the TeamName's list
             for (String team : teams.keySet()) {
                 if (!teamNames.remove(team)) {
+                    if(APTeamsPanel.selectedTeam != null && APTeamsPanel.selectedTeam.name.equals(team))
+                        APTeamsPanel.selectedTeam = null;
                     teams.remove(team);
                 }
             }
@@ -209,6 +191,8 @@ public class TeamManager {
                     removeMe.addDataStorageOperation(SetPacket.Operation.REPLACE, players);
                     APClient.apClient.dataStorageSet(removeMe);
                     if (players.isEmpty()) {
+                        if(APTeamsPanel.selectedTeam != null && APTeamsPanel.selectedTeam.name.equals(key[2]))
+                            APTeamsPanel.selectedTeam = null;
                         teams.remove(key[2]);
                         SetPacket deleteTeam = new SetPacket("spire_teams", "I matter");
                         deleteTeam.want_reply = true;
@@ -263,8 +247,11 @@ public class TeamManager {
         if (team == null || !teams.containsKey(team.name))
             return false;
 
+        if(team.members == null)
+            team.members = new ArrayList<>();
+
         TeamInfo oldTeam = teams.get(team.name);
-        if(!oldTeam.locked && team.locked) {
+        if(myTeam != null && myTeam.name.equals(team.name) && !oldTeam.locked && team.locked) {
             // initiate game start!
             ConnectionResult.start();
         }
@@ -283,7 +270,7 @@ public class TeamManager {
             keys.add("spire_team_" + team.name + "_players");
             APClient.apClient.dataStorageSetNotify(keys);
             APClient.apClient.dataStorageGet(keys);
-            APTeamsPanel.teamButtons.add(new APChest.TeamButton(team));
+            APTeamsPanel.teamButtons.add(new TeamButton(team));
             return true;
         }
         return false;
@@ -332,8 +319,6 @@ public class TeamManager {
         addTeamPacket.addDataStorageOperation(SetPacket.Operation.ADD, Collections.singleton(CardCrawlGame.playerName));
         addTeamPacket.want_reply = true;
         APClient.apClient.dataStorageSet(addTeamPacket);
-        PlayerManager.sendUpdate();
-
     }
 
     public static void leaveTeam() {
@@ -348,6 +333,8 @@ public class TeamManager {
         APClient.apClient.dataStorageSet(removeMe);
 
         if (myTeam.members.isEmpty()) {
+            if(APTeamsPanel.selectedTeam != null && APTeamsPanel.selectedTeam.name.equals(myTeam.name))
+                APTeamsPanel.selectedTeam = null;
             teams.remove(myTeam.name);
             SetPacket removeTeamListing = new SetPacket("spire_teams", null);
             removeTeamListing.want_reply = true;
@@ -364,7 +351,6 @@ public class TeamManager {
         if (APTeamsPanel.selectedTeam == myTeam)
             APTeamsPanel.selectedTeam = null;
         myTeam = null;
-        PlayerManager.sendUpdate();
     }
 
     public static void lockTeam() {
@@ -481,6 +467,16 @@ public class TeamManager {
         if (hpChange > 0){
             sendDamageLink(-hpChange);
         }
+        if (hpChange < 0) {
+            if (AbstractDungeon.player.maxHealth <= 1) {
+                hpChange = -AbstractDungeon.player.maxHealth + 1;
+            }
+
+            if (AbstractDungeon.player.currentHealth > AbstractDungeon.player.maxHealth + hpChange) {
+                sendDamageLink( AbstractDungeon.player.currentHealth - (AbstractDungeon.player.maxHealth + hpChange));
+            }
+        }
+
         SetPacket maxHPpacket = new SetPacket("spire_team_" + myTeam.name + "_maxhp", 0);
         maxHPpacket.addDataStorageOperation(SetPacket.Operation.ADD, hpChange);
         maxHPpacket.want_reply = true;

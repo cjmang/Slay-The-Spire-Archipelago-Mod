@@ -147,8 +147,9 @@ public class ArchipelagoRewardScreen  extends CustomScreen {
             } else {
                 AbstractDungeon.previousScreen = AbstractDungeon.CurrentScreen.COMBAT_REWARD;
             }
-        } else if (EventRoom.class.isAssignableFrom(AbstractDungeon.getCurrRoom().getClass())) {
-            AbstractDungeon.previousScreen = null;
+        } else if (EventRoom.class.isAssignableFrom(AbstractDungeon.getCurrRoom().getClass())
+                && !AbstractDungeon.getCurrRoom().phase.equals(AbstractRoom.RoomPhase.COMPLETE)) {
+                AbstractDungeon.previousScreen = null;
         } else if (AbstractDungeon.getCurrRoom() instanceof TreasureRoom) {
             if(((TreasureRoom) AbstractDungeon.getCurrRoom()).chest.isOpen) {
                 AbstractDungeon.previousScreen = AbstractDungeon.CurrentScreen.COMBAT_REWARD;
@@ -160,6 +161,8 @@ public class ArchipelagoRewardScreen  extends CustomScreen {
         } else if(previousScreen != null && previousScreen != AbstractDungeon.CurrentScreen.NONE) {
                 AbstractDungeon.previousScreen = previousScreen;
                 previousScreen = null;
+        } else if(ShopRoom.class.isAssignableFrom(AbstractDungeon.getCurrRoom().getClass())) {
+            previousScreen = null;
         } else if(AbstractDungeon.getCurrRoom().phase == AbstractRoom.RoomPhase.COMPLETE) {
             AbstractDungeon.previousScreen = AbstractDungeon.CurrentScreen.MAP;
             AbstractDungeon.dungeonMapScreen.open(false);

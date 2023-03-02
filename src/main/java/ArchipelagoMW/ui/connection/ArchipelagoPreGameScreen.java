@@ -5,7 +5,6 @@ import ArchipelagoMW.APSettings;
 import ArchipelagoMW.Archipelago;
 import ArchipelagoMW.apEvents.ConnectionResult;
 import ArchipelagoMW.teams.TeamManager;
-import ArchipelagoMW.ui.hud.APTeamsPanel;
 import ArchipelagoMW.ui.mainMenu.ArchipelagoMainMenuButton;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;

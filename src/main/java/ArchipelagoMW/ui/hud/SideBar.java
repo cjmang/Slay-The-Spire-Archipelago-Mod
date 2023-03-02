@@ -47,12 +47,6 @@ public class SideBar {
 
     public final CopyOnWriteArrayList<PlayerPanel> playerPanels = new CopyOnWriteArrayList<>();
 
-    // Group UI
-    public boolean showTeamButton = true;
-    public boolean showTeamPanel = false;
-
-    public static boolean useTeams = false;
-
     private final float x;
     private final float y;
 
@@ -66,14 +60,6 @@ public class SideBar {
         for (PlayerPanel player : playerPanels) {
             player.update();
         }
-
-        if (Loader.isModLoaded("downfall"))
-            showTeamButton = AbstractDungeon.currMapNode.room.event instanceof NeowEvent || AbstractDungeon.currMapNode.room.event instanceof HeartEvent;
-        else
-            showTeamButton = AbstractDungeon.currMapNode.room.event instanceof NeowEvent;
-
-        //just disable it for now
-        showTeamButton = false;
     }
 
 
