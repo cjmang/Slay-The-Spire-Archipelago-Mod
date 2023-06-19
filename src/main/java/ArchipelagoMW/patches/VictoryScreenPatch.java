@@ -61,7 +61,7 @@ public class VictoryScreenPatch {
             @Override
             public int[] Locate(CtBehavior ctBehavior) throws Exception {
                 Matcher match = new Matcher.MethodCallMatcher(ReturnToMenuButton.class, "update");
-                return new int[LineFinder.findInOrder(ctBehavior, match)[0]+1];
+                return new int[] {LineFinder.findInOrder(ctBehavior, match)[0]+1};
             }
         }
     }
