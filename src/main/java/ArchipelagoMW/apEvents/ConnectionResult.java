@@ -79,10 +79,10 @@ public class ConnectionResult {
                 slotData.character = AbstractPlayer.PlayerClass.THE_SILENT.name();
                 break;
             case "2":
-                slotData.character = AbstractPlayer.PlayerClass.DEFECT.name();;
+                slotData.character = AbstractPlayer.PlayerClass.DEFECT.name();
                 break;
             case "3":
-                slotData.character = AbstractPlayer.PlayerClass.WATCHER.name();;
+                slotData.character = AbstractPlayer.PlayerClass.WATCHER.name();
                 break;
             case "4":
                 slotData.character = "HERMIT";
