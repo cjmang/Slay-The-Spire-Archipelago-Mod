@@ -6,7 +6,7 @@
     <groupId>gg.archipelago</groupId>
     <artifactId>ArchipelagoMW</artifactId> <!--Keep a note of this one: this is the ID used in the "auto add cards" method-->
     <name>Archipelago Multi-World</name>
-    <version>0.1.11</version>
+    <version>1.12</version>
     <description>Archipelago Multi-World Integration into Slay the Spire</description>
 
     <properties>
@@ -63,7 +63,7 @@
         <dependency>
             <groupId>gg.archipelago</groupId>
             <artifactId>APClient</artifactId>
-            <version>1.9</version>
+            <version>1.10</version>
         </dependency>
     </dependencies>
 
@@ -123,9 +123,9 @@
                 <configuration>
                     <groupId>gg.archipelago</groupId>
                     <artifactId>APClient</artifactId>
-                    <version>1.9</version>
+                    <version>1.10</version>
                     <packaging>jar</packaging>
-                    <file>${basedir}/dependencies/Archipelago.MultiClient.Java-1.9-all.jar</file>
+                    <file>${basedir}/dependencies/Archipelago.MultiClient.Java-1.10-all.jar</file>
                     <generatePom>true</generatePom>
                 </configuration>
                 <executions>
