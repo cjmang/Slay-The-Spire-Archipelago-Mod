@@ -66,7 +66,7 @@ public class Archipelago implements
 
     @SuppressWarnings("unused")
     public static void initialize() {
-        logger.info("========================= Initializing Archipelago Multi-World Version 1.11 =========================");
+        logger.info("========================= Initializing Archipelago Multi-World Version 1.13 =========================");
         new Archipelago();
         logger.info("=========================  Archipelago Multi-World Initialized. =========================");
     }
