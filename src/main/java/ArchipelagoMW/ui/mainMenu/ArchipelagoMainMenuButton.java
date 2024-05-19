@@ -2,6 +2,7 @@ package ArchipelagoMW.ui.mainMenu;
 
 import ArchipelagoMW.Archipelago;
 import ArchipelagoMW.ui.connection.ArchipelagoPreGameScreen;
+import ArchipelagoMW.ui.connection.ConnectionPanel;
 import com.evacipated.cardcrawl.modthespire.lib.SpireEnum;
 import com.evacipated.cardcrawl.modthespire.lib.SpirePatch;
 import com.megacrit.cardcrawl.core.CardCrawlGame;
@@ -48,7 +49,8 @@ public class ArchipelagoMainMenuButton {
     }
 
     public static void openConnectionInfo() {
-        logger.info("I should be opening the connection window now...");
+        logger.info("Opening Connection Window");
+        ConnectionPanel.connectionResultText = "";
         archipelagoPreGameScreen = new ArchipelagoPreGameScreen();
         archipelagoPreGameScreen.open();
     }

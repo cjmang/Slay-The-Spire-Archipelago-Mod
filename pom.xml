@@ -6,7 +6,7 @@
     <groupId>gg.archipelago</groupId>
     <artifactId>ArchipelagoMW</artifactId> <!--Keep a note of this one: this is the ID used in the "auto add cards" method-->
     <name>Archipelago Multi-World</name>
-    <version>1.13</version>
+    <version>1.14</version>
     <description>Archipelago Multi-World Integration into Slay the Spire</description>
 
     <properties>
@@ -19,7 +19,22 @@
         <Steam.path>D:\SteamLibrary\steamapps</Steam.path>
     </properties>
 
+    <repositories>
+        <repository>
+            <id>github</id>
+            <url>https://maven.pkg.github.com/KonoTyran/Archipelago.MultiClient.Java</url>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </repository>
+    </repositories>
+
     <dependencies>
+        <dependency>
+            <groupId>gg.archipelago</groupId>
+            <artifactId>multiclient.java</artifactId>
+            <version>0.1.0-SNAPSHOT</version>
+        </dependency>
         <dependency>
             <groupId>com.megacrit.cardcrawl</groupId>
             <artifactId>slaythespire</artifactId>
@@ -59,11 +74,6 @@
             <scope>system</scope>
             <systemPath>${Steam.path}/workshop/content/646570/1610056683/downfall.jar</systemPath>
             <!--<systemPath>${basedir}/../lib/downfall.jar</systemPath>-->
-        </dependency>
-        <dependency>
-            <groupId>gg.archipelago</groupId>
-            <artifactId>APClient</artifactId>
-            <version>1.12</version>
         </dependency>
     </dependencies>
 
@@ -113,28 +123,6 @@
                         <goals>
                             <goal>run</goal>
                         </goals>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-install-plugin</artifactId>
-                <version>2.5.1</version>
-                <configuration>
-                    <groupId>gg.archipelago</groupId>
-                    <artifactId>APClient</artifactId>
-                    <version>1.12</version>
-                    <packaging>jar</packaging>
-                    <file>${basedir}/dependencies/Archipelago.MultiClient.Java-1.12-all.jar</file>
-                    <generatePom>true</generatePom>
-                </configuration>
-                <executions>
-                    <execution>
-                        <id>install-jar-lib</id>
-                        <goals>
-                            <goal>install-file</goal>
-                        </goals>
-                        <phase>clean</phase>
                     </execution>
                 </executions>
             </plugin>

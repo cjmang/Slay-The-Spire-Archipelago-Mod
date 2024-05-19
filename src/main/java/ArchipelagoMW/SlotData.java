@@ -1,6 +1,6 @@
 package ArchipelagoMW;
 
-import archipelagoClient.com.google.gson.annotations.SerializedName;
+import com.google.gson.annotations.SerializedName;
 
 public class SlotData {
 
