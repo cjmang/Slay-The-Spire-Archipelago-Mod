@@ -3,8 +3,8 @@ package ArchipelagoMW;
 import ArchipelagoMW.patches.SavePatch;
 import basemod.ReflectionHacks;
 import com.megacrit.cardcrawl.rewards.RewardItem;
-import gg.archipelago.client.network.client.SetPacket;
-import gg.archipelago.client.parts.NetworkItem;
+import dev.koifysh.archipelago.network.client.SetPacket;
+import dev.koifysh.archipelago.parts.NetworkItem;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 

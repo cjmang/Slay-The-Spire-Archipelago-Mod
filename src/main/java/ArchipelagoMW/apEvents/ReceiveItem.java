@@ -2,8 +2,8 @@ package ArchipelagoMW.apEvents;
 
 import ArchipelagoMW.ui.RewardMenu.ArchipelagoRewardScreen;
 
-import gg.archipelago.client.events.ArchipelagoEventListener;
-import gg.archipelago.client.events.ReceiveItemEvent;
+import dev.koifysh.archipelago.events.ArchipelagoEventListener;
+import dev.koifysh.archipelago.events.ReceiveItemEvent;
 
 public class ReceiveItem {
 

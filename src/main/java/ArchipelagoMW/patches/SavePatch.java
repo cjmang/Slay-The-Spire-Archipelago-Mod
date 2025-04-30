@@ -8,7 +8,7 @@ import com.megacrit.cardcrawl.rooms.TreasureRoomBoss;
 import com.megacrit.cardcrawl.saveAndContinue.SaveAndContinue;
 import com.megacrit.cardcrawl.saveAndContinue.SaveFile;
 import com.megacrit.cardcrawl.saveAndContinue.SaveFileObfuscator;
-import gg.archipelago.client.network.client.SetPacket;
+import dev.koifysh.archipelago.network.client.SetPacket;
 import javassist.CtBehavior;
 
 import java.io.*;

@@ -4,7 +4,7 @@ import ArchipelagoMW.LocationTracker;
 import com.evacipated.cardcrawl.modthespire.lib.*;
 import com.megacrit.cardcrawl.rewards.RewardItem;
 import com.megacrit.cardcrawl.screens.CombatRewardScreen;
-import gg.archipelago.client.parts.NetworkItem;
+import dev.koifysh.archipelago.parts.NetworkItem;
 import javassist.CtBehavior;
 
 import java.util.ArrayList;

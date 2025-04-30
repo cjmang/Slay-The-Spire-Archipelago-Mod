@@ -3,8 +3,8 @@ package ArchipelagoMW.apEvents;
 import ArchipelagoMW.patches.SavePatch;
 import ArchipelagoMW.ui.connection.ArchipelagoPreGameScreen;
 import ArchipelagoMW.ui.mainMenu.ArchipelagoMainMenuButton;
-import gg.archipelago.client.events.ArchipelagoEventListener;
-import gg.archipelago.client.events.RetrievedEvent;
+import dev.koifysh.archipelago.events.ArchipelagoEventListener;
+import dev.koifysh.archipelago.events.RetrievedEvent;
 
 public class DataStorageGet {
 

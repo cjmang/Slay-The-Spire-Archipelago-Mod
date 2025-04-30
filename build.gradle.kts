@@ -15,7 +15,7 @@ repositories {
     mavenCentral()
 }
 val steamPath = providers.gradleProperty("steam.path").get()
-println(steamPath)
+
 dependencies {
     // Use JUnit Jupiter for testing.
     testImplementation(libs.junit.jupiter)

@@ -21,10 +21,10 @@ import com.megacrit.cardcrawl.helpers.SeedHelper;
 import com.megacrit.cardcrawl.random.Random;
 import com.megacrit.cardcrawl.screens.mainMenu.MainMenuScreen;
 import downfall.patches.EvilModeCharacterSelect;
-import gg.archipelago.client.events.ArchipelagoEventListener;
-import gg.archipelago.client.events.ConnectionResultEvent;
-import gg.archipelago.client.helper.DeathLink;
-import gg.archipelago.client.parts.Version;
+import dev.koifysh.archipelago.events.ArchipelagoEventListener;
+import dev.koifysh.archipelago.events.ConnectionResultEvent;
+import dev.koifysh.archipelago.helper.DeathLink;
+import dev.koifysh.archipelago.parts.Version;
 
 import java.util.Collections;
 
@@ -57,7 +57,7 @@ public class ConnectionResult {
         }
         ConnectionPanel.connectionResultText = msg;
 
-        if (event.getResult() != gg.archipelago.client.network.ConnectionResult.Success)
+        if (event.getResult() != dev.koifysh.archipelago.network.ConnectionResult.Success)
             return;
 
         if (CardCrawlGame.mode != CardCrawlGame.GameMode.CHAR_SELECT)

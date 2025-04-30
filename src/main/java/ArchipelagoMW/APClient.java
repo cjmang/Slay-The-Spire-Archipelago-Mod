@@ -7,16 +7,16 @@ import ArchipelagoMW.apEvents.ReceiveItem;
 import ArchipelagoMW.teams.PlayerManager;
 import ArchipelagoMW.teams.TeamManager;
 import ArchipelagoMW.ui.connection.ConnectionPanel;
-import gg.archipelago.client.ArchipelagoClient;
-import gg.archipelago.client.ItemFlags;
-import gg.archipelago.client.Print.APPrint;
-import gg.archipelago.client.parts.NetworkItem;
+import dev.koifysh.archipelago.Client;
+import dev.koifysh.archipelago.Print.APPrint;
+import dev.koifysh.archipelago.flags.ItemsHandling;
+import dev.koifysh.archipelago.parts.NetworkItem;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.net.URISyntaxException;
 
-public class APClient extends ArchipelagoClient {
+public class APClient extends Client {
 
     public static final Logger logger = LogManager.getLogger(APClient.class.getName());
 
@@ -31,7 +31,7 @@ public class APClient extends ArchipelagoClient {
         apClient = new APClient();
         apClient.setPassword(password);
         apClient.setName(slotName);
-        apClient.setItemsHandlingFlags(ItemFlags.SEND_ITEMS + ItemFlags.SEND_OWN_ITEMS + ItemFlags.SEND_STARTING_INVENTORY);
+        apClient.setItemsHandlingFlags(ItemsHandling.SEND_ITEMS + ItemsHandling.SEND_OWN_ITEMS + ItemsHandling.SEND_STARTING_INVENTORY);
 
         apClient.getEventManager().registerListener(new ConnectionResult());
         apClient.getEventManager().registerListener(new LocationInfo());
@@ -50,16 +50,6 @@ public class APClient extends ArchipelagoClient {
     private APClient() {
         super();
         this.setGame("Slay the Spire");
-    }
-
-    @Override
-    public void onPrint(String s) {
-
-    }
-
-    @Override
-    public void onPrintJson(APPrint apPrint, String s, int i, NetworkItem networkItem) {
-
     }
 
     @Override

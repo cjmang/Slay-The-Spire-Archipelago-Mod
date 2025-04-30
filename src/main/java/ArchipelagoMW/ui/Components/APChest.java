@@ -9,7 +9,7 @@ import com.megacrit.cardcrawl.dungeons.AbstractDungeon;
 import com.megacrit.cardcrawl.helpers.Hitbox;
 import com.megacrit.cardcrawl.helpers.TipHelper;
 import com.megacrit.cardcrawl.rewards.chests.AbstractChest;
-import gg.archipelago.client.parts.NetworkItem;
+import dev.koifysh.archipelago.parts.NetworkItem;
 
 public class APChest extends AbstractChest {
 

@@ -11,7 +11,7 @@ import com.megacrit.cardcrawl.screens.DeathScreen;
 import com.megacrit.cardcrawl.screens.GameOverScreen;
 import com.megacrit.cardcrawl.screens.VictoryScreen;
 import com.megacrit.cardcrawl.ui.buttons.ReturnToMenuButton;
-import gg.archipelago.client.ClientStatus;
+import dev.koifysh.archipelago.ClientStatus;
 import javassist.CtBehavior;
 
 public class VictoryScreenPatch {
