@@ -1,4 +1,6 @@
 *.class
+.gradle/
+build/
 
 # IntelliJ
 .idea/
@@ -83,3 +85,6 @@ repo/
 sendToDevs/
 steam_appid.txt
 /dependencies/
+
+# Ignore Gradle build output directory
+build
