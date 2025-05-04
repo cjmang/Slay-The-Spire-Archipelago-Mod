@@ -1,14 +1,14 @@
 {
-  "modid": "${project.artifactId}",
-  "name": "${project.name}",
+  "modid": "${project.name}",
+  "name": "Archipelago Multi-World 2.0",
   "author_list": [
-    "Kono Tyran"
+    "Platano Bailando"
   ],
   "credits": "ModTheSpire, Archipelago",
   "description": "${project.description}",
   "version": "${project.version}",
-  "sts_version": "${SlayTheSpire.version}",
-  "mts_version": "${ModTheSpire.version}",
+  "sts_version": "${slayTheSpireVersion}",
+  "mts_version": "${modTheSpireVersion}",
   "dependencies": [
     "basemod"
   ],
