@@ -53,19 +53,6 @@ tasks.processResources {
     }
 }
 
-tasks.named<ShadowJar>("shadowJar") {
-
-//    project.configurations.implementation.get().dependencies.forEach {
-//        logger.warn(it.group)
-//    }
-//    dependencies {
-//        exclude {
-//            // Excluding all the file system deps?
-////            it.
-//        }
-//    }
-}
-
 tasks.named<Test>("test") {
     // Use JUnit Platform for unit tests.
     useJUnitPlatform()
