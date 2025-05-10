@@ -5,6 +5,7 @@ import ArchipelagoMW.apEvents.ConnectionResult;
 import ArchipelagoMW.util.DeathLinkHelper;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.evacipated.cardcrawl.modthespire.lib.*;
+import com.megacrit.cardcrawl.characters.AbstractPlayer;
 import com.megacrit.cardcrawl.core.Settings;
 import com.megacrit.cardcrawl.helpers.SeedHelper;
 import com.megacrit.cardcrawl.screens.charSelect.CharacterOption;
@@ -12,7 +13,6 @@ import com.megacrit.cardcrawl.screens.charSelect.CharacterSelectScreen;
 import dev.koifysh.archipelago.helper.DeathLink;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 
 public class CharacterSelectScreenPatch {
 
@@ -21,15 +21,13 @@ public class CharacterSelectScreenPatch {
 
     public static void removeNonAPChars() {
         charSelectScreen.options = new ArrayList<>(options);
-        Iterator<CharacterOption> itr = charSelectScreen.options.iterator();
-        while(itr.hasNext())
+        charSelectScreen.options.removeIf(o -> !ConnectionResult.availableAPChars.contains(o.c.chosenClass.name()));
+        // Something went very wrong, force Ironclad
+        if (charSelectScreen.options.isEmpty())
         {
-            // TODO: is a fallback needed in case the character is wrong/some goofy mod character?
-            CharacterOption opt = itr.next();
-            if(!ConnectionResult.availableAPChars.contains(opt.c.chosenClass.name()))
-            {
-                itr.remove();
-            }
+            options.stream()
+                    .filter(o -> o.c.chosenClass.name().equals(AbstractPlayer.PlayerClass.IRONCLAD.name()))
+                    .forEach(o -> charSelectScreen.options.add(o));
         }
     }
     @SpirePatch(clz = CharacterSelectScreen.class, method="initialize")
