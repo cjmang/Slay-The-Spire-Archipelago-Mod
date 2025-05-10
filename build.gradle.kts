@@ -1,3 +1,5 @@
+import java.util.regex.Pattern
+
 plugins {
     `java-library`
     id("com.gradleup.shadow") version "8.3.0"
@@ -48,7 +50,7 @@ tasks.processResources {
 
 tasks.register<Copy>("deployLocal") {
     val mwJar = fileTree(project.layout.buildDirectory.dir("libs")).filter { f: File ->
-        f.name.matches(Regex("ArchipelagoMW.*\\.jar"))
+        f.name.matches(Regex("ArchipelagoMW-2\\.0-${Pattern.quote(project.version.toString())}-all\\.jar"))
     }
     from(mwJar)
     into("${steamPath}/common/SlayTheSpire/mods/")
