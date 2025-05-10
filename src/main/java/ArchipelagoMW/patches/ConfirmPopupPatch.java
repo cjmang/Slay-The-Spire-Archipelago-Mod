@@ -39,7 +39,7 @@ public class ConfirmPopupPatch {
         @SpirePostfixPatch
         public static void Postfix(ConfirmPopup __instance, ConfirmPopup.ConfirmType ___type) {
             if (___type == AP_SAVE_RESUME) {
-                ArchipelagoMainMenuButton.archipelagoPreGameScreen.screen = ArchipelagoPreGameScreen.APScreen.team;
+                ArchipelagoMainMenuButton.archipelagoPreGameScreen.screen = ArchipelagoPreGameScreen.APScreen.charSelect;
             }
         }
     }

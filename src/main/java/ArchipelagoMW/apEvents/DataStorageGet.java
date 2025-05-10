@@ -17,7 +17,7 @@ public class DataStorageGet {
                 SavePatch.compressedSave = event.getString(SavePatch.AP_SAVE_STRING);
                 ArchipelagoMainMenuButton.archipelagoPreGameScreen.connectionPanel.resumeSave.show();
             } else {
-                ArchipelagoMainMenuButton.archipelagoPreGameScreen.screen = ArchipelagoPreGameScreen.APScreen.team;
+                ArchipelagoMainMenuButton.archipelagoPreGameScreen.screen = ArchipelagoPreGameScreen.APScreen.charSelect;
             }
         }
     }

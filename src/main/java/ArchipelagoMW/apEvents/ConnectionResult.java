@@ -27,10 +27,14 @@ import dev.koifysh.archipelago.helper.DeathLink;
 import dev.koifysh.archipelago.parts.Version;
 
 import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.TreeSet;
 
 public class ConnectionResult {
 
     public static AbstractPlayer character = CardCrawlGame.characterManager.getCharacter(AbstractPlayer.PlayerClass.IRONCLAD);
+    public static Set<String> availableAPChars = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
 
     @ArchipelagoEventListener
     public void onConnectionResult(ConnectionResultEvent event) {
@@ -112,6 +116,9 @@ public class ConnectionResult {
                 character = CardCrawlGame.characterManager.getRandomCharacter(new Random());
         }
 
+        availableAPChars.add(slotData.character);
+
+        // TODO: update once we can support more than one toon
         for (AbstractPlayer ch : CardCrawlGame.characterManager.getAllCharacters()) {
             if (ch.chosenClass.name().equalsIgnoreCase(slotData.character)) {
                 character = ch;

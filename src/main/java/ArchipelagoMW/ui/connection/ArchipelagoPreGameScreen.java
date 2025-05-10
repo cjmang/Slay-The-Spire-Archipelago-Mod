@@ -4,6 +4,7 @@ import ArchipelagoMW.APClient;
 import ArchipelagoMW.APSettings;
 import ArchipelagoMW.Archipelago;
 import ArchipelagoMW.apEvents.ConnectionResult;
+import ArchipelagoMW.patches.CharacterSelectScreenPatch;
 import ArchipelagoMW.teams.TeamManager;
 import ArchipelagoMW.ui.mainMenu.ArchipelagoMainMenuButton;
 import com.badlogic.gdx.Gdx;
@@ -44,7 +45,7 @@ public class ArchipelagoPreGameScreen {
     public APScreen screen = APScreen.connection;
 
     public enum APScreen {
-        connection, team
+        connection, team, charSelect
     }
 
     public ArchipelagoPreGameScreen() {
@@ -76,6 +77,11 @@ public class ArchipelagoPreGameScreen {
         Gdx.input.setInputProcessor(new ScrollInputProcessor());
     }
 
+    public void toCharSelect() {
+        CharacterSelectScreenPatch.removeNonAPChars();
+        CardCrawlGame.mainMenuScreen.screen = MainMenuScreen.CurScreen.CHAR_SELECT;
+    }
+
     //update when something happens on our screen.
     public void update() {
 
@@ -102,7 +108,7 @@ public class ArchipelagoPreGameScreen {
                         APSettings.saveSettings();
                         Archipelago.setConnectionInfo(ArchipelagoMainMenuButton.archipelagoPreGameScreen.connectionPanel.addressTextBox.getText(), ArchipelagoMainMenuButton.archipelagoPreGameScreen.connectionPanel.slotNameTextBox.getText(), ArchipelagoMainMenuButton.archipelagoPreGameScreen.connectionPanel.passwordTextBox.getText());
                         APClient.newConnection(Archipelago.address, Archipelago.slotName, Archipelago.password.isEmpty() ? null : Archipelago.password);
-                        ArchipelagoMainMenuButton.archipelagoPreGameScreen.confirmButton.updateText("Start Game");
+                        ArchipelagoMainMenuButton.archipelagoPreGameScreen.confirmButton.updateText("Select Character");
                         break;
                     case team:
                         ConnectionResult.start();
@@ -120,6 +126,9 @@ public class ArchipelagoPreGameScreen {
             case team:
                 ConnectionResult.start();
                 teamPanel.update();
+                break;
+            case charSelect:
+                toCharSelect();
                 break;
         }
     }
