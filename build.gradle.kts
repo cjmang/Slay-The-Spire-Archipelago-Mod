@@ -14,7 +14,7 @@ plugins {
 }
 
 description = "Archipelago Multi-World Integration into Slay the Spire"
-version = "1.14"
+version = "1.15-rc-1"
 
 repositories {
     // Use Maven Central for resolving dependencies.
@@ -32,7 +32,7 @@ dependencies {
 
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 
-    implementation("gg.archipelago:Java-Client:latest.integration")
+    implementation("io.github.ArchipelagoMW:Java-Client:latest.integration")
 
     shadow(files("${steamPath}/common/SlayTheSpire/desktop-1.0.jar"))
     shadow(files("${steamPath}/workshop/content/646570/1605060445/ModTheSpire.jar"))
@@ -60,7 +60,7 @@ tasks.named<Test>("test") {
 
 tasks.register<Copy>("deployLocal") {
     val mwJar = fileTree(project.layout.buildDirectory.dir("libs")).filter { f: File ->
-        f.name.matches(Regex("ArchipelagoMW.*\\.jar"))
+        f.name.matches(Regex("ArchipelagoMW-2.0-${project.version}-all\\.jar"))
     }
     from(mwJar)
     into("${steamPath}/common/SlayTheSpire/mods/")
