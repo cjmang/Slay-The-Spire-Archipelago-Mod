@@ -102,7 +102,8 @@ public class ArchipelagoIcon extends TopPanelItem {
                             "TAB Card Draw: #b" + LocationTracker.cardDrawIndex + " NL " +
                             "TAB Rare Card Draw: #b" + LocationTracker.rareCardIndex + " NL " +
                             "TAB Relic: #b" + LocationTracker.relicIndex + " NL " +
-                            "TAB Boss Relic: #b" + LocationTracker.bossRelicIndex
+                            "TAB Boss Relic: #b" + LocationTracker.bossRelicIndex + " NL " +
+                            "TAB Floors Reached: #b" + AbstractDungeon.floorNum
             );
         }
 

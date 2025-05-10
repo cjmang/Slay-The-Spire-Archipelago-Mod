@@ -27,6 +27,7 @@ import com.megacrit.cardcrawl.random.Random;
 import com.megacrit.cardcrawl.relics.AbstractRelic;
 import com.megacrit.cardcrawl.rewards.RewardItem;
 import com.megacrit.cardcrawl.rooms.*;
+import com.megacrit.cardcrawl.saveAndContinue.SaveFile;
 import com.megacrit.cardcrawl.screens.mainMenu.ScrollBar;
 import com.megacrit.cardcrawl.screens.mainMenu.ScrollBarListener;
 import com.megacrit.cardcrawl.vfx.AbstractGameEffect;
@@ -72,6 +73,7 @@ public class ArchipelagoRewardScreen  extends CustomScreen {
     public static int receivedItemsIndex = 0;
     public static boolean apReward = false;
     public static boolean apRareReward = false;
+    public static int apGold = 0;
 
     public static boolean APScreen = false;
 
@@ -98,6 +100,15 @@ public class ArchipelagoRewardScreen  extends CustomScreen {
             if (apRareReward) {
                 return SpireReturn.Return(AbstractCard.CardRarity.RARE);
             }
+            return SpireReturn.Continue();
+        }
+    }
+
+    @SpirePatch(clz = AbstractDungeon.class, method="nextRoomTransition", paramtypez = {SaveFile.class})
+    public static class FloorCheckPatch {
+        @SpireInsertPatch(rloc=2197 - 2126)
+        public static SpireReturn<Void> insert() {
+            APClient.client.checkLocation(AbstractDungeon.floorNum);
             return SpireReturn.Continue();
         }
     }
@@ -199,6 +210,11 @@ public class ArchipelagoRewardScreen  extends CustomScreen {
         for (int i = receivedItemsIndex; i < items.size(); ++i) {
             receivedItemsIndex = i + 1;
             addReward(items.get(i));
+        }
+        if(apGold > 0)
+        {
+            addReward(new RewardItem(apGold));
+            apGold = 0;
         }
     }
 
@@ -372,6 +388,7 @@ public class ArchipelagoRewardScreen  extends CustomScreen {
         }
     }
 
+
     public void addReward(RewardItem item) {
         rewards.add(item);
         positionRewards();
@@ -381,6 +398,7 @@ public class ArchipelagoRewardScreen  extends CustomScreen {
         long itemID = networkItem.itemID;
         String location = networkItem.locationName;
         String player = networkItem.playerName;
+
         if (itemID == 8000L) { //card draw
             apReward = true;
             ArrayList<AbstractCard> cards = AbstractDungeon.getRewardCards();
@@ -429,7 +447,12 @@ public class ArchipelagoRewardScreen  extends CustomScreen {
             RewardItemPatch.CustomFields.apReward.set(reward, true);
             reward.text = player + " NL " + location;
             addReward(reward);
+        } else if (itemID == 8004L) { // One Gold
+            apGold += 1;
+        } else if (itemID == 8005) { // Five Gold
+            apGold += 5;
         }
+
     }
 
     public AbstractCard.CardRarity rollRarity(Random rng) {
