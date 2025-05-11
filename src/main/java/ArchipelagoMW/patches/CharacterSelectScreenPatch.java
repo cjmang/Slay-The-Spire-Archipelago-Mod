@@ -7,6 +7,7 @@ import ArchipelagoMW.util.DeathLinkHelper;
 import basemod.CustomCharacterSelectScreen;
 import basemod.ReflectionHacks;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.evacipated.cardcrawl.modthespire.Loader;
 import com.evacipated.cardcrawl.modthespire.lib.*;
 import com.megacrit.cardcrawl.characters.AbstractPlayer;
 import com.megacrit.cardcrawl.core.Settings;
@@ -17,6 +18,7 @@ import com.megacrit.cardcrawl.screens.charSelect.CharacterOption;
 import com.megacrit.cardcrawl.screens.charSelect.CharacterSelectScreen;
 import dev.koifysh.archipelago.helper.DeathLink;
 import downfall.downfallMod;
+import downfall.patches.EvilModeCharacterSelect;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -80,6 +82,11 @@ public class CharacterSelectScreenPatch {
             __instance.isAscensionMode = APClient.slotData.ascension > 0;
             __instance.ascensionLevel = APClient.slotData.ascension;
             Settings.isFinalActAvailable = APClient.slotData.finalAct == 1;
+
+            if(Loader.isModLoaded("downfall"))
+            {
+                EvilModeCharacterSelect.evilMode = APClient.slotData.downfall == 1;
+            }
 
             if (APClient.slotData.deathLink > 0) {
                 DeathLink.setDeathLinkEnabled(true);
