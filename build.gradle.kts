@@ -22,7 +22,7 @@ dependencies {
 
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 
-    implementation("io.github.ArchipelagoMW:Java-Client:latest.integration")
+    implementation(project(":client-wrapper"))
 
     shadow(files("${steamPath}/common/SlayTheSpire/desktop-1.0.jar"))
     shadow(files("${steamPath}/workshop/content/646570/1605060445/ModTheSpire.jar"))
@@ -42,6 +42,11 @@ tasks.processResources {
         expand(project.properties)
     }
 }
+
+//tasks.shadowJar {
+//    isEnableRelocation = true
+//    relocationPrefix = "io.cjmang"
+//}
 
 //tasks.named<Test>("test") {
 //    // Use JUnit Platform for unit tests.

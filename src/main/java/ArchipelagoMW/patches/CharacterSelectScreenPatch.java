@@ -1,33 +1,41 @@
 package ArchipelagoMW.patches;
 
 import ArchipelagoMW.APClient;
+import ArchipelagoMW.Archipelago;
 import ArchipelagoMW.apEvents.ConnectionResult;
 import ArchipelagoMW.util.DeathLinkHelper;
+import basemod.CustomCharacterSelectScreen;
 import basemod.ReflectionHacks;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.evacipated.cardcrawl.modthespire.lib.*;
 import com.megacrit.cardcrawl.characters.AbstractPlayer;
 import com.megacrit.cardcrawl.core.Settings;
 import com.megacrit.cardcrawl.helpers.ImageMaster;
+import com.megacrit.cardcrawl.helpers.ModHelper;
 import com.megacrit.cardcrawl.helpers.SeedHelper;
 import com.megacrit.cardcrawl.screens.charSelect.CharacterOption;
 import com.megacrit.cardcrawl.screens.charSelect.CharacterSelectScreen;
 import dev.koifysh.archipelago.helper.DeathLink;
+import downfall.downfallMod;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.stream.Collectors;
 
 public class CharacterSelectScreenPatch {
 
-    public static CharacterSelectScreen charSelectScreen;
+    public static CustomCharacterSelectScreen charSelectScreen;
     private static ArrayList<CharacterOption> options;
 
-    public static void removeNonAPChars() {
+    public static void lockNonAPChars() {
         charSelectScreen.options = new ArrayList<>(options);
+        Archipelago.logger.info("Character Options {}", options.stream().map(o-> o.c.chosenClass.name()).collect(Collectors.toList()));
         charSelectScreen.options.stream().filter(o -> !ConnectionResult.availableAPChars.contains(o.c.chosenClass.name()))
                 .forEach(o -> {
                     o.locked = true;
                     ReflectionHacks.setPrivate(o, CharacterOption.class, "buttonImg", ImageMaster.CHAR_SELECT_LOCKED);
                 });
+        Archipelago.logger.info("Available AP Chars: {}", ConnectionResult.availableAPChars);
         if (charSelectScreen.options.stream().allMatch(o -> o.locked))
         {
             // Something went very wrong, force Ironclad
@@ -39,14 +47,14 @@ public class CharacterSelectScreenPatch {
                     });
         }
     }
-    @SpirePatch(clz = CharacterSelectScreen.class, method="initialize")
+    @SpirePatch(clz = CustomCharacterSelectScreen.class, method="initialize")
     public static class InitPatch {
 
         @SpirePostfixPatch
-        public static void captureCharSelect(CharacterSelectScreen __instance)
+        public static void captureCharSelect(CustomCharacterSelectScreen __instance,  ArrayList<CharacterOption> ___allOptions)
         {
             charSelectScreen = __instance;
-            options = new ArrayList<>(__instance.options);
+            options = new ArrayList<>(___allOptions);
         }
     }
 
@@ -97,6 +105,20 @@ public class CharacterSelectScreenPatch {
         public static void Replace(CharacterSelectScreen __instance, SpriteBatch sb)
         {
             // Don't render seed selection
+        }
+    }
+
+    @SpirePatch(clz= CustomCharacterSelectScreen.class, method="initialize")
+    public static class ForceDownfallCrossover
+    {
+        @SpirePrefixPatch
+        public static void force()
+        {
+            if(ModHelper.isModEnabled("downfall"))
+            {
+                downfallMod.crossoverCharacters = true;
+                downfallMod.crossoverModCharacters = true;
+            }
         }
     }
 }

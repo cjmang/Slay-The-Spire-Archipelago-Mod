@@ -7,6 +7,7 @@ import ArchipelagoMW.apEvents.ConnectionResult;
 import ArchipelagoMW.patches.CharacterSelectScreenPatch;
 import ArchipelagoMW.teams.TeamManager;
 import ArchipelagoMW.ui.mainMenu.ArchipelagoMainMenuButton;
+import basemod.BaseMod;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -14,6 +15,7 @@ import com.evacipated.cardcrawl.modthespire.lib.SpireEnum;
 import com.megacrit.cardcrawl.core.CardCrawlGame;
 import com.megacrit.cardcrawl.core.Settings;
 import com.megacrit.cardcrawl.helpers.FontHelper;
+import com.megacrit.cardcrawl.helpers.ModHelper;
 import com.megacrit.cardcrawl.helpers.input.InputHelper;
 import com.megacrit.cardcrawl.helpers.input.ScrollInputProcessor;
 import com.megacrit.cardcrawl.localization.UIStrings;
@@ -21,6 +23,7 @@ import com.megacrit.cardcrawl.screens.charSelect.CharacterSelectScreen;
 import com.megacrit.cardcrawl.screens.mainMenu.MainMenuScreen;
 import com.megacrit.cardcrawl.screens.mainMenu.MenuCancelButton;
 import com.megacrit.cardcrawl.ui.buttons.GridSelectConfirmButton;
+import downfall.downfallMod;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -78,7 +81,7 @@ public class ArchipelagoPreGameScreen {
     }
 
     public void toCharSelect() {
-        CharacterSelectScreenPatch.removeNonAPChars();
+        CharacterSelectScreenPatch.lockNonAPChars();
         CardCrawlGame.mainMenuScreen.screen = MainMenuScreen.CurScreen.CHAR_SELECT;
     }
 
