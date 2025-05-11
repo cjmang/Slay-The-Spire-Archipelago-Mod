@@ -2,6 +2,7 @@ package ArchipelagoMW.ui.RewardMenu;
 
 import ArchipelagoMW.APClient;
 import ArchipelagoMW.Archipelago;
+import ArchipelagoMW.LocationTracker;
 import ArchipelagoMW.patches.RewardItemPatch;
 import basemod.ReflectionHacks;
 import basemod.abstracts.CustomScreen;
@@ -108,7 +109,7 @@ public class ArchipelagoRewardScreen  extends CustomScreen {
     public static class FloorCheckPatch {
         @SpireInsertPatch(rloc=2197 - 2126)
         public static SpireReturn<Void> insert() {
-            APClient.client.checkLocation(AbstractDungeon.floorNum);
+            LocationTracker.sendFloorCheck(AbstractDungeon.floorNum);
             return SpireReturn.Continue();
         }
     }
@@ -399,7 +400,7 @@ public class ArchipelagoRewardScreen  extends CustomScreen {
         String location = networkItem.locationName;
         String player = networkItem.playerName;
 
-        if (itemID == 8000L) { //card draw
+        if (itemID % 20L == 1L) { //card draw
             apReward = true;
             ArrayList<AbstractCard> cards = AbstractDungeon.getRewardCards();
             apReward = false;
@@ -410,7 +411,7 @@ public class ArchipelagoRewardScreen  extends CustomScreen {
             RewardItemPatch.CustomFields.apReward.set(reward, true);
             reward.text = player + " NL " + location;
             addReward(reward);
-        } else if (itemID == 8001L) { //rare card draw
+        } else if (itemID % 20L == 2L) { //rare card draw
             apRareReward = true;
             ArrayList<AbstractCard> rareCards = AbstractDungeon.getRewardCards();
             apRareReward = false;
@@ -428,13 +429,13 @@ public class ArchipelagoRewardScreen  extends CustomScreen {
 
             reward.text = player + " NL " + location;
             addReward(reward);
-        } else if (itemID == 8002L) { // Relic
+        } else if (itemID % 20L == 3L) { // Relic
             AbstractRelic relic = AbstractDungeon.returnRandomRelic(getRandomRelicTier());
             RewardItem reward = new RewardItem(relic);
             reward.text = player + " NL " + location;
             RewardItemPatch.CustomFields.apReward.set(reward, true);
             addReward(reward);
-        } else if (itemID == 8003L) { // Boss Relic
+        } else if (itemID % 20L == 4L) { // Boss Relic
             ArrayList<AbstractRelic> bossRelics = new ArrayList<AbstractRelic>() {{
                 add(AbstractDungeon.returnRandomRelic(AbstractRelic.RelicTier.BOSS));
                 add(AbstractDungeon.returnRandomRelic(AbstractRelic.RelicTier.BOSS));
@@ -447,9 +448,9 @@ public class ArchipelagoRewardScreen  extends CustomScreen {
             RewardItemPatch.CustomFields.apReward.set(reward, true);
             reward.text = player + " NL " + location;
             addReward(reward);
-        } else if (itemID == 8004L) { // One Gold
+        } else if (itemID % 20L == 5L) { // One Gold
             apGold += 1;
-        } else if (itemID == 8005) { // Five Gold
+        } else if (itemID % 20L == 6L) { // Five Gold
             apGold += 5;
         }
 

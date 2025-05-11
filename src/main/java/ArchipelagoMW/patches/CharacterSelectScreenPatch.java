@@ -3,10 +3,12 @@ package ArchipelagoMW.patches;
 import ArchipelagoMW.APClient;
 import ArchipelagoMW.apEvents.ConnectionResult;
 import ArchipelagoMW.util.DeathLinkHelper;
+import basemod.ReflectionHacks;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.evacipated.cardcrawl.modthespire.lib.*;
 import com.megacrit.cardcrawl.characters.AbstractPlayer;
 import com.megacrit.cardcrawl.core.Settings;
+import com.megacrit.cardcrawl.helpers.ImageMaster;
 import com.megacrit.cardcrawl.helpers.SeedHelper;
 import com.megacrit.cardcrawl.screens.charSelect.CharacterOption;
 import com.megacrit.cardcrawl.screens.charSelect.CharacterSelectScreen;
@@ -21,13 +23,20 @@ public class CharacterSelectScreenPatch {
 
     public static void removeNonAPChars() {
         charSelectScreen.options = new ArrayList<>(options);
-        charSelectScreen.options.removeIf(o -> !ConnectionResult.availableAPChars.contains(o.c.chosenClass.name()));
-        // Something went very wrong, force Ironclad
-        if (charSelectScreen.options.isEmpty())
+        charSelectScreen.options.stream().filter(o -> !ConnectionResult.availableAPChars.contains(o.c.chosenClass.name()))
+                .forEach(o -> {
+                    o.locked = true;
+                    ReflectionHacks.setPrivate(o, CharacterOption.class, "buttonImg", ImageMaster.CHAR_SELECT_LOCKED);
+                });
+        if (charSelectScreen.options.stream().allMatch(o -> o.locked))
         {
+            // Something went very wrong, force Ironclad
             options.stream()
                     .filter(o -> o.c.chosenClass.name().equals(AbstractPlayer.PlayerClass.IRONCLAD.name()))
-                    .forEach(o -> charSelectScreen.options.add(o));
+                    .forEach(o -> {
+                        o.locked = false;
+                        ReflectionHacks.setPrivate(o, CharacterOption.class, "buttonImg", ImageMaster.CHAR_SELECT_IRONCLAD);
+                    });
         }
     }
     @SpirePatch(clz = CharacterSelectScreen.class, method="initialize")

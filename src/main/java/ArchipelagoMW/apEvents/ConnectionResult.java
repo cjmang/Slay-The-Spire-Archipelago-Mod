@@ -32,7 +32,10 @@ import java.util.Set;
 import java.util.TreeSet;
 
 public class ConnectionResult {
-
+    /**
+     * character offset for locations
+     *
+     */
     public static AbstractPlayer character = CardCrawlGame.characterManager.getCharacter(AbstractPlayer.PlayerClass.IRONCLAD);
     public static Set<String> availableAPChars = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
 
@@ -68,9 +71,8 @@ public class ConnectionResult {
             return;
 
         APClient.slotData = event.getSlotData(SlotData.class);
-
-
         SlotData slotData = APClient.slotData;
+
         Archipelago.logger.info("slot data parsed");
 
 
@@ -113,6 +115,8 @@ public class ConnectionResult {
                 slotData.character = "THE_SNECKO";
                 break;
             case "12":
+                // TODO: Spire Take the Wheel will not work with this change; will need
+                // some additional help
                 character = CardCrawlGame.characterManager.getRandomCharacter(new Random());
         }
 
@@ -125,7 +129,8 @@ public class ConnectionResult {
                 break;
             }
         }
-        LocationTracker.reset();
+
+        LocationTracker.initialize(slotData.character_offset);
         ArchipelagoRewardScreen.rewards.clear();
         ArchipelagoRewardScreen.receivedItemsIndex = 0;
         ArchipelagoRewardScreen.apRareReward = false;
@@ -142,10 +147,11 @@ public class ConnectionResult {
         Archipelago.logger.info("about to parse slot data");
         try {
 
-            Archipelago.logger.info("character: " + character.name);
+            Archipelago.logger.info("character: {}", character.name);
             Archipelago.logger.info("heart: " + APClient.slotData.finalAct);
             Archipelago.logger.info("seed: " + APClient.slotData.seed);
             Archipelago.logger.info("ascension: " + APClient.slotData.ascension);
+            Archipelago.logger.info("character offset: {}", APClient.slotData.character_offset);
 
             CardCrawlGame.chosenCharacter = character.chosenClass;
             if (Loader.isModLoaded("downfall"))

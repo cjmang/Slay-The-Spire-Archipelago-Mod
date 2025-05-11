@@ -2,6 +2,7 @@ package ArchipelagoMW;
 
 import ArchipelagoMW.patches.SavePatch;
 import basemod.ReflectionHacks;
+import com.megacrit.cardcrawl.dungeons.AbstractDungeon;
 import com.megacrit.cardcrawl.rewards.RewardItem;
 import dev.koifysh.archipelago.network.client.SetPacket;
 import dev.koifysh.archipelago.parts.NetworkItem;
@@ -10,60 +11,27 @@ import org.apache.logging.log4j.Logger;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class LocationTracker {
     public static final Logger logger = LogManager.getLogger(LocationTracker.class.getName());
 
     public static int cardDrawIndex = 0;
-    public static final ArrayList<Long> cardDrawLocations = new ArrayList<Long>() {{
-        add(19001L);
-        add(19002L);
-        add(19003L);
-        add(19004L);
-        add(19005L);
-        add(19006L);
-        add(19007L);
-        add(19008L);
-        add(19009L);
-        add(19010L);
-        add(19011L);
-        add(19012L);
-        add(19013L);
-        add(19014L);
-        add(19015L);
-    }};
+    public static final List<Long> cardDrawLocations = new ArrayList<Long>();
 
     public static int relicIndex = 0;
-    public static final ArrayList<Long> relicLocations = new ArrayList<Long>() {{
-        add(20001L);
-        add(20002L);
-        add(20003L);
-        add(20004L);
-        add(20005L);
-        add(20006L);
-        add(20007L);
-        add(20008L);
-        add(20009L);
-        add(20010L);
-    }};
+    public static final List<Long> relicLocations = new ArrayList<Long>();
 
     public static int rareCardIndex = 0;
-    public static final ArrayList<Long> rareCardLocations = new ArrayList<Long>() {{
-        add(21001L);
-        add(21002L);
-        add(21003L);
-    }};
+    public static final List<Long> rareCardLocations = new ArrayList<Long>();
 
     public static int bossRelicIndex = 0;
-    public static final ArrayList<Long> bossRelicLocations = new ArrayList<Long>() {{
-        add(22001L);
-        add(22002L);
-        add(22003L);
-    }};
+    public static final List<Long> bossRelicLocations = new ArrayList<Long>();
 
     public static boolean cardDraw;
 
-    public static HashMap<Long, NetworkItem> scoutedLocations = new HashMap<>();
+    public static final Map<Long, NetworkItem> scoutedLocations = new HashMap<>();
 
     public static void reset() {
         bossRelicIndex = 0;
@@ -72,11 +40,51 @@ public class LocationTracker {
         relicIndex = 0;
     }
 
+    public static void initialize(long charOffset)
+    {
+        cardDrawLocations.clear();
+        cardDrawLocations.add(101L + charOffset * 200L);
+        cardDrawLocations.add(102L + charOffset * 200L);
+        cardDrawLocations.add(103L + charOffset * 200L);
+        cardDrawLocations.add(104L + charOffset * 200L);
+        cardDrawLocations.add(105L + charOffset * 200L);
+        cardDrawLocations.add(106L + charOffset * 200L);
+        cardDrawLocations.add(107L + charOffset * 200L);
+        cardDrawLocations.add(108L + charOffset * 200L);
+        cardDrawLocations.add(109L + charOffset * 200L);
+        cardDrawLocations.add(110L + charOffset * 200L);
+        cardDrawLocations.add(111L + charOffset * 200L);
+        cardDrawLocations.add(112L + charOffset * 200L);
+        cardDrawLocations.add(113L + charOffset * 200L);
+        cardDrawLocations.add(114L + charOffset * 200L);
+        cardDrawLocations.add(115L + charOffset * 200L);
+
+        relicLocations.clear();
+        relicLocations.add(141L + charOffset * 200L);
+        relicLocations.add(142L + charOffset * 200L);
+        relicLocations.add(143L + charOffset * 200L);
+        relicLocations.add(144L + charOffset * 200L);
+        relicLocations.add(145L + charOffset * 200L);
+        relicLocations.add(146L + charOffset * 200L);
+        relicLocations.add(147L + charOffset * 200L);
+        relicLocations.add(148L + charOffset * 200L);
+        relicLocations.add(149L + charOffset * 200L);
+        relicLocations.add(140L + charOffset * 200L);
+
+        rareCardLocations.clear();
+        rareCardLocations.add(131L + charOffset * 200L);
+        rareCardLocations.add(132L + charOffset * 200L);
+
+        bossRelicLocations.clear();
+        bossRelicLocations.add(161L + charOffset * 200L);
+        bossRelicLocations.add(162L + charOffset * 200L);
+    }
+
     /**
      * @return a {@link NetworkItem} if this card draw was sent to AP,
      * null if you should keep this card draw locally.
      */
-    static public NetworkItem sendCardDraw(RewardItem reward) {
+    public static NetworkItem sendCardDraw(RewardItem reward) {
         boolean isBoss = ReflectionHacks.getPrivate(reward, RewardItem.class, "isBoss");
         if (isBoss) {
             if (rareCardIndex >= rareCardLocations.size())
@@ -100,8 +108,10 @@ public class LocationTracker {
                 return null;
             long locationID = cardDrawLocations.get(cardDrawIndex);
             cardDrawIndex++;
+            Archipelago.logger.info("Sending Location Id {}", locationID);
             APClient.apClient.checkLocation(locationID);
             NetworkItem item = scoutedLocations.get(locationID);
+            Archipelago.logger.info("Got Network item {}", item.itemName);
             if (item == null) {
                 NetworkItem networkItem = new NetworkItem();
                 networkItem.itemName = "Card Draw " + (15 - cardDrawLocations.size());
@@ -116,7 +126,7 @@ public class LocationTracker {
     /**
      * sends the next relic location to AP
      */
-    static public NetworkItem sendRelic() {
+    public static NetworkItem sendRelic() {
         if (relicIndex >= relicLocations.size())
             return null;
 
@@ -136,7 +146,7 @@ public class LocationTracker {
     /**
      * sends the next boss relic location to AP
      */
-    static public NetworkItem sendBossRelic(int act) {
+    public static NetworkItem sendBossRelic(int act) {
         logger.info("Going to send relic from act " + act);
         long locationID;
         try {
@@ -157,13 +167,17 @@ public class LocationTracker {
         return item;
     }
 
+    public static void sendFloorCheck(int floor)
+    {
+        APClient.client.checkLocation(floor + (200L * APClient.slotData.character_offset));
+    }
+
     public static void forfeit() {
-        ArrayList<Long> allLocations = new ArrayList<Long>() {{
-            addAll(cardDrawLocations);
-            addAll(rareCardLocations);
-            addAll(relicLocations);
-            addAll(bossRelicLocations);
-        }};
+        List<Long> allLocations = new ArrayList<>() ;
+        allLocations.addAll(cardDrawLocations);
+        allLocations.addAll(rareCardLocations);
+        allLocations.addAll(relicLocations);
+        allLocations.addAll(bossRelicLocations);
 
         APClient.apClient.getLocationManager().checkLocations(allLocations);
         SetPacket set = new SetPacket(SavePatch.AP_SAVE_STRING,"");

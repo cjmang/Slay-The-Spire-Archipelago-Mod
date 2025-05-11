@@ -24,4 +24,7 @@ public class SlotData {
 
     @SerializedName("death_link")
     public int deathLink = 0;
+
+    @SerializedName("character_offset")
+    public int character_offset = 0;
 }
