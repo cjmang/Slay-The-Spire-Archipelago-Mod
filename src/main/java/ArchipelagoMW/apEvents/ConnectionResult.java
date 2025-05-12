@@ -3,7 +3,9 @@ package ArchipelagoMW.apEvents;
 import ArchipelagoMW.*;
 import ArchipelagoMW.patches.SavePatch;
 import ArchipelagoMW.ui.RewardMenu.ArchipelagoRewardScreen;
+import ArchipelagoMW.ui.connection.ArchipelagoPreGameScreen;
 import ArchipelagoMW.ui.connection.ConnectionPanel;
+import ArchipelagoMW.ui.mainMenu.ArchipelagoMainMenuButton;
 import ArchipelagoMW.util.DeathLinkHelper;
 import com.evacipated.cardcrawl.modthespire.Loader;
 import com.megacrit.cardcrawl.core.CardCrawlGame;
@@ -127,7 +129,18 @@ public class ConnectionResult {
 //        LocationTracker.scoutAllLocations();
 //        TeamManager.initialLoad();
 //        PlayerManager.initialLoad();
-        DataStorageGet.loadRequestId = APClient.apClient.dataStorageGet(Arrays.asList(SavePatch.AP_SAVE_STRING, SavePatch.AP_SAVE_CHAR));
+//        DataStorageGet.loadRequestId = APClient.apClient.dataStorageGet(Arrays.asList(SavePatch.AP_SAVE_STRING, SavePatch.AP_SAVE_CHAR));
+        APClient.apClient.asyncDSGet(Arrays.asList(SavePatch.AP_SAVE_STRING, SavePatch.AP_SAVE_CHAR),
+                (e) -> {
+                    if (e.getString(SavePatch.AP_SAVE_STRING) != null && !e.getString(SavePatch.AP_SAVE_STRING).isEmpty()) {
+                        SavePatch.compressedSave = e.getString(SavePatch.AP_SAVE_STRING);
+                        SavePatch.savedChar = e.getString(SavePatch.AP_SAVE_CHAR);
+                        APClient.logger.info("Got saved character {}", SavePatch.savedChar);
+                        ArchipelagoMainMenuButton.archipelagoPreGameScreen.connectionPanel.resumeSave.show();
+                    } else {
+                        ArchipelagoMainMenuButton.archipelagoPreGameScreen.screen = ArchipelagoPreGameScreen.APScreen.charSelect;
+                    }
+                });
     }
 
     public static void start() {
