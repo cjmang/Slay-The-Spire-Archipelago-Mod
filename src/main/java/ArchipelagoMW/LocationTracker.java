@@ -2,7 +2,6 @@ package ArchipelagoMW;
 
 import ArchipelagoMW.patches.SavePatch;
 import basemod.ReflectionHacks;
-import com.megacrit.cardcrawl.dungeons.AbstractDungeon;
 import com.megacrit.cardcrawl.rewards.RewardItem;
 import dev.koifysh.archipelago.network.client.SetPacket;
 import dev.koifysh.archipelago.parts.NetworkItem;
@@ -40,8 +39,16 @@ public class LocationTracker {
         relicIndex = 0;
     }
 
-    public static void initialize(long charOffset)
+    private static long currentOffset = -1;
+    private static final List<Long> extraOffsets = new ArrayList<>();
+
+    public static void initialize(long charOffset, List<Long> extras)
     {
+        currentOffset = charOffset;
+        extraOffsets.clear();
+        extraOffsets.addAll(extras);
+        APClient.logger.info("Intializing LocationTracker with {} and extras {}", charOffset, extraOffsets);
+
         cardDrawLocations.clear();
         cardDrawLocations.add(101L + charOffset * 200L);
         cardDrawLocations.add(102L + charOffset * 200L);
@@ -91,7 +98,7 @@ public class LocationTracker {
                 return null;
             long locationID = rareCardLocations.get(rareCardIndex);
             rareCardIndex++;
-            APClient.apClient.checkLocation(locationID);
+            APClient.apClient.checkLocations(getLocationIDs(locationID));
             NetworkItem item = scoutedLocations.get(locationID);
             if (item == null) {
                 NetworkItem networkItem = new NetworkItem();
@@ -109,7 +116,7 @@ public class LocationTracker {
             long locationID = cardDrawLocations.get(cardDrawIndex);
             cardDrawIndex++;
             Archipelago.logger.info("Sending Location Id {}", locationID);
-            APClient.apClient.checkLocation(locationID);
+            APClient.apClient.checkLocations(getLocationIDs(locationID));
             NetworkItem item = scoutedLocations.get(locationID);
             Archipelago.logger.info("Got Network item {}", item.itemName);
             if (item == null) {
@@ -132,7 +139,7 @@ public class LocationTracker {
 
         long locationID = relicLocations.get(relicIndex);
         relicIndex++;
-        APClient.apClient.checkLocation(locationID);
+        APClient.apClient.checkLocations(getLocationIDs(locationID));
         NetworkItem item = scoutedLocations.get(locationID);
         if (item == null) {
             NetworkItem networkItem = new NetworkItem();
@@ -156,7 +163,7 @@ public class LocationTracker {
             logger.info("while the length is " + bossRelicLocations.size());
             return null;
         }
-        APClient.apClient.checkLocation(locationID);
+        APClient.apClient.checkLocations(getLocationIDs(locationID));
         NetworkItem item = scoutedLocations.get(locationID);
         if (item == null) {
             NetworkItem networkItem = new NetworkItem();
@@ -167,12 +174,26 @@ public class LocationTracker {
         return item;
     }
 
-    public static void sendFloorCheck(int floor)
+    private static List<Long> getLocationIDs(long locationID)
     {
-        APClient.client.checkLocation(floor + (200L * APClient.slotData.character_offset));
+        List<Long> result = new ArrayList<>(extraOffsets.size() + 1);
+        result.add(locationID);
+
+        for(Long extra : extraOffsets)
+        {
+            result.add(locationID - (currentOffset * 200L) + (extra * 200L));
+        }
+        APClient.logger.info("Sending location ids: {}", result);
+        return result;
     }
 
-    public static void forfeit() {
+    public static void sendFloorCheck(int floor)
+    {
+        APClient.logger.info("Sending floor check for floor {} and id {}", floor, floor + (200L * currentOffset));
+        APClient.client.checkLocations(getLocationIDs(floor + (200L * currentOffset)));
+    }
+
+    public static void endOfTheRoad() {
         List<Long> allLocations = new ArrayList<>() ;
         allLocations.addAll(cardDrawLocations);
         allLocations.addAll(rareCardLocations);

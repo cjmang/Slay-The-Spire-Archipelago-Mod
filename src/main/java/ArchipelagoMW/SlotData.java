@@ -1,6 +1,10 @@
 package ArchipelagoMW;
 
-import com.google.gson.annotations.SerializedName;
+
+import io.cjmang.google.gson.annotations.SerializedName;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class SlotData {
 
@@ -27,4 +31,8 @@ public class SlotData {
 
     @SerializedName("character_offset")
     public int character_offset = 0;
+
+    @SerializedName("characters")
+    public List<CharacterConfig> characters = new ArrayList<>();
+
 }

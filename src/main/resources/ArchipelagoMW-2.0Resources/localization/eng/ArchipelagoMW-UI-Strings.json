@@ -1,10 +1,10 @@
 {
-  "ArchipelagoMW:MainMenu": {
+  "ArchipelagoMW-2.0:MainMenu": {
     "TEXT": [
       "Archipelago"
     ]
   },
-  "ArchipelagoMW:RewardMenu": {
+  "ArchipelagoMW-2.0:RewardMenu": {
     "TEXT": [
       "Return",
       "Help From Afar",
@@ -13,7 +13,7 @@
       "Cards From "
     ]
   },
-  "ArchipelagoMW:ConnectionMenu": {
+  "ArchipelagoMW-2.0:ConnectionMenu": {
     "TEXT": [
       "Archipelago",
       "Connection Info",

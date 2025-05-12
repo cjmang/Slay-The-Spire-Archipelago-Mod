@@ -7,6 +7,9 @@ import ArchipelagoMW.apEvents.ReceiveItem;
 import ArchipelagoMW.teams.PlayerManager;
 import ArchipelagoMW.teams.TeamManager;
 import ArchipelagoMW.ui.connection.ConnectionPanel;
+import basemod.BaseMod;
+import basemod.interfaces.PostDungeonUpdateSubscriber;
+import com.megacrit.cardcrawl.dungeons.AbstractDungeon;
 import dev.koifysh.archipelago.Client;
 import dev.koifysh.archipelago.Print.APPrint;
 import dev.koifysh.archipelago.flags.ItemsHandling;
@@ -23,6 +26,8 @@ public class APClient extends Client {
     public static APClient apClient;
 
     public static SlotData slotData;
+
+    public static CharacterManager charManager;
 
     public static void newConnection(String address, String slotName, String password) {
         if (apClient != null) {
@@ -42,6 +47,7 @@ public class APClient extends Client {
         //apClient.getEventManager().registerListener(new TestButton());
         try {
             apClient.connect(address);
+            charManager = new CharacterManager();
         } catch (URISyntaxException e) {
             e.printStackTrace();
         }

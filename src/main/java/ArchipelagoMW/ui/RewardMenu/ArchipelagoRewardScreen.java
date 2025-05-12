@@ -4,6 +4,7 @@ import ArchipelagoMW.APClient;
 import ArchipelagoMW.Archipelago;
 import ArchipelagoMW.LocationTracker;
 import ArchipelagoMW.patches.RewardItemPatch;
+import basemod.BaseMod;
 import basemod.ReflectionHacks;
 import basemod.abstracts.CustomScreen;
 import com.badlogic.gdx.Gdx;
@@ -31,9 +32,13 @@ import com.megacrit.cardcrawl.rooms.*;
 import com.megacrit.cardcrawl.saveAndContinue.SaveFile;
 import com.megacrit.cardcrawl.screens.mainMenu.ScrollBar;
 import com.megacrit.cardcrawl.screens.mainMenu.ScrollBarListener;
+import com.megacrit.cardcrawl.screens.stats.StatsScreen;
 import com.megacrit.cardcrawl.vfx.AbstractGameEffect;
 import com.megacrit.cardcrawl.vfx.RewardGlowEffect;
 import dev.koifysh.archipelago.parts.NetworkItem;
+import javassist.CannotCompileException;
+import javassist.CtBehavior;
+import javassist.expr.Expr;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -105,13 +110,13 @@ public class ArchipelagoRewardScreen  extends CustomScreen {
         }
     }
 
-    @SpirePatch(clz = AbstractDungeon.class, method="nextRoomTransition", paramtypez = {SaveFile.class})
+    @SpirePatch(clz = StatsScreen.class, method="incrementFloorClimbed")
     public static class FloorCheckPatch {
-        @SpireInsertPatch(rloc=2197 - 2126)
-        public static SpireReturn<Void> insert() {
+        @SpirePostfixPatch()
+        public static void insert() {
             LocationTracker.sendFloorCheck(AbstractDungeon.floorNum);
-            return SpireReturn.Continue();
         }
+
     }
 
 
@@ -397,6 +402,10 @@ public class ArchipelagoRewardScreen  extends CustomScreen {
 
     public void addReward(NetworkItem networkItem) {
         long itemID = networkItem.itemID;
+        if(!APClient.charManager.isItemIDForCurrentCharacter(itemID))
+        {
+            return;
+        }
         String location = networkItem.locationName;
         String player = networkItem.playerName;
 

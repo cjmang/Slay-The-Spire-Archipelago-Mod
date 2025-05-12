@@ -36,9 +36,9 @@ public class Archipelago implements
         PostInitializeSubscriber {
 
     public static final Logger logger = LogManager.getLogger(Archipelago.class.getName());
-    public static final String modID = "ArchipelagoMW";
+    public static final String modID = "ArchipelagoMW-2.0";
     public static final String MODNAME = "Archipelago Multi-World";
-    public static final String AUTHOR = "Kono Tyran & Mavelovent";
+    public static final String AUTHOR = "Kono Tyran & Mavelovent & PlatanoBailando";
     public static final String DESCRIPTION = "An Archipelago multiworld mod.";
 
     public static BossRelicRewardScreen bossRelicRewardScreen;
@@ -130,12 +130,14 @@ public class Archipelago implements
                 save.add("card_draw_index", new JsonPrimitive(LocationTracker.cardDrawIndex));
                 save.add("rare_card_draw_index", new JsonPrimitive(LocationTracker.rareCardIndex));
                 save.add("relic_index", new JsonPrimitive(LocationTracker.relicIndex));
+                save.add("character", new JsonPrimitive(APClient.charManager.getCurrentCharacter().chosenClass.name()));
 
                 return save;
             }
 
             @Override
             public void onLoadRaw(JsonElement jsonElement) {
+                APClient.logger.info("Loading save data");
                 Gson gson = new Gson();
 
                 JsonObject save = jsonElement.getAsJsonObject();
@@ -173,6 +175,10 @@ public class Archipelago implements
                 LocationTracker.cardDrawIndex = save.get("card_draw_index").getAsInt();
                 LocationTracker.rareCardIndex = save.get("rare_card_draw_index").getAsInt();
                 LocationTracker.relicIndex = save.get("relic_index").getAsInt();
+                if(!APClient.charManager.selectCharacter(save.get("character").getAsString()))
+                {
+                    throw new RuntimeException("Could not select character from save file " + save.get("character").getAsString());
+                }
             }
         });
 

@@ -2,6 +2,7 @@ package ArchipelagoMW.patches;
 
 import ArchipelagoMW.APClient;
 import ArchipelagoMW.Archipelago;
+import ArchipelagoMW.CharacterManager;
 import ArchipelagoMW.apEvents.ConnectionResult;
 import ArchipelagoMW.util.DeathLinkHelper;
 import basemod.CustomCharacterSelectScreen;
@@ -30,15 +31,21 @@ public class CharacterSelectScreenPatch {
     private static ArrayList<CharacterOption> options;
 
     public static void lockNonAPChars() {
+        CharacterManager charManager = APClient.charManager;
         charSelectScreen.options = new ArrayList<>(options);
+//        charManager.markUnrecognziedCharacters(charManager.getCharacters().stream()
+//                        .map(c -> c.officialName)
+//                        .filter(n -> options.stream().noneMatch(o -> o.c.chosenClass.name().equals(n)))
+//                        .collect(Collectors.toList()));
+        charManager.markUnrecognziedCharacters();
         Archipelago.logger.info("Character Options {}", options.stream().map(o-> o.c.chosenClass.name()).collect(Collectors.toList()));
-        charSelectScreen.options.stream().filter(o -> !ConnectionResult.availableAPChars.contains(o.c.chosenClass.name()))
+        charSelectScreen.options.stream().filter(o -> !charManager.getAvailableAPChars().contains(o.c.chosenClass.name()))
                 .forEach(o -> {
                     o.locked = true;
                     ReflectionHacks.setPrivate(o, CharacterOption.class, "buttonImg", ImageMaster.CHAR_SELECT_LOCKED);
                 });
-        Archipelago.logger.info("Available AP Chars: {}", ConnectionResult.availableAPChars);
-        if (charSelectScreen.options.stream().allMatch(o -> o.locked))
+        Archipelago.logger.info("Available AP Chars: {}", charManager.getAvailableAPChars());
+        if(charManager.getCharacters().size() == charManager.getUnrecognizedCharacters().size())
         {
             // Something went very wrong, force Ironclad
             options.stream()
@@ -47,6 +54,7 @@ public class CharacterSelectScreenPatch {
                         o.locked = false;
                         ReflectionHacks.setPrivate(o, CharacterOption.class, "buttonImg", ImageMaster.CHAR_SELECT_IRONCLAD);
                     });
+            charManager.handleIroncladOverride();
         }
     }
     @SpirePatch(clz = CustomCharacterSelectScreen.class, method="initialize")
@@ -56,6 +64,7 @@ public class CharacterSelectScreenPatch {
         public static void captureCharSelect(CustomCharacterSelectScreen __instance,  ArrayList<CharacterOption> ___allOptions)
         {
             charSelectScreen = __instance;
+            APClient.logger.info("Intializing custom character select screen");
             options = new ArrayList<>(___allOptions);
         }
     }
@@ -78,6 +87,7 @@ public class CharacterSelectScreenPatch {
         @SpirePrefixPatch
         public static void initializeAPSettings(CharacterSelectScreen __instance)
         {
+            // updateButtons is where game start happens, more or less
             SeedHelper.setSeed(APClient.slotData.seed);
             __instance.isAscensionMode = APClient.slotData.ascension > 0;
             __instance.ascensionLevel = APClient.slotData.ascension;
@@ -98,7 +108,11 @@ public class CharacterSelectScreenPatch {
                 if(o.selected)
                 {
                     //TODO: cleanup
-                    ConnectionResult.character = o.c;
+                    //ConnectionResult.character = o.c;
+                    if(!APClient.charManager.selectCharacter(o.c.chosenClass.name()))
+                    {
+                        throw new RuntimeException("Attempting to play AP with an unrecognized character " + o.c.chosenClass.name());
+                    }
                     break;
                 }
             }

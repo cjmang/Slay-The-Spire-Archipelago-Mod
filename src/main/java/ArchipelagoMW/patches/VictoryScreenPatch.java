@@ -1,20 +1,28 @@
 package ArchipelagoMW.patches;
 
 import ArchipelagoMW.APClient;
+import ArchipelagoMW.CharacterConfig;
+import ArchipelagoMW.CharacterManager;
 import ArchipelagoMW.LocationTracker;
+import ArchipelagoMW.apEvents.DataStorageGet;
 import com.evacipated.cardcrawl.modthespire.lib.*;
-import com.megacrit.cardcrawl.core.CardCrawlGame;
-import com.megacrit.cardcrawl.dungeons.TheBeyond;
-import com.megacrit.cardcrawl.helpers.Hitbox;
+import com.megacrit.cardcrawl.characters.AbstractPlayer;
 import com.megacrit.cardcrawl.helpers.controller.CInputActionSet;
 import com.megacrit.cardcrawl.screens.DeathScreen;
 import com.megacrit.cardcrawl.screens.GameOverScreen;
 import com.megacrit.cardcrawl.screens.VictoryScreen;
 import com.megacrit.cardcrawl.ui.buttons.ReturnToMenuButton;
 import dev.koifysh.archipelago.ClientStatus;
+import dev.koifysh.archipelago.events.RetrievedEvent;
+import dev.koifysh.archipelago.network.client.SetPacket;
 import javassist.CtBehavior;
 
+import java.util.*;
+import java.util.stream.Collectors;
+
 public class VictoryScreenPatch {
+
+    private static final String VICTORY_KEY = "spire_" + APClient.apClient.getSlot() + "_victory";
 
     @SpirePatch(clz = DeathScreen.class, method = SpirePatch.CONSTRUCTOR)
     public static class deathPatch {
@@ -26,9 +34,9 @@ public class VictoryScreenPatch {
             if (!GameOverScreen.isVictory || APClient.slotData.finalAct == 1)
                 return;
 
-
-            APClient.apClient.setGameState(ClientStatus.CLIENT_GOAL);
-            LocationTracker.forfeit();
+            if(victoryForCurrentCharacter()) {
+                LocationTracker.endOfTheRoad();
+            }
         }
     }
 
@@ -41,9 +49,9 @@ public class VictoryScreenPatch {
             if (!GameOverScreen.isVictory)
                 return;
 
-
-            APClient.apClient.setGameState(ClientStatus.CLIENT_GOAL);
-            LocationTracker.forfeit();
+            if(victoryForCurrentCharacter()) {
+                LocationTracker.endOfTheRoad();
+            }
         }
     }
 
@@ -64,5 +72,40 @@ public class VictoryScreenPatch {
                 return new int[] {LineFinder.findInOrder(ctBehavior, match)[0]+1};
             }
         }
+    }
+
+    public static boolean victoryForCurrentCharacter() {
+        CharacterManager characterManager = APClient.charManager;
+        AbstractPlayer character = characterManager.getCurrentCharacter();
+        RetrievedEvent event = DataStorageGet.getData(Collections.singleton(VICTORY_KEY));
+        if(event == null)
+        {
+            APClient.logger.info("Couldn't communicate with server for victory; save file will be retained");
+            return false;
+        }
+        Set<String> charsWonWith = new HashSet<>();
+        charsWonWith.add(character.chosenClass.name());
+        String result = event.getString(VICTORY_KEY);
+        if(result != null)
+        {
+            String[] chars = result.split(":;:");
+            charsWonWith.addAll(Arrays.asList(chars));
+        }
+        else
+        {
+            for(CharacterConfig config : characterManager.getUnrecognizedCharacters())
+            {
+                charsWonWith.add(config.officialName);
+            }
+        }
+        APClient.logger.info("Won with the following characters: {}", charsWonWith);
+        if(charsWonWith.size() >= characterManager.getCharacters().size())
+        {
+            APClient.apClient.setGameState(ClientStatus.CLIENT_GOAL);
+        }
+        SetPacket packet = new SetPacket(VICTORY_KEY, String.join(":;:", charsWonWith));
+        // TODO: this API feels awkward, and I dunno the error handling semantics
+        APClient.apClient.dataStorageSet(packet);
+        return true;
     }
 }

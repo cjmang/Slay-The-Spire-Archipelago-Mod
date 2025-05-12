@@ -12,12 +12,12 @@ public class APTextures {
     public static Texture TEAM_SETTINGS_BACKGROUND;
 
     public static void initialize() {
-        AP_BADGE = ImageMaster.loadImage("ArchipelagoMWResources/images/Badge.png");
-        AP_ICON = ImageMaster.loadImage("ArchipelagoMWResources/images/ui/APIcon.png");
-        AP_CHEST = ImageMaster.loadImage("ArchipelagoMWResources/images/npc/APChest.png");
-        PLAYER_PANEL = ImageMaster.loadImage("ArchipelagoMWResources/images/ui/hud/PlayerPanel.png");
-        TEAM_BAR = ImageMaster.loadImage("ArchipelagoMWResources/images/ui/hud/TeamColorBar.png");
-        TEAM_SETTINGS_BACKGROUND = ImageMaster.loadImage("ArchipelagoMWResources/images/ui/hud/TeamSettingsBackground.png");
+        AP_BADGE = ImageMaster.loadImage("ArchipelagoMW-2.0Resources/images/Badge.png");
+        AP_ICON = ImageMaster.loadImage("ArchipelagoMW-2.0Resources/images/ui/APIcon.png");
+        AP_CHEST = ImageMaster.loadImage("ArchipelagoMW-2.0Resources/images/npc/APChest.png");
+        PLAYER_PANEL = ImageMaster.loadImage("ArchipelagoMW-2.0Resources/images/ui/hud/PlayerPanel.png");
+        TEAM_BAR = ImageMaster.loadImage("ArchipelagoMW-2.0Resources/images/ui/hud/TeamColorBar.png");
+        TEAM_SETTINGS_BACKGROUND = ImageMaster.loadImage("ArchipelagoMW-2.0Resources/images/ui/hud/TeamSettingsBackground.png");
 
     }
 }

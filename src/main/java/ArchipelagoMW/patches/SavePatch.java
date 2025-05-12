@@ -20,8 +20,10 @@ import java.util.zip.GZIPOutputStream;
 public class SavePatch {
 
     public static String compressedSave = "";
+    public static String savedChar = "";
 
     public static String AP_SAVE_STRING = "spire_" + APClient.apClient.getSlot() + "_save";
+    public static String AP_SAVE_CHAR = "spire_" + APClient.apClient.getSlot() + "_char";
 
     @SpirePatch(clz = SaveAndContinue.class, method = "loadSaveString", paramtypez = {String.class})
     public static class LoadSaveString {
@@ -40,9 +42,11 @@ public class SavePatch {
             // hopefully Save data?
             if (save.current_room.equals(TreasureRoomBoss.class.getName()) && TeamManager.myTeam == null) {
                 compressedSave = compress(data);
-                SetPacket packet = new SetPacket(AP_SAVE_STRING, 0);
-                packet.addDataStorageOperation(SetPacket.Operation.REPLACE, compressedSave);
-                APClient.apClient.dataStorageSet(packet);
+                SetPacket savePacket = new SetPacket(AP_SAVE_STRING, 0);
+                SetPacket charPacket = new SetPacket(AP_SAVE_CHAR, APClient.charManager.getCurrentCharacter().chosenClass.name());
+                savePacket.addDataStorageOperation(SetPacket.Operation.REPLACE, compressedSave);
+                APClient.apClient.dataStorageSet(savePacket);
+                APClient.apClient.dataStorageSet(charPacket);
                 return SpireReturn.Return();
             }
             return SpireReturn.Continue();
@@ -64,7 +68,7 @@ public class SavePatch {
      * @return a compressed String.
      */
     private static String compress(final String str) {
-        if (str == null || str.length() == 0) {
+        if (str == null || str.isEmpty()) {
             return str;
         }
         try {

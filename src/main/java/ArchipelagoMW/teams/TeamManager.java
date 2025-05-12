@@ -9,11 +9,8 @@ import com.evacipated.cardcrawl.modthespire.lib.*;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
-import com.megacrit.cardcrawl.characters.AbstractPlayer;
 import com.megacrit.cardcrawl.core.CardCrawlGame;
 import com.megacrit.cardcrawl.dungeons.AbstractDungeon;
-import com.megacrit.cardcrawl.dungeons.Exordium;
-import com.megacrit.cardcrawl.saveAndContinue.SaveFile;
 import com.megacrit.cardcrawl.screens.DeathScreen;
 import dev.koifysh.archipelago.events.ArchipelagoEventListener;
 import dev.koifysh.archipelago.events.BouncedEvent;
@@ -253,6 +250,7 @@ public class TeamManager {
         TeamInfo oldTeam = teams.get(team.name);
         if(myTeam != null && myTeam.name.equals(team.name) && !oldTeam.locked && team.locked) {
             // initiate game start!
+            // TODO: what is this team manager nonsense?
             ConnectionResult.start();
         }
         oldTeam.update(team);
