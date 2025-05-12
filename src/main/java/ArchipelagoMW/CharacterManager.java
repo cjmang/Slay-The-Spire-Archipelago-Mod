@@ -114,10 +114,6 @@ public class CharacterManager {
 
     private void selectCharacter(CharacterConfig config)
     {
-        if(config == currentCharacterConfig)
-        {
-            return;
-        }
 
         currentCharacterConfig = config;
         currentCharacter = CardCrawlGame.characterManager.getAllCharacters()

@@ -84,7 +84,7 @@ public class CharacterSelectScreenPatch {
     public static class UpdateButtonsPatch
     {
 
-        @SpirePrefixPatch
+        @SpireInsertPatch(rloc=298-280)
         public static void initializeAPSettings(CharacterSelectScreen __instance)
         {
             // updateButtons is where game start happens, more or less

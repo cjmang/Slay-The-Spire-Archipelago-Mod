@@ -47,6 +47,7 @@ public class LocationTracker {
         currentOffset = charOffset;
         extraOffsets.clear();
         extraOffsets.addAll(extras);
+        reset();
         APClient.logger.info("Intializing LocationTracker with {} and extras {}", charOffset, extraOffsets);
 
         cardDrawLocations.clear();

@@ -5,6 +5,7 @@ import ArchipelagoMW.CharacterConfig;
 import ArchipelagoMW.CharacterManager;
 import ArchipelagoMW.LocationTracker;
 import ArchipelagoMW.apEvents.DataStorageGet;
+import basemod.BaseMod;
 import com.evacipated.cardcrawl.modthespire.lib.*;
 import com.megacrit.cardcrawl.characters.AbstractPlayer;
 import com.megacrit.cardcrawl.helpers.controller.CInputActionSet;
