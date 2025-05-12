@@ -107,7 +107,7 @@ public class VictoryScreenPatch {
                 SetPacket packet = new SetPacket(victoryKey, charsWonWith);
                 packet.defaultValue = new ArrayList<>();
                 packet.addDataStorageOperation(SetPacket.Operation.DEFAULT, null);
-                packet.addDataStorageOperation(SetPacket.Operation.ADD, charsWonWith);
+                packet.addDataStorageOperation(SetPacket.Operation.UPDATE, charsWonWith);
 
                 Future<SetReplyEvent> reply = client.dataStorageSetFuture(packet);
                 SetReplyEvent event = reply.get();
@@ -118,10 +118,8 @@ public class VictoryScreenPatch {
 
                 List<String> eventChars = (List<String>) event.value;
 
-                Set<String> totalCharsWonWith = new HashSet<>(eventChars);
-
-                APClient.logger.info("Won with the following characters: {}", totalCharsWonWith);
-                if (totalCharsWonWith.size() >= characterManager.getCharacters().size()) {
+                APClient.logger.info("Won with the following characters: {}", eventChars);
+                if (eventChars.size() >= characterManager.getCharacters().size()) {
                     client.setGameState(ClientStatus.CLIENT_GOAL);
                 }
                 LocationTracker.endOfTheRoad();
