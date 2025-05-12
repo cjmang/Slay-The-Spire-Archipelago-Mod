@@ -140,7 +140,7 @@ public class ConnectionResult {
 
             Archipelago.logger.info("character: {}", config.officialName);
             Archipelago.logger.info("heart: " + config.finalAct);
-            Archipelago.logger.info("seed: " + APClient.slotData.seed);
+            Archipelago.logger.info("seed: " + config.seed);
             Archipelago.logger.info("ascension: " + config.ascension);
             Archipelago.logger.info("character offset: {}", config.charOffset);
 
@@ -155,7 +155,7 @@ public class ConnectionResult {
             DeathLinkHelper.update.sendDeath = false;
 
             Settings.isFinalActAvailable = config.finalAct;
-            SeedHelper.setSeed(APClient.slotData.seed);
+            SeedHelper.setSeed(config.seed);
 
             AbstractDungeon.isAscensionMode = config.ascension > 0;
             AbstractDungeon.ascensionLevel = config.ascension;

@@ -15,6 +15,8 @@ public class CharacterConfig {
     public String officialName;
     @SerializedName("mod_num")
     public int modNum;
+    @SerializedName("seed")
+    public String seed;
     @SerializedName("ascension")
     public int ascension;
     @SerializedName("final_act")
@@ -30,9 +32,11 @@ public class CharacterConfig {
                 ", charOffset=" + charOffset +
                 ", officialName='" + officialName + '\'' +
                 ", modNum=" + modNum +
+                ", seed='" + seed + '\'' +
                 ", ascension=" + ascension +
                 ", finalAct=" + finalAct +
                 ", downfall=" + downfall +
                 '}';
     }
 }
+

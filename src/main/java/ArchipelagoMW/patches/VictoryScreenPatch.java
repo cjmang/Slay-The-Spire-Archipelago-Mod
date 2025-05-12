@@ -32,7 +32,7 @@ public class VictoryScreenPatch {
         public static void Postfix() {
             // check if this is a post-act3 death which the "isVictory" flag tracks
             // if we should be finishing final act, this is not a victory regardless of act3 boss's death
-            if (!GameOverScreen.isVictory || APClient.slotData.finalAct == 1)
+            if (!GameOverScreen.isVictory || APClient.charManager.getCurrentCharacterConfig().finalAct)
                 return;
 
             if(victoryForCurrentCharacter()) {

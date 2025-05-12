@@ -2,6 +2,7 @@ package ArchipelagoMW.patches;
 
 import ArchipelagoMW.APClient;
 import ArchipelagoMW.Archipelago;
+import ArchipelagoMW.CharacterConfig;
 import ArchipelagoMW.CharacterManager;
 import ArchipelagoMW.apEvents.ConnectionResult;
 import ArchipelagoMW.util.DeathLinkHelper;
@@ -87,23 +88,6 @@ public class CharacterSelectScreenPatch {
         @SpireInsertPatch(rloc=298-280)
         public static void initializeAPSettings(CharacterSelectScreen __instance)
         {
-            // updateButtons is where game start happens, more or less
-            SeedHelper.setSeed(APClient.slotData.seed);
-            __instance.isAscensionMode = APClient.slotData.ascension > 0;
-            __instance.ascensionLevel = APClient.slotData.ascension;
-            Settings.isFinalActAvailable = APClient.slotData.finalAct == 1;
-
-            if(Loader.isModLoaded("downfall"))
-            {
-                EvilModeCharacterSelect.evilMode = APClient.slotData.downfall == 1;
-            }
-
-            if (APClient.slotData.deathLink > 0) {
-                DeathLink.setDeathLinkEnabled(true);
-            }
-
-            DeathLinkHelper.update.sendDeath = false;
-
             for (CharacterOption o : __instance.options) {
                 if(o.selected)
                 {
@@ -116,6 +100,24 @@ public class CharacterSelectScreenPatch {
                     break;
                 }
             }
+            CharacterConfig config = APClient.charManager.getCurrentCharacterConfig();
+            // updateButtons is where game start happens, more or less
+            SeedHelper.setSeed(config.seed);
+            __instance.isAscensionMode = config.ascension > 0;
+            __instance.ascensionLevel = config.ascension;
+            Settings.isFinalActAvailable = config.finalAct;
+
+            if(Loader.isModLoaded("downfall"))
+            {
+                EvilModeCharacterSelect.evilMode = config.downfall;
+            }
+
+            if (APClient.slotData.deathLink > 0) {
+                DeathLink.setDeathLinkEnabled(true);
+            }
+
+            DeathLinkHelper.update.sendDeath = false;
+
 
         }
     }

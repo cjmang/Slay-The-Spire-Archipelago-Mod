@@ -8,9 +8,6 @@ import java.util.List;
 
 public class SlotData {
 
-    @SerializedName("seed")
-    public String seed;
-
     @SerializedName("character")
     public String character = "The Ironclad";
 
