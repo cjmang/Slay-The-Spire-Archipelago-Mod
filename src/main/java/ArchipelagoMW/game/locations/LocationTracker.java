@@ -194,8 +194,10 @@ public class LocationTracker {
 
     public static void sendFloorCheck(int floor)
     {
-        APClient.logger.info("Sending floor check for floor {} and id {}", floor, floor + (200L * currentOffset));
-        APClient.client.checkLocations(getLocationIDs(floor + (200L * currentOffset)));
+        if(APClient.slotData.includeFloorChecks != 0) {
+            APClient.logger.info("Sending floor check for floor {} and id {}", floor, floor + (200L * currentOffset));
+            APClient.client.checkLocations(getLocationIDs(floor + (200L * currentOffset)));
+        }
     }
 
     public static void endOfTheRoad() {

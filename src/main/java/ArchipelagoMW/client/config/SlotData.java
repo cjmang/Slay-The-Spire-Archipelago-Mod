@@ -11,9 +11,6 @@ public class SlotData {
     @SerializedName("character")
     public String character = "The Ironclad";
 
-    @SerializedName("games")
-    public int games;
-
     @SerializedName("ascension")
     public int ascension = 0;
 
@@ -26,8 +23,8 @@ public class SlotData {
     @SerializedName("death_link")
     public int deathLink = 0;
 
-    @SerializedName("character_offset")
-    public int character_offset = 0;
+    @SerializedName("include_floor_checks")
+    public int includeFloorChecks;
 
     @SerializedName("characters")
     public List<CharacterConfig> characters = new ArrayList<>();
