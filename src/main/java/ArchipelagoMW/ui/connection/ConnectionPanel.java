@@ -2,7 +2,7 @@ package ArchipelagoMW.ui.connection;
 
 import ArchipelagoMW.APSettings;
 import ArchipelagoMW.Archipelago;
-import ArchipelagoMW.patches.ConfirmPopupPatch;
+import ArchipelagoMW.save.ConfirmPopupPatch;
 import ArchipelagoMW.ui.Components.TextBox;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
@@ -53,7 +53,7 @@ public class ConnectionPanel {
     float slotNameOffset = FontHelper.getSmartWidth(textFont, TEXT[3], 1000000.0F, 0.0F, 1f);
     float passwordOffset = FontHelper.getSmartWidth(textFont, TEXT[6], 1000000.0F, 0.0F, 1f);
 
-    public final ConfirmPopup resumeSave;
+//    public final ConfirmPopup resumeSave;
 
     public TextBox addressTextBox;
     public TextBox slotNameTextBox;
@@ -72,25 +72,25 @@ public class ConnectionPanel {
         passwordTextBox = new TextBox(OPTION_X + passwordOffset, currentY, PANEL_WIDTH * .85f - passwordOffset);
         passwordTextBox.setText(APSettings.password);
         currentY -= stepY;
-        resumeSave = new ConfirmPopup("Resume?", "Archipelago Save Detected would you like to resume?", ConfirmPopupPatch.AP_SAVE_RESUME);
+//        resumeSave = new ConfirmPopup("Resume?", "Archipelago Save Detected would you like to resume?", ConfirmPopupPatch.AP_SAVE_RESUME);
     }
 
     public void update() {
-        if (!resumeSave.shown) {
-            if(Gdx.input.isKeyJustPressed(Input.Keys.TAB)) {
-                if (Gdx.input.getInputProcessor().equals(addressTextBox)) {
-                    Gdx.input.setInputProcessor(slotNameTextBox);
-                } else if (Gdx.input.getInputProcessor().equals(slotNameTextBox)) {
-                    Gdx.input.setInputProcessor(passwordTextBox);
-                } else if (Gdx.input.getInputProcessor().equals(passwordTextBox)) {
-                    Gdx.input.setInputProcessor(addressTextBox);
-                }
+//        if (!resumeSave.shown) {
+        if(Gdx.input.isKeyJustPressed(Input.Keys.TAB)) {
+            if (Gdx.input.getInputProcessor().equals(addressTextBox)) {
+                Gdx.input.setInputProcessor(slotNameTextBox);
+            } else if (Gdx.input.getInputProcessor().equals(slotNameTextBox)) {
+                Gdx.input.setInputProcessor(passwordTextBox);
+            } else if (Gdx.input.getInputProcessor().equals(passwordTextBox)) {
+                Gdx.input.setInputProcessor(addressTextBox);
             }
-            addressTextBox.update();
-            slotNameTextBox.update();
-            passwordTextBox.update();
         }
-        resumeSave.update();
+        addressTextBox.update();
+        slotNameTextBox.update();
+        passwordTextBox.update();
+//        }
+//        resumeSave.update();
     }
 
     public void render(SpriteBatch sb) {
@@ -164,7 +164,7 @@ public class ConnectionPanel {
                 new Color(0.9F, 0.9F, 0.9F, 1.0F), 1f);
 
 
-        resumeSave.render(sb);
+//        resumeSave.render(sb);
     }
 
     static {

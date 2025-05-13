@@ -1,16 +1,7 @@
 package ArchipelagoMW.apEvents;
 
-import ArchipelagoMW.APClient;
-import ArchipelagoMW.patches.SavePatch;
-import ArchipelagoMW.ui.connection.ArchipelagoPreGameScreen;
-import ArchipelagoMW.ui.mainMenu.ArchipelagoMainMenuButton;
 import dev.koifysh.archipelago.events.ArchipelagoEventListener;
 import dev.koifysh.archipelago.events.RetrievedEvent;
-
-import java.util.Collection;
-import java.util.concurrent.LinkedTransferQueue;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TransferQueue;
 
 // TODO: delete
 public class DataStorageGet {

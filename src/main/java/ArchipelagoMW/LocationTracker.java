@@ -1,9 +1,8 @@
 package ArchipelagoMW;
 
-import ArchipelagoMW.patches.SavePatch;
+import ArchipelagoMW.save.SaveManager;
 import basemod.ReflectionHacks;
 import com.megacrit.cardcrawl.rewards.RewardItem;
-import dev.koifysh.archipelago.network.client.SetPacket;
 import dev.koifysh.archipelago.parts.NetworkItem;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -202,9 +201,7 @@ public class LocationTracker {
         allLocations.addAll(bossRelicLocations);
 
         APClient.apClient.getLocationManager().checkLocations(allLocations);
-        SetPacket set = new SetPacket(SavePatch.AP_SAVE_STRING,"");
-        set.addDataStorageOperation(SetPacket.Operation.REPLACE, "");
-        APClient.apClient.dataStorageSet(set);
+        SaveManager.getInstance().saveString(APClient.charManager.getCurrentCharacter().chosenClass.name(), "");
     }
 
     public static void scoutAllLocations() {

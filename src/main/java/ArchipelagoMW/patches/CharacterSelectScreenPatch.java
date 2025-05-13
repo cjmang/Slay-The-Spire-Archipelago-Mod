@@ -4,7 +4,8 @@ import ArchipelagoMW.APClient;
 import ArchipelagoMW.Archipelago;
 import ArchipelagoMW.CharacterConfig;
 import ArchipelagoMW.CharacterManager;
-import ArchipelagoMW.apEvents.ConnectionResult;
+import ArchipelagoMW.save.ConfirmPopupPatch;
+import ArchipelagoMW.save.SaveManager;
 import ArchipelagoMW.util.DeathLinkHelper;
 import basemod.CustomCharacterSelectScreen;
 import basemod.ReflectionHacks;
@@ -18,6 +19,7 @@ import com.megacrit.cardcrawl.helpers.ModHelper;
 import com.megacrit.cardcrawl.helpers.SeedHelper;
 import com.megacrit.cardcrawl.screens.charSelect.CharacterOption;
 import com.megacrit.cardcrawl.screens.charSelect.CharacterSelectScreen;
+import com.megacrit.cardcrawl.screens.options.ConfirmPopup;
 import dev.koifysh.archipelago.helper.DeathLink;
 import downfall.downfallMod;
 import downfall.patches.EvilModeCharacterSelect;
@@ -28,16 +30,15 @@ import java.util.stream.Collectors;
 
 public class CharacterSelectScreenPatch {
 
+
+    private static ConfirmPopup resumeSave;
     public static CustomCharacterSelectScreen charSelectScreen;
     private static ArrayList<CharacterOption> options;
 
     public static void lockNonAPChars() {
         CharacterManager charManager = APClient.charManager;
         charSelectScreen.options = new ArrayList<>(options);
-//        charManager.markUnrecognziedCharacters(charManager.getCharacters().stream()
-//                        .map(c -> c.officialName)
-//                        .filter(n -> options.stream().noneMatch(o -> o.c.chosenClass.name().equals(n)))
-//                        .collect(Collectors.toList()));
+
         charManager.markUnrecognziedCharacters();
         Archipelago.logger.info("Character Options {}", options.stream().map(o-> o.c.chosenClass.name()).collect(Collectors.toList()));
         charSelectScreen.options.stream().filter(o -> !charManager.getAvailableAPChars().contains(o.c.chosenClass.name()))
@@ -58,6 +59,8 @@ public class CharacterSelectScreenPatch {
             charManager.handleIroncladOverride();
         }
     }
+
+
     @SpirePatch(clz = CustomCharacterSelectScreen.class, method="initialize")
     public static class InitPatch {
 
@@ -67,6 +70,7 @@ public class CharacterSelectScreenPatch {
             charSelectScreen = __instance;
             APClient.logger.info("Intializing custom character select screen");
             options = new ArrayList<>(___allOptions);
+            resumeSave = new ConfirmPopup("Resume?", "Archipelago Save Detected would you like to resume?", ConfirmPopupPatch.AP_SAVE_RESUME);
         }
     }
 
@@ -79,15 +83,34 @@ public class CharacterSelectScreenPatch {
         {
             ___isAscensionModeUnlocked[0] = false;
         }
+
+        @SpirePostfixPatch
+        public static void updateResumeSave(CharacterSelectScreen __instance)
+        {
+            resumeSave.update();
+        }
+    }
+
+    @SpirePatch(clz = CharacterSelectScreen.class, method="render", paramtypez={SpriteBatch.class})
+    public static class RenderPatch
+    {
+        @SpirePostfixPatch
+        public static void renderConfirm(CharacterSelectScreen __instance, SpriteBatch sb)
+        {
+            resumeSave.render(sb);
+        }
     }
 
     @SpirePatch(clz= CharacterSelectScreen.class, method="updateButtons")
     public static class UpdateButtonsPatch
     {
 
-        @SpireInsertPatch(rloc=298-280)
-        public static void initializeAPSettings(CharacterSelectScreen __instance)
+        @SpireInsertPatch(rloc=297-280)
+        public static SpireReturn<Void> showSaveConfirm(CharacterSelectScreen __instance)
         {
+            if(!__instance.confirmButton.hb.clicked) {
+                return SpireReturn.Continue();
+            }
             for (CharacterOption o : __instance.options) {
                 if(o.selected)
                 {
@@ -100,6 +123,18 @@ public class CharacterSelectScreenPatch {
                     break;
                 }
             }
+            if(SaveManager.getInstance().hasSave(APClient.charManager.getCurrentCharacter().chosenClass.name()))
+            {
+                resumeSave.show();
+                __instance.confirmButton.hb.clicked = false;
+                return SpireReturn.Return();
+            }
+            return SpireReturn.Continue();
+        }
+
+        @SpireInsertPatch(rloc=298-280)
+        public static void initializeAPSettings(CharacterSelectScreen __instance)
+        {
             CharacterConfig config = APClient.charManager.getCurrentCharacterConfig();
             // updateButtons is where game start happens, more or less
             SeedHelper.setSeed(config.seed);

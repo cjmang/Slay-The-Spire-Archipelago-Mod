@@ -41,12 +41,12 @@ public class APClient extends Client {
         apClient.setName(slotName);
         apClient.setItemsHandlingFlags(ItemsHandling.SEND_ITEMS + ItemsHandling.SEND_OWN_ITEMS + ItemsHandling.SEND_STARTING_INVENTORY);
 
-//        apClient.getEventManager().registerListener(new ConnectionResult());
-//        apClient.getEventManager().registerListener(new LocationInfo());
-//        apClient.getEventManager().registerListener(new ReceiveItem());
+        apClient.getEventManager().registerListener(new ConnectionResult());
+        apClient.getEventManager().registerListener(new LocationInfo());
+        apClient.getEventManager().registerListener(new ReceiveItem());
         apClient.getEventManager().registerListener(apClient.dataStorageWrapper);
-//        apClient.getEventManager().registerListener(new PlayerManager());
-//        apClient.getEventManager().registerListener(new TeamManager());
+        apClient.getEventManager().registerListener(new PlayerManager());
+        apClient.getEventManager().registerListener(new TeamManager());
         //apClient.getEventManager().registerListener(new TestButton());
         try {
             apClient.connect(address);
@@ -63,14 +63,12 @@ public class APClient extends Client {
 
     @Override
     public void onError(Exception e) {
-//        ConnectionPanel.connectionResultText = "Server Error NL " + e.getMessage();
-        e.printStackTrace(System.err);
+        ConnectionPanel.connectionResultText = "Server Error NL " + e.getMessage();
     }
 
     @Override
     public void onClose(String message, int i) {
-//        ConnectionPanel.connectionResultText = "Connection Closed NL " + message;
-        System.out.println(message);
+        ConnectionPanel.connectionResultText = "Connection Closed NL " + message;
     }
 
     public void asyncDSGet(Collection<String> keys, Consumer<RetrievedEvent> lambda)

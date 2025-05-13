@@ -1,7 +1,7 @@
 package ArchipelagoMW.apEvents;
 
 import ArchipelagoMW.*;
-import ArchipelagoMW.patches.SavePatch;
+import ArchipelagoMW.save.SaveManager;
 import ArchipelagoMW.ui.RewardMenu.ArchipelagoRewardScreen;
 import ArchipelagoMW.ui.connection.ArchipelagoPreGameScreen;
 import ArchipelagoMW.ui.connection.ConnectionPanel;
@@ -17,8 +17,6 @@ import downfall.patches.EvilModeCharacterSelect;
 import dev.koifysh.archipelago.events.ArchipelagoEventListener;
 import dev.koifysh.archipelago.events.ConnectionResultEvent;
 import dev.koifysh.archipelago.helper.DeathLink;
-
-import java.util.*;
 
 public class ConnectionResult {
     /**
@@ -64,6 +62,7 @@ public class ConnectionResult {
         Archipelago.logger.info(slotData.characters.toString());
         APClient.charManager.initialize(slotData.characters);
         Archipelago.logger.info("slot data parsed");
+        SaveManager.getInstance().loadSaves();
 
 
 //        character = CardCrawlGame.characterManager.getCharacter(AbstractPlayer.PlayerClass.IRONCLAD);
@@ -130,17 +129,19 @@ public class ConnectionResult {
 //        TeamManager.initialLoad();
 //        PlayerManager.initialLoad();
 //        DataStorageGet.loadRequestId = APClient.apClient.dataStorageGet(Arrays.asList(SavePatch.AP_SAVE_STRING, SavePatch.AP_SAVE_CHAR));
-        APClient.apClient.asyncDSGet(Arrays.asList(SavePatch.AP_SAVE_STRING, SavePatch.AP_SAVE_CHAR),
-                (e) -> {
-                    if (e.getString(SavePatch.AP_SAVE_STRING) != null && !e.getString(SavePatch.AP_SAVE_STRING).isEmpty()) {
-                        SavePatch.compressedSave = e.getString(SavePatch.AP_SAVE_STRING);
-                        SavePatch.savedChar = e.getString(SavePatch.AP_SAVE_CHAR);
-                        APClient.logger.info("Got saved character {}", SavePatch.savedChar);
-                        ArchipelagoMainMenuButton.archipelagoPreGameScreen.connectionPanel.resumeSave.show();
-                    } else {
-                        ArchipelagoMainMenuButton.archipelagoPreGameScreen.screen = ArchipelagoPreGameScreen.APScreen.charSelect;
-                    }
-                });
+//        APClient.apClient.asyncDSGet(Arrays.asList(SavePatch.AP_SAVE_STRING, SavePatch.AP_SAVE_CHAR),
+//                (e) -> {
+//                    if (e.getString(SavePatch.AP_SAVE_STRING) != null && !e.getString(SavePatch.AP_SAVE_STRING).isEmpty()) {
+//                        SavePatch.compressedSave = e.getString(SavePatch.AP_SAVE_STRING);
+//                        SavePatch.savedChar = e.getString(SavePatch.AP_SAVE_CHAR);
+//                        APClient.logger.info("Got saved character {}", SavePatch.savedChar);
+//                        ArchipelagoMainMenuButton.archipelagoPreGameScreen.connectionPanel.resumeSave.show();
+//                    } else {
+//                        ArchipelagoMainMenuButton.archipelagoPreGameScreen.screen = ArchipelagoPreGameScreen.APScreen.charSelect;
+//                    }
+//                });
+
+        ArchipelagoMainMenuButton.archipelagoPreGameScreen.screen = ArchipelagoPreGameScreen.APScreen.charSelect;
     }
 
     public static void start() {

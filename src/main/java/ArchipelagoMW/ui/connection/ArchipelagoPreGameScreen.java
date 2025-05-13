@@ -85,7 +85,7 @@ public class ArchipelagoPreGameScreen {
     //update when something happens on our screen.
     public void update() {
 
-        if (!connectionPanel.resumeSave.shown) {
+//        if (!connectionPanel.resumeSave.shown) {
             //back button
             backButton.update();
             if (backButton.hb.clicked || InputHelper.pressedEscape) {
@@ -116,7 +116,7 @@ public class ArchipelagoPreGameScreen {
                         TeamManager.lockTeam();
                         break;
                 }
-            }
+//            }
         }
 
         //pass the update to our address panel.
@@ -150,10 +150,10 @@ public class ArchipelagoPreGameScreen {
                 break;
         }
 
-        if (!connectionPanel.resumeSave.shown) {
+//        if (!connectionPanel.resumeSave.shown) {
             this.backButton.render(sb);
             this.confirmButton.render(sb);
-        }
+//        }
     }
 
     static {
