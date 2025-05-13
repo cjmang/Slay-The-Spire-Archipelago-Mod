@@ -1,5 +1,6 @@
 # StSArchipelago
-Archipelago integration into Slay the Spire
+Archipelago integration into Slay the Spire.
+Credit to Kono Tyran for the original implementation.
 
 # Contributing
 You will need to set the gradle property for the `steamPath`,
