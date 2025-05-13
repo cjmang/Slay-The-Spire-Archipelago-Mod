@@ -14,7 +14,7 @@ plugins {
 }
 
 description = "Archipelago Multi-World Integration into Slay the Spire"
-version = "1.15-rc-1"
+version = "1.15-rc-2"
 
 repositories {
     // Use Maven Central for resolving dependencies.
@@ -28,11 +28,11 @@ val provided by configurations.creating {
 
 dependencies {
     // Use JUnit Jupiter for testing.
-    testImplementation(libs.junit.jupiter)
+//    testImplementation(libs.junit.jupiter)
 
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 
-    implementation("io.github.ArchipelagoMW:Java-Client:latest.integration")
+    implementation(project(":client-wrapper"))
 
     shadow(files("${steamPath}/common/SlayTheSpire/desktop-1.0.jar"))
     shadow(files("${steamPath}/workshop/content/646570/1605060445/ModTheSpire.jar"))
@@ -53,10 +53,10 @@ tasks.processResources {
     }
 }
 
-tasks.named<Test>("test") {
-    // Use JUnit Platform for unit tests.
-    useJUnitPlatform()
-}
+//tasks.named<Test>("test") {
+//    // Use JUnit Platform for unit tests.
+//    useJUnitPlatform()
+//}
 
 tasks.register<Copy>("deployLocal") {
     val mwJar = fileTree(project.layout.buildDirectory.dir("libs")).filter { f: File ->

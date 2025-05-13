@@ -11,3 +11,4 @@ plugins {
 }
 
 rootProject.name = "ArchipelagoMW-2.0"
+include("client-wrapper")
