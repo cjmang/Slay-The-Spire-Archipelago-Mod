@@ -4,7 +4,7 @@ import ArchipelagoMW.client.APClient;
 import ArchipelagoMW.game.CharacterManager;
 import ArchipelagoMW.game.locations.LocationTracker;
 import ArchipelagoMW.game.items.patches.RewardItemPatch;
-import ArchipelagoMW.game.locations.ui.RewardMenu.ArchipelagoRewardScreen;
+import ArchipelagoMW.game.items.ui.ArchipelagoRewardScreen;
 import basemod.abstracts.CustomSavableRaw;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
@@ -55,9 +55,9 @@ public class APSaveable implements CustomSavableRaw {
 
         save.add("rewards_remaining", new JsonPrimitive(ArchipelagoRewardScreen.rewardsQueued));
         save.add("received_index", new JsonPrimitive(ArchipelagoRewardScreen.receivedItemsIndex));
-        save.add("card_draw_index", new JsonPrimitive(LocationTracker.cardDrawIndex));
-        save.add("rare_card_draw_index", new JsonPrimitive(LocationTracker.rareCardIndex));
-        save.add("relic_index", new JsonPrimitive(LocationTracker.relicIndex));
+        save.add("card_draw_index", new JsonPrimitive(LocationTracker.cardDrawLocations.getIndex()));
+        save.add("rare_card_draw_index", new JsonPrimitive(LocationTracker.rareDrawLocations.getIndex()));
+        save.add("relic_index", new JsonPrimitive(LocationTracker.relicLocations.getIndex()));
         save.add("character", new JsonPrimitive(CharacterManager.getInstance().getCurrentCharacter().chosenClass.name()));
 
         return save;
@@ -100,9 +100,11 @@ public class APSaveable implements CustomSavableRaw {
         ArchipelagoRewardScreen.rewards = rewards;
         ArchipelagoRewardScreen.rewardsQueued = save.get("rewards_remaining").getAsInt();
         ArchipelagoRewardScreen.receivedItemsIndex = save.get("received_index").getAsInt();
-        LocationTracker.cardDrawIndex = save.get("card_draw_index").getAsInt();
-        LocationTracker.rareCardIndex = save.get("rare_card_draw_index").getAsInt();
-        LocationTracker.relicIndex = save.get("relic_index").getAsInt();
+        LocationTracker.loadFromSave(
+                save.get("card_draw_index").getAsInt(),
+                save.get("rare_card_draw_index").getAsInt(),
+                save.get("relic_index").getAsInt()
+        );
         if(!CharacterManager.getInstance().selectCharacter(save.get("character").getAsString()))
         {
             throw new RuntimeException("Could not select character from save file " + save.get("character").getAsString());

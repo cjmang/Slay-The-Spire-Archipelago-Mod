@@ -2,10 +2,11 @@ package ArchipelagoMW.game;
 
 import ArchipelagoMW.client.APClient;
 import ArchipelagoMW.client.config.CharacterConfig;
+import ArchipelagoMW.game.items.MiscItemTracker;
 import ArchipelagoMW.game.locations.LocationTracker;
 import ArchipelagoMW.game.teams.PlayerManager;
 import ArchipelagoMW.game.teams.TeamManager;
-import ArchipelagoMW.game.locations.ui.RewardMenu.ArchipelagoRewardScreen;
+import ArchipelagoMW.game.items.ui.ArchipelagoRewardScreen;
 import com.megacrit.cardcrawl.characters.AbstractPlayer;
 import com.megacrit.cardcrawl.core.CardCrawlGame;
 
@@ -17,6 +18,7 @@ public class CharacterManager {
 
     private static final CharacterManager INSTANCE = new CharacterManager();
 
+    private MiscItemTracker itemTracker = new MiscItemTracker(this);
     private List<CharacterConfig> characters = Collections.emptyList();
     private final Set<String> availableAPChars = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
 
@@ -35,6 +37,7 @@ public class CharacterManager {
         currentCharacter = null;
         currentCharacterConfig = null;
         unrecognizedCharacters.clear();
+        itemTracker = new MiscItemTracker(this);
     }
 
     public void initialize(List<CharacterConfig> configs)
@@ -55,6 +58,10 @@ public class CharacterManager {
                     .orElse(null);
         }
 
+    }
+
+    public MiscItemTracker getItemTracker() {
+        return itemTracker;
     }
 
     public List<CharacterConfig> getCharacters() {

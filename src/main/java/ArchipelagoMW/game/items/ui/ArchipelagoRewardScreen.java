@@ -1,4 +1,4 @@
-package ArchipelagoMW.game.locations.ui.RewardMenu;
+package ArchipelagoMW.game.items.ui;
 
 import ArchipelagoMW.client.APClient;
 import ArchipelagoMW.game.CharacterManager;
@@ -348,7 +348,7 @@ public class ArchipelagoRewardScreen  extends CustomScreen {
 
         ArrayList<AbstractGameEffect> effects = ReflectionHacks.getPrivate(reward,RewardItem.class, "effects");
         if (!ret) {
-            if (effects.size() == 0) {
+            if (effects.isEmpty()) {
                 effects.add(new RewardGlowEffect(reward.hb.cX, reward.hb.cY));
             }
 

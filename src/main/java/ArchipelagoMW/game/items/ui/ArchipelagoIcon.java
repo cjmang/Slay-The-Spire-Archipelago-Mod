@@ -4,7 +4,6 @@ import ArchipelagoMW.client.APClient;
 import ArchipelagoMW.game.ui.APTextures;
 import ArchipelagoMW.mod.Archipelago;
 import ArchipelagoMW.game.locations.LocationTracker;
-import ArchipelagoMW.game.locations.ui.RewardMenu.ArchipelagoRewardScreen;
 import basemod.BaseMod;
 import basemod.ReflectionHacks;
 import basemod.TopPanelItem;
@@ -97,10 +96,11 @@ public class ArchipelagoIcon extends TopPanelItem {
                     "Archipelago Rewards (" + APInputActionSet.apmenu.getKeyString() + ")",
                     "View unclaimed rewards that have been sent by Archipelago. NL NL " +
                             "#yChecked #yLocations: NL " +
-                            "TAB Card Draw: #b" + LocationTracker.cardDrawIndex + " NL " +
-                            "TAB Rare Card Draw: #b" + LocationTracker.rareCardIndex + " NL " +
-                            "TAB Relic: #b" + LocationTracker.relicIndex + " NL " +
-                            "TAB Boss Relic: #b" + LocationTracker.bossRelicIndex + " NL " +
+                            "TAB Card Draw: #b" + LocationTracker.cardDrawLocations.getIndex() + " NL " +
+                            "TAB Rare Card Draw: #b" + LocationTracker.rareDrawLocations.getIndex() + " NL " +
+                            "TAB Relic: #b" + LocationTracker.relicLocations.getIndex() + " NL " +
+                            "TAB Boss Relic: #b" + LocationTracker.bossRelicLocations.getIndex() + " NL " +
+                            "TAB Campfires: #b" + LocationTracker.campfireLocations.getNumberChecked() + " NL " +
                             "TAB Floors Reached: #b" + AbstractDungeon.floorNum
             );
         }

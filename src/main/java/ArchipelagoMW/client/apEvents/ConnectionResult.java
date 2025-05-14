@@ -5,7 +5,7 @@ import ArchipelagoMW.client.config.CharacterConfig;
 import ArchipelagoMW.client.config.SlotData;
 import ArchipelagoMW.game.CharacterManager;
 import ArchipelagoMW.game.save.SaveManager;
-import ArchipelagoMW.game.locations.ui.RewardMenu.ArchipelagoRewardScreen;
+import ArchipelagoMW.game.items.ui.ArchipelagoRewardScreen;
 import ArchipelagoMW.game.connect.ui.connection.ArchipelagoPreGameScreen;
 import ArchipelagoMW.game.connect.ui.connection.ConnectionPanel;
 import ArchipelagoMW.game.connect.ui.mainMenu.ArchipelagoMainMenuButton;
@@ -79,6 +79,7 @@ public class ConnectionResult {
         try {
 
             CharacterConfig config = CharacterManager.getInstance().getCurrentCharacterConfig();
+            CharacterManager.getInstance().getItemTracker().initialize(APClient.apClient.getItemManager().getReceivedItemIDs());
             CardCrawlGame.chosenCharacter = CharacterManager.getInstance().getCurrentCharacter().chosenClass;
 
             Archipelago.logger.info("character: {}", config.officialName);

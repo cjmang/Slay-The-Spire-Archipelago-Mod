@@ -1,7 +1,7 @@
 package ArchipelagoMW.game.items.patches;
 
 import ArchipelagoMW.game.ui.APTextures;
-import ArchipelagoMW.game.locations.ui.RewardMenu.ArchipelagoRewardScreen;
+import ArchipelagoMW.game.items.ui.ArchipelagoRewardScreen;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.evacipated.cardcrawl.modthespire.lib.*;

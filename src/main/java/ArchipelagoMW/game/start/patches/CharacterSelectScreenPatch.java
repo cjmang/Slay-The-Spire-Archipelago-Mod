@@ -135,6 +135,7 @@ public class CharacterSelectScreenPatch {
         public static void initializeAPSettings(CharacterSelectScreen __instance)
         {
             CharacterConfig config = CharacterManager.getInstance().getCurrentCharacterConfig();
+            CharacterManager.getInstance().getItemTracker().initialize(APClient.apClient.getItemManager().getReceivedItemIDs());
             // updateButtons is where game start happens, more or less
             SeedHelper.setSeed(config.seed);
             __instance.isAscensionMode = config.ascension > 0;

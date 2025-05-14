@@ -1,6 +1,6 @@
 package ArchipelagoMW.game.items.patches;
 
-import ArchipelagoMW.game.locations.ui.RewardMenu.ArchipelagoRewardScreen;
+import ArchipelagoMW.game.items.ui.ArchipelagoRewardScreen;
 import basemod.BaseMod;
 import com.evacipated.cardcrawl.modthespire.lib.SpirePatch;
 import com.evacipated.cardcrawl.modthespire.lib.SpirePrefixPatch;

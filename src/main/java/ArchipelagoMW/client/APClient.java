@@ -7,7 +7,7 @@ import ArchipelagoMW.client.apEvents.ConnectionResult;
 import ArchipelagoMW.game.locations.LocationTracker;
 import ArchipelagoMW.game.teams.PlayerManager;
 import ArchipelagoMW.game.teams.TeamManager;
-import ArchipelagoMW.game.locations.ui.RewardMenu.ArchipelagoRewardScreen;
+import ArchipelagoMW.game.items.ui.ArchipelagoRewardScreen;
 import ArchipelagoMW.game.connect.ui.connection.ConnectionPanel;
 import dev.koifysh.archipelago.Client;
 import dev.koifysh.archipelago.events.*;
@@ -96,16 +96,17 @@ public class APClient extends Client {
         dataStorageWrapper.close();
     }
 
-    private static class EventHandlers
+    public static class EventHandlers
     {
         @ArchipelagoEventListener
         public static void onLocationInfo(LocationInfoEvent event)
         {
+            APClient.logger.info("Got Location Scouts");
             LocationTracker.addToScoutedLocations(event.locations);
         }
 
         @ArchipelagoEventListener
-        public void onReceiveItem(ReceiveItemEvent event)
+        public static void onReceiveItem(ReceiveItemEvent event)
         {
             CharacterConfig character = CharacterManager.getInstance().getCurrentCharacterConfig();
             if(character == null)
@@ -113,9 +114,9 @@ public class APClient extends Client {
                 return;
             }
             if(event.getIndex() > ArchipelagoRewardScreen.receivedItemsIndex) {
-                if(CharacterManager.getInstance().isItemIDForCurrentCharacter(event.getItemID()) &&
-                        event.getItem().itemName.startsWith(character.name))
+                if(CharacterManager.getInstance().isItemIDForCurrentCharacter(event.getItemID()))
                 {
+                    CharacterManager.getInstance().getItemTracker().addItem(event.getItemID());
                     // only increase counter, actual items get fetched when you open the reward screen.
                     ArchipelagoRewardScreen.rewardsQueued += 1;
                 }

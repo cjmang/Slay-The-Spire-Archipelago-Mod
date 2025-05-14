@@ -29,4 +29,7 @@ public class SlotData {
     @SerializedName("characters")
     public List<CharacterConfig> characters = new ArrayList<>();
 
+    @SerializedName("campfire_sanity")
+    public int campfireSanity = 0;
+
 }

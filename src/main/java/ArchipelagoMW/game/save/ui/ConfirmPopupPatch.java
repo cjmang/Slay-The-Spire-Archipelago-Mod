@@ -50,6 +50,7 @@ public class ConfirmPopupPatch {
             if (___type == AP_SAVE_RESUME) {
 
                 CharacterConfig config = CharacterManager.getInstance().getCurrentCharacterConfig();
+                CharacterManager.getInstance().getItemTracker().initialize(APClient.apClient.getItemManager().getReceivedItemIDs());
 
                 if (Loader.isModLoaded("downfall"))
                     EvilModeCharacterSelect.evilMode = config.downfall;
