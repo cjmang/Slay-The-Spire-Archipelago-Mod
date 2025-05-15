@@ -1,6 +1,7 @@
 package ArchipelagoMW.game.items.ui;
 
 import ArchipelagoMW.client.APClient;
+import ArchipelagoMW.client.APContext;
 import ArchipelagoMW.game.ui.APTextures;
 import ArchipelagoMW.mod.Archipelago;
 import ArchipelagoMW.game.locations.LocationTracker;
@@ -35,9 +36,11 @@ public class ArchipelagoIcon extends TopPanelItem {
     public static final String ID = Archipelago.makeID("ClaimRewards");
 
     public static List<NetworkItem> pendingRewards = new LinkedList<>();
+    private final APContext ctx;
 
     public ArchipelagoIcon() {
         super(APTextures.AP_ICON, ID);
+        ctx = APContext.getContext();
     }
 
     @Override
@@ -79,7 +82,7 @@ public class ArchipelagoIcon extends TopPanelItem {
 
     @Override
     public void render(SpriteBatch sb, Color color) {
-        if (!APClient.apClient.isConnected()) {
+        if (!ctx.getClient().isConnected()) {
             super.render(sb, Color.RED);
         } else {
             if (!this.isClickable())
@@ -96,11 +99,11 @@ public class ArchipelagoIcon extends TopPanelItem {
                     "Archipelago Rewards (" + APInputActionSet.apmenu.getKeyString() + ")",
                     "View unclaimed rewards that have been sent by Archipelago. NL NL " +
                             "#yChecked #yLocations: NL " +
-                            "TAB Card Draw: #b" + LocationTracker.cardDrawLocations.getIndex() + " NL " +
-                            "TAB Rare Card Draw: #b" + LocationTracker.rareDrawLocations.getIndex() + " NL " +
-                            "TAB Relic: #b" + LocationTracker.relicLocations.getIndex() + " NL " +
-                            "TAB Boss Relic: #b" + LocationTracker.bossRelicLocations.getIndex() + " NL " +
-                            "TAB Campfires: #b" + LocationTracker.campfireLocations.getNumberChecked() + " NL " +
+                            "TAB Card Draw: #b" + LocationTracker.getCardDrawLocations().getIndex() + " NL " +
+                            "TAB Rare Card Draw: #b" + LocationTracker.getRareDrawLocations().getIndex() + " NL " +
+                            "TAB Relic: #b" + LocationTracker.getRelicLocations().getIndex() + " NL " +
+                            "TAB Boss Relic: #b" + LocationTracker.getBossRelicLocations().getIndex() + " NL " +
+                            "TAB Campfires: #b" + LocationTracker.getCampfireLocations().getNumberChecked() + " NL " +
                             "TAB Floors Reached: #b" + AbstractDungeon.floorNum
             );
         }
@@ -115,8 +118,8 @@ public class ArchipelagoIcon extends TopPanelItem {
             return;
 
         // if we are disconnected, and we click the ap button try new connection.
-        if (!APClient.apClient.isConnected() && !AbstractDungeon.player.isDead) {
-            APClient.newConnection(Archipelago.address, Archipelago.slotName, Archipelago.password);
+        if (!ctx.getClient().isConnected() && !AbstractDungeon.player.isDead) {
+            APClient.newConnection(APContext.getContext(), Archipelago.address, Archipelago.slotName, Archipelago.password);
         } else if (AbstractDungeon.screen == ArchipelagoRewardScreen.Enum.ARCHIPELAGO_REWARD_SCREEN) {
             AbstractDungeon.closeCurrentScreen();
         } else {

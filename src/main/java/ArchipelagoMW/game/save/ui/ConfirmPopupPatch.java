@@ -1,6 +1,7 @@
 package ArchipelagoMW.game.save.ui;
 
 import ArchipelagoMW.client.APClient;
+import ArchipelagoMW.client.APContext;
 import ArchipelagoMW.client.config.CharacterConfig;
 import ArchipelagoMW.game.CharacterManager;
 import ArchipelagoMW.client.util.DeathLinkHelper;
@@ -48,14 +49,14 @@ public class ConfirmPopupPatch {
         @SpirePostfixPatch
         public static void Postfix(ConfirmPopup __instance, ConfirmPopup.ConfirmType ___type) {
             if (___type == AP_SAVE_RESUME) {
-
-                CharacterConfig config = CharacterManager.getInstance().getCurrentCharacterConfig();
-                CharacterManager.getInstance().getItemTracker().initialize(APClient.apClient.getItemManager().getReceivedItemIDs());
+                APContext ctx = APContext.getContext();
+                CharacterConfig config = ctx.getCharacterManager().getCurrentCharacterConfig();
+                ctx.getItemTracker().initialize(ctx.getItemManager().getReceivedItemIDs());
 
                 if (Loader.isModLoaded("downfall"))
                     EvilModeCharacterSelect.evilMode = config.downfall;
 
-                if (APClient.slotData.deathLink > 0) {
+                if (APContext.getContext().getSlotData().deathLink > 0) {
                     DeathLink.setDeathLinkEnabled(true);
                 }
 

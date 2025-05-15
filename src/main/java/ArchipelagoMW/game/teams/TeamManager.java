@@ -1,6 +1,7 @@
 package ArchipelagoMW.game.teams;
 
 import ArchipelagoMW.client.APClient;
+import ArchipelagoMW.client.APContext;
 import ArchipelagoMW.client.apEvents.ConnectionResult;
 import ArchipelagoMW.game.ui.Components.TeamButton;
 import ArchipelagoMW.game.connect.ui.connection.APTeamsPanel;
@@ -71,8 +72,8 @@ public class TeamManager {
         SetPacket initTeams = new SetPacket("spire_teams", new ArrayList<>());
         initTeams.addDataStorageOperation(SetPacket.Operation.DEFAULT, "i'm needed!");
         initTeams.want_reply = true;
-        teamListRequest = APClient.apClient.dataStorageSet(initTeams);
-        APClient.apClient.dataStorageSetNotify(Collections.singleton("spire_teams"));
+        teamListRequest = APContext.getContext().getClient().dataStorageSet(initTeams);
+        APContext.getContext().getClient().dataStorageSetNotify(Collections.singleton("spire_teams"));
     }
 
     private static final Type arrayListString = new TypeToken<ArrayList<String>>() {
@@ -80,6 +81,7 @@ public class TeamManager {
 
     @ArchipelagoEventListener
     public void teamInfoReceived(RetrievedEvent event) {
+        APClient client = APContext.getContext().getClient();
         for (String stringKey : event.data.keySet()) {
             String[] key = stringKey.split("_");
 
@@ -94,7 +96,7 @@ public class TeamManager {
                 if (players != null && players.contains(CardCrawlGame.playerName) && (myTeam == null || !key[2].equals(myTeam.name))) {
                     SetPacket removeMe = new SetPacket(stringKey, "I matter");
                     removeMe.addDataStorageOperation(SetPacket.Operation.REMOVE,CardCrawlGame.playerName);
-                    APClient.apClient.dataStorageSet(removeMe);
+                    client.dataStorageSet(removeMe);
                     if (players.isEmpty()) {
                         if(APTeamsPanel.selectedTeam != null && APTeamsPanel.selectedTeam.name.equals(key[2]))
                             APTeamsPanel.selectedTeam = null;
@@ -102,7 +104,7 @@ public class TeamManager {
                         SetPacket deleteTeam = new SetPacket("spire_teams", "I matter");
                         deleteTeam.want_reply = true;
                         deleteTeam.addDataStorageOperation(SetPacket.Operation.REMOVE, key[2]);
-                        APClient.apClient.dataStorageSet(deleteTeam);
+                        client.dataStorageSet(deleteTeam);
                     }
                 } else {
                     TeamInfo team = teams.get(key[2]);
@@ -152,6 +154,7 @@ public class TeamManager {
         if (key.length < 2 || !key[0].equals("spire") || !key[1].startsWith("team")) // all of our keys contain at LEAST 2 keys, and start with "spire"
             return;
 
+        APClient client = APContext.getContext().getClient();
         if (key[1].equals("teams")) { // spire_teams
 
             ArrayList<String> teamNames = event.getValueAsObject(arrayListString);
@@ -186,7 +189,7 @@ public class TeamManager {
                     }
                     SetPacket removeMe = new SetPacket(event.key, "I matter");
                     removeMe.addDataStorageOperation(SetPacket.Operation.REPLACE, players);
-                    APClient.apClient.dataStorageSet(removeMe);
+                    client.dataStorageSet(removeMe);
                     if (players.isEmpty()) {
                         if(APTeamsPanel.selectedTeam != null && APTeamsPanel.selectedTeam.name.equals(key[2]))
                             APTeamsPanel.selectedTeam = null;
@@ -194,7 +197,7 @@ public class TeamManager {
                         SetPacket deleteTeam = new SetPacket("spire_teams", "I matter");
                         deleteTeam.want_reply = true;
                         deleteTeam.addDataStorageOperation(SetPacket.Operation.REPLACE, teams.keySet().toArray());
-                        APClient.apClient.dataStorageSet(deleteTeam);
+                        client.dataStorageSet(deleteTeam);
                     }
                 }
             } else if ( myTeam != null && key[2].equals(myTeam.name)  ) { // spire_team_{myTeam}_
@@ -237,7 +240,7 @@ public class TeamManager {
         SetPacket teamUpdatePacket = new SetPacket("spire_team_" + team.name, null);
         teamUpdatePacket.addDataStorageOperation(SetPacket.Operation.REPLACE, gson.toJson(team));
         teamUpdatePacket.want_reply = true;
-        APClient.apClient.dataStorageSet(teamUpdatePacket);
+        APContext.getContext().getClient().dataStorageSet(teamUpdatePacket);
     }
 
     private static boolean updateTeam(TeamInfo team) {
@@ -266,8 +269,8 @@ public class TeamManager {
             ArrayList<String> keys = new ArrayList<>();
             keys.add("spire_team_" + team.name);
             keys.add("spire_team_" + team.name + "_players");
-            APClient.apClient.dataStorageSetNotify(keys);
-            APClient.apClient.dataStorageGet(keys);
+            APContext.getContext().getClient().dataStorageSetNotify(keys);
+            APContext.getContext().getClient().dataStorageGet(keys);
             APTeamsPanel.teamButtons.add(new TeamButton(team));
             return true;
         }
@@ -298,7 +301,7 @@ public class TeamManager {
         SetPacket addTeamPacket = new SetPacket("spire_teams", new ArrayList<>());
         addTeamPacket.addDataStorageOperation(SetPacket.Operation.ADD, Collections.singleton(team.name));
         addTeamPacket.want_reply = true;
-        APClient.apClient.dataStorageSet(addTeamPacket);
+        APContext.getContext().getClient().dataStorageSet(addTeamPacket);
 
 
         return true;
@@ -316,19 +319,20 @@ public class TeamManager {
         SetPacket addTeamPacket = new SetPacket("spire_team_" + team.name + "_players", new ArrayList<>());
         addTeamPacket.addDataStorageOperation(SetPacket.Operation.ADD, Collections.singleton(CardCrawlGame.playerName));
         addTeamPacket.want_reply = true;
-        APClient.apClient.dataStorageSet(addTeamPacket);
+        APContext.getContext().getClient().dataStorageSet(addTeamPacket);
     }
 
     public static void leaveTeam() {
         if (myTeam == null)
             return;
+        APClient client = APContext.getContext().getClient();
 
         while (myTeam.members.contains(CardCrawlGame.playerName))
             myTeam.members.remove(CardCrawlGame.playerName);
 
         SetPacket removeMe = new SetPacket("spire_team_" +myTeam.name+"_players", null);
         removeMe.addDataStorageOperation(SetPacket.Operation.REMOVE, CardCrawlGame.playerName);
-        APClient.apClient.dataStorageSet(removeMe);
+        client.dataStorageSet(removeMe);
 
         if (myTeam.members.isEmpty()) {
             if(APTeamsPanel.selectedTeam != null && APTeamsPanel.selectedTeam.name.equals(myTeam.name))
@@ -337,10 +341,10 @@ public class TeamManager {
             SetPacket removeTeamListing = new SetPacket("spire_teams", null);
             removeTeamListing.want_reply = true;
             removeTeamListing.addDataStorageOperation(SetPacket.Operation.REMOVE,myTeam.name);
-            APClient.apClient.dataStorageSet(removeTeamListing);
+            client.dataStorageSet(removeTeamListing);
             SetPacket deleteTeam = new SetPacket("spire_team_"+myTeam.name, null);
             deleteTeam.addDataStorageOperation(SetPacket.Operation.REPLACE,null);
-            APClient.apClient.dataStorageSet(deleteTeam);
+            client.dataStorageSet(deleteTeam);
         }
         else {
             myTeam.leader = myTeam.members.get(0);
@@ -364,6 +368,8 @@ public class TeamManager {
             return;
 
         if(myTeam.members.stream().anyMatch(member -> !PlayerManager.players.containsKey(member))) return;
+
+        APClient client = APContext.getContext().getClient();
 
         if (myTeam.healthLink) {
             //INITALIZE PAIN!
@@ -389,13 +395,13 @@ public class TeamManager {
 
             SetPacket initHP = new SetPacket("spire_team_" +myTeam.name+"_hp", health);
             initHP.addDataStorageOperation(SetPacket.Operation.REPLACE, health);
-            APClient.apClient.dataStorageSet(initHP);
+            client.dataStorageSet(initHP);
 
             SetPacket initMaxHp = new SetPacket("spire_team_" +myTeam.name+"_maxhp", maxHealth);
             initMaxHp.addDataStorageOperation(SetPacket.Operation.REPLACE, maxHealth);
-            APClient.apClient.dataStorageSet(initMaxHp);
+            client.dataStorageSet(initMaxHp);
 
-            APClient.apClient.dataStorageGet(Arrays.asList("spire_team_" +myTeam.name+"_maxhp","spire_team_" +myTeam.name+"_hp"));
+            client.dataStorageGet(Arrays.asList("spire_team_" +myTeam.name+"_maxhp","spire_team_" +myTeam.name+"_hp"));
 
             myTeam.affectsApplied = true;
         }
@@ -408,30 +414,31 @@ public class TeamManager {
 
             SetPacket initHP = new SetPacket("spire_team_" +myTeam.name+"_gold", 0);
             initHP.addDataStorageOperation(SetPacket.Operation.REPLACE, gold);
-            APClient.apClient.dataStorageSet(initHP);
+            client.dataStorageSet(initHP);
 
-            APClient.apClient.dataStorageGet(Collections.singletonList("spire_team_" + myTeam.name + "_gold"));
+            client.dataStorageGet(Collections.singletonList("spire_team_" + myTeam.name + "_gold"));
 
         }
 
         BouncePacket lockedBounce = new BouncePacket();
         lockedBounce.games = new String[]{"Slay the Spire"};
         lockedBounce.setData(new HashMap<String,Object>(){{put("spire_team_" + myTeam.name +"_locked",true);}});
-        APClient.apClient.sendBounce(lockedBounce);
+        client.sendBounce(lockedBounce);
     }
 
     @ArchipelagoEventListener
     public void bounced(BouncedEvent event) {
+        APClient client = APContext.getContext().getClient();
         if(myTeam != null && event.containsKey("spire_team_"+myTeam.name+"_locked")) {
             if(myTeam.healthLink) {
                 //no death link.. just.. no
                 DeathLink.setDeathLinkEnabled(false);
-                APClient.apClient.dataStorageSetNotify(Arrays.asList("spire_team_" + myTeam.name + "_hp", "spire_team_" + myTeam.name + "_maxhp"));
-                APClient.apClient.dataStorageGet(Arrays.asList("spire_team_" + myTeam.name + "_maxhp", "spire_team_" + myTeam.name + "_hp"));
+                client.dataStorageSetNotify(Arrays.asList("spire_team_" + myTeam.name + "_hp", "spire_team_" + myTeam.name + "_maxhp"));
+                client.dataStorageGet(Arrays.asList("spire_team_" + myTeam.name + "_maxhp", "spire_team_" + myTeam.name + "_hp"));
             }
             if(myTeam.goldLink) {
-                APClient.apClient.dataStorageSetNotify(Collections.singletonList("spire_team_" + myTeam.name + "_gold"));
-                APClient.apClient.dataStorageGet(Collections.singletonList("spire_team_" + myTeam.name + "_gold"));
+                client.dataStorageSetNotify(Collections.singletonList("spire_team_" + myTeam.name + "_gold"));
+                client.dataStorageGet(Collections.singletonList("spire_team_" + myTeam.name + "_gold"));
             }
         }
     }
@@ -443,7 +450,7 @@ public class TeamManager {
         SetPacket addTeamPacket = new SetPacket("spire_team_" + myTeam.name + "_hp", 0);
         addTeamPacket.addDataStorageOperation(SetPacket.Operation.ADD, -damageAmount);
         addTeamPacket.want_reply = true;
-        APClient.apClient.dataStorageSet(addTeamPacket);
+        APContext.getContext().getClient().dataStorageSet(addTeamPacket);
         return true;
     }
 
@@ -454,7 +461,7 @@ public class TeamManager {
         SetPacket addTeamPacket = new SetPacket("spire_team_" + myTeam.name + "_gold", 0);
         addTeamPacket.addDataStorageOperation(SetPacket.Operation.ADD, goldAmount);
         addTeamPacket.want_reply = true;
-        APClient.apClient.dataStorageSet(addTeamPacket);
+        APContext.getContext().getClient().dataStorageSet(addTeamPacket);
         return true;
     }
 
@@ -478,7 +485,7 @@ public class TeamManager {
         SetPacket maxHPpacket = new SetPacket("spire_team_" + myTeam.name + "_maxhp", 0);
         maxHPpacket.addDataStorageOperation(SetPacket.Operation.ADD, hpChange);
         maxHPpacket.want_reply = true;
-        APClient.apClient.dataStorageSet(maxHPpacket);
+        APContext.getContext().getClient().dataStorageSet(maxHPpacket);
         return true;
     }
 

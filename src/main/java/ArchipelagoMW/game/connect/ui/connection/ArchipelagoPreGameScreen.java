@@ -1,6 +1,7 @@
 package ArchipelagoMW.game.connect.ui.connection;
 
 import ArchipelagoMW.client.APClient;
+import ArchipelagoMW.client.APContext;
 import ArchipelagoMW.mod.APSettings;
 import ArchipelagoMW.mod.Archipelago;
 import ArchipelagoMW.game.start.patches.CharacterSelectScreenPatch;
@@ -104,7 +105,7 @@ public class ArchipelagoPreGameScreen {
                         APSettings.password = connectionPanel.passwordTextBox.getText();
                         APSettings.saveSettings();
                         Archipelago.setConnectionInfo(ArchipelagoMainMenuButton.archipelagoPreGameScreen.connectionPanel.addressTextBox.getText(), ArchipelagoMainMenuButton.archipelagoPreGameScreen.connectionPanel.slotNameTextBox.getText(), ArchipelagoMainMenuButton.archipelagoPreGameScreen.connectionPanel.passwordTextBox.getText());
-                        APClient.newConnection(Archipelago.address, Archipelago.slotName, Archipelago.password.isEmpty() ? null : Archipelago.password);
+                        APClient.newConnection(APContext.getContext(), Archipelago.address, Archipelago.slotName, Archipelago.password.isEmpty() ? null : Archipelago.password);
                         ArchipelagoMainMenuButton.archipelagoPreGameScreen.confirmButton.updateText("Select Character");
                         break;
 //                    case team:

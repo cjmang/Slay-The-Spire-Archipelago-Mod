@@ -1,16 +1,15 @@
-package ArchipelagoMW.game.locations.patches.campfire;
+package ArchipelagoMW.game.locations.campfire;
 
-import ArchipelagoMW.client.APClient;
-import ArchipelagoMW.game.CharacterManager;
+import ArchipelagoMW.client.APContext;
 import ArchipelagoMW.game.items.MiscItemTracker;
 import ArchipelagoMW.game.locations.LocationTracker;
-import ArchipelagoMW.game.locations.ui.campfire.APCampfireButton;
 import com.evacipated.cardcrawl.modthespire.lib.*;
 import com.megacrit.cardcrawl.dungeons.AbstractDungeon;
 import com.megacrit.cardcrawl.rooms.CampfireUI;
 import com.megacrit.cardcrawl.ui.campfire.AbstractCampfireOption;
 import com.megacrit.cardcrawl.ui.campfire.RestOption;
 import com.megacrit.cardcrawl.ui.campfire.SmithOption;
+import dev.koifysh.archipelago.network.client.CreateAsHint;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,11 +22,12 @@ public class APCampfirePatch {
         @SpireInsertPatch(rloc=117-92)
         public static void changeValidOptions(CampfireUI __instance, ArrayList<AbstractCampfireOption> ___buttons)
         {
-            if(APClient.slotData.campfireSanity == 0) {
+            APContext ctx = APContext.getContext();
+            if(ctx.getSlotData().campfireSanity == 0) {
                 return;
             }
 
-            MiscItemTracker itemTracker = CharacterManager.getInstance().getItemTracker();
+            MiscItemTracker itemTracker = ctx.getItemTracker();
             int restCount = itemTracker.getRestCount();
             int smithCount = itemTracker.getSmithCount();
 
@@ -39,11 +39,12 @@ public class APCampfirePatch {
                 }
             }
 
-            LocationTracker.CampfireLocations campfireLocs = LocationTracker.campfireLocations;
+            LocationTracker locationTracker = ctx.getLocationTracker();
+            LocationTracker.CampfireLocations campfireLocs = locationTracker.getCampfireLocations();
             List<Long> remaining = campfireLocs.getLocationsForAct(AbstractDungeon.actNum);
-            // TODO: Send out hints!
+            ctx.getClient().scoutLocations(new ArrayList<>(remaining), CreateAsHint.BROADCAST_NEW);
             for(Long rem : remaining) {
-                ___buttons.add(new APCampfireButton(rem, LocationTracker.getScoutedItem(rem)));
+                ___buttons.add(new APCampfireButton(rem, locationTracker.getScoutedItem(rem)));
             }
         }
 

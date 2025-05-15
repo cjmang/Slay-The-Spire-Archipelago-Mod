@@ -1,6 +1,7 @@
 package ArchipelagoMW.game.teams;
 
 import ArchipelagoMW.client.APClient;
+import ArchipelagoMW.client.APContext;
 import ArchipelagoMW.mod.Archipelago;
 import ArchipelagoMW.game.teams.ui.hud.PlayerPanel;
 import com.evacipated.cardcrawl.modthespire.lib.*;
@@ -201,19 +202,20 @@ public class PlayerManager {
         SetPacket packet = new SetPacket("spire_player_" + playerInfo.getName(), "");
         packet.addDataStorageOperation(SetPacket.Operation.REPLACE, gson.toJson(playerInfo));
         packet.want_reply = true;
-        APClient.apClient.dataStorageSet(packet);
+        APContext.getContext().getClient().dataStorageSet(packet);
     }
 
     public static void initialLoad() {
+        APClient client = APContext.getContext().getClient();
         Archipelago.sideBar.playerPanels.clear();
         players.clear();
         sendUpdate();
         SetPacket initPlayers = new SetPacket("spire_players", Collections.singleton(CardCrawlGame.playerName));
         initPlayers.addDataStorageOperation(SetPacket.Operation.DEFAULT, "i'm needed!");
         initPlayers.want_reply = true;
-        playerListRequest = APClient.apClient.dataStorageSet(initPlayers);
+        playerListRequest = client.dataStorageSet(initPlayers);
 
-        APClient.apClient.dataStorageSetNotify(Collections.singleton("spire_players"));
+        client.dataStorageSetNotify(Collections.singleton("spire_players"));
 
     }
 
@@ -237,12 +239,13 @@ public class PlayerManager {
         String[] key = event.key.split("_");
         if (!key[1].startsWith("player"))
             return;
+        APClient client = APContext.getContext().getClient();
         if (event.getRequestID() == playerListRequest) {
             ArrayList<String> playerNames = event.getValueAsObject(arrayListString);
             if (!playerNames.contains(CardCrawlGame.playerName)) {
                 SetPacket addSelf = new SetPacket("spire_players", new ArrayList<String>());
                 addSelf.addDataStorageOperation(SetPacket.Operation.ADD, Collections.singleton(CardCrawlGame.playerName));
-                APClient.apClient.dataStorageSet(addSelf);
+                client.dataStorageSet(addSelf);
             }
 
             ArrayList<String> keys = new ArrayList<>();
@@ -251,8 +254,8 @@ public class PlayerManager {
                 keys.add("spire_player_" + playerName);
             }
 
-            APClient.apClient.dataStorageSetNotify(keys);
-            APClient.apClient.dataStorageGet(keys);
+            client.dataStorageSetNotify(keys);
+            client.dataStorageGet(keys);
 
         } else if (key.length == 3 && key[1].equals("player")) {
             updatePlayer(gson.fromJson((String) event.value, PlayerInfo.class));
@@ -264,8 +267,8 @@ public class PlayerManager {
             for (String playerName : playerNames) {
                 keys.add("spire_player_" + playerName);
             }
-            APClient.apClient.dataStorageSetNotify(keys);
-            APClient.apClient.dataStorageGet(keys);
+            client.dataStorageSetNotify(keys);
+            client.dataStorageGet(keys);
         }
     }
 

@@ -1,6 +1,7 @@
 package ArchipelagoMW.client.apEvents;
 
 import ArchipelagoMW.client.APClient;
+import ArchipelagoMW.client.APContext;
 import ArchipelagoMW.client.config.CharacterConfig;
 import ArchipelagoMW.client.config.SlotData;
 import ArchipelagoMW.game.CharacterManager;
@@ -62,10 +63,10 @@ public class ConnectionResult {
         if (CardCrawlGame.mode != CardCrawlGame.GameMode.CHAR_SELECT)
             return;
 
-        APClient.slotData = event.getSlotData(SlotData.class);
-        SlotData slotData = APClient.slotData;
+        SlotData slotData = event.getSlotData(SlotData.class);
+        APContext.getContext().getClient().setSlotData(slotData);
         Archipelago.logger.info(slotData.characters.toString());
-        CharacterManager.getInstance().initialize(slotData.characters);
+        APContext.getContext().getCharacterManager().initialize(slotData.characters);
         Archipelago.logger.info("slot data parsed");
         SaveManager.getInstance().loadSaves();
 
@@ -77,10 +78,10 @@ public class ConnectionResult {
 
         Archipelago.logger.info("about to parse slot data");
         try {
-
-            CharacterConfig config = CharacterManager.getInstance().getCurrentCharacterConfig();
-            CharacterManager.getInstance().getItemTracker().initialize(APClient.apClient.getItemManager().getReceivedItemIDs());
-            CardCrawlGame.chosenCharacter = CharacterManager.getInstance().getCurrentCharacter().chosenClass;
+            APContext ctx = APContext.getContext();
+            CharacterConfig config = ctx.getCharacterManager().getCurrentCharacterConfig();
+            ctx.getItemTracker().initialize(APContext.getContext().getItemManager().getReceivedItemIDs());
+            CardCrawlGame.chosenCharacter = ctx.getCharacterManager().getCurrentCharacter().chosenClass;
 
             Archipelago.logger.info("character: {}", config.officialName);
             Archipelago.logger.info("heart: " + config.finalAct);
@@ -92,7 +93,7 @@ public class ConnectionResult {
             if (Loader.isModLoaded("downfall"))
                 EvilModeCharacterSelect.evilMode = config.downfall;
 
-            if (APClient.slotData.deathLink > 0) {
+            if (APContext.getContext().getClient().getSlotData().deathLink > 0) {
                 DeathLink.setDeathLinkEnabled(true);
             }
 

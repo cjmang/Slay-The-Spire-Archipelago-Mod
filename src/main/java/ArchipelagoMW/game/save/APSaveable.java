@@ -1,6 +1,7 @@
 package ArchipelagoMW.game.save;
 
 import ArchipelagoMW.client.APClient;
+import ArchipelagoMW.client.APContext;
 import ArchipelagoMW.game.CharacterManager;
 import ArchipelagoMW.game.locations.LocationTracker;
 import ArchipelagoMW.game.items.patches.RewardItemPatch;
@@ -16,15 +17,19 @@ import com.megacrit.cardcrawl.helpers.PotionHelper;
 import com.megacrit.cardcrawl.helpers.RelicLibrary;
 import com.megacrit.cardcrawl.rewards.RewardItem;
 import com.megacrit.cardcrawl.rewards.RewardSave;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 
 public class APSaveable implements CustomSavableRaw {
+    private static final Logger logger = LogManager.getLogger(APSaveable.class);
 
     private static final Type REWARD_SAVE_LIST_TYPE = new TypeToken<ArrayList<APRewardSave>>() {}.getType();
     @Override
     public JsonElement onSaveRaw() {
+        LocationTracker locationTracker = APContext.getContext().getLocationTracker();
         Gson gson = new Gson();
         JsonObject save = new JsonObject();
 
@@ -55,17 +60,18 @@ public class APSaveable implements CustomSavableRaw {
 
         save.add("rewards_remaining", new JsonPrimitive(ArchipelagoRewardScreen.rewardsQueued));
         save.add("received_index", new JsonPrimitive(ArchipelagoRewardScreen.receivedItemsIndex));
-        save.add("card_draw_index", new JsonPrimitive(LocationTracker.cardDrawLocations.getIndex()));
-        save.add("rare_card_draw_index", new JsonPrimitive(LocationTracker.rareDrawLocations.getIndex()));
-        save.add("relic_index", new JsonPrimitive(LocationTracker.relicLocations.getIndex()));
-        save.add("character", new JsonPrimitive(CharacterManager.getInstance().getCurrentCharacter().chosenClass.name()));
+        save.add("card_draw_index", new JsonPrimitive(locationTracker.getCardDrawLocations().getIndex()));
+        save.add("rare_card_draw_index", new JsonPrimitive(locationTracker.getRareDrawLocations().getIndex()));
+        save.add("relic_index", new JsonPrimitive(locationTracker.getRelicLocations().getIndex()));
+        save.add("character", new JsonPrimitive(APContext.getContext().getCharacterManager().getCurrentCharacter().chosenClass.name()));
 
         return save;
     }
 
     @Override
     public void onLoadRaw(JsonElement jsonElement) {
-        APClient.logger.info("Loading save data");
+        logger.info("Loading save data");
+        LocationTracker locationTracker = APContext.getContext().getLocationTracker();
         Gson gson = new Gson();
 
         JsonObject save = jsonElement.getAsJsonObject();
@@ -100,12 +106,12 @@ public class APSaveable implements CustomSavableRaw {
         ArchipelagoRewardScreen.rewards = rewards;
         ArchipelagoRewardScreen.rewardsQueued = save.get("rewards_remaining").getAsInt();
         ArchipelagoRewardScreen.receivedItemsIndex = save.get("received_index").getAsInt();
-        LocationTracker.loadFromSave(
+        locationTracker.loadFromSave(
                 save.get("card_draw_index").getAsInt(),
                 save.get("rare_card_draw_index").getAsInt(),
                 save.get("relic_index").getAsInt()
         );
-        if(!CharacterManager.getInstance().selectCharacter(save.get("character").getAsString()))
+        if(!APContext.getContext().getCharacterManager().selectCharacter(save.get("character").getAsString()))
         {
             throw new RuntimeException("Could not select character from save file " + save.get("character").getAsString());
         }

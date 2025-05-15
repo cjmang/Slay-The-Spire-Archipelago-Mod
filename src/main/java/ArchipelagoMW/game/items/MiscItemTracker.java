@@ -2,13 +2,19 @@ package ArchipelagoMW.game.items;
 
 import ArchipelagoMW.game.CharacterManager;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 public class MiscItemTracker {
-    private static final Long REST_ID = 7L;
-    private static final Long SMITH_ID = 8L;
+    private static final Set<Long> validIds = Arrays.stream(APItemID.values())
+            .map(i -> i.value)
+            .filter(v -> v >=7 && v <= 13)
+            .collect(Collectors.toSet());
+
     private final Map<Long, Integer> itemCount = new ConcurrentHashMap<>();
     private final CharacterManager charManager;
 
@@ -16,37 +22,67 @@ public class MiscItemTracker {
         this.charManager = charManager;
     }
 
-
     public void initialize(List<Long> itemIDs)
     {
         itemIDs.stream()
                 .filter(charManager::isItemIDForCurrentCharacter)
-                .filter(i -> i%20L == REST_ID || i%20L == SMITH_ID)
+                .filter(i -> validIds.contains(i%20L))
                 .forEach(this::addItem);
     }
 
-    public void addItem(Long itemID)
+    public void addItem(long itemID)
     {
-        if(itemID %20L !=REST_ID && itemID % 20L != SMITH_ID)
+        long remainder = itemID % 20L;
+        if(!validIds.contains(remainder))
         {
             return;
         }
-        itemCount.merge(itemID % 20L, 1, Integer::sum);
+        itemCount.merge(remainder, 1, Integer::sum);
     }
 
     public int getCount(Long itemID)
     {
-        return itemCount.getOrDefault(itemID, 0);
+        return itemCount.getOrDefault(itemID % 20L, 0);
+    }
+
+    public int getCount(APItemID itemID)
+    {
+        return getCount(itemID.value);
     }
 
     public int getRestCount()
     {
-        return getCount(REST_ID);
+        return getCount(APItemID.PROGRESSIVE_REST);
     }
 
     public int getSmithCount()
     {
-        return getCount(SMITH_ID);
+        return getCount(APItemID.PROGRESSIVE_SMITH);
+    }
+
+    public int getCardSlotCount()
+    {
+        return getCount(APItemID.CARD_SLOT);
+    }
+
+    public int getNeutralCardSlotCount()
+    {
+        return getCount(APItemID.NEUTRAL_CARD_SLOT);
+    }
+
+    public int getRelicSlotCount()
+    {
+        return getCount(APItemID.RELIC_SLOT);
+    }
+
+    public int getPotionSlotCount()
+    {
+        return getCount(APItemID.POTION_SLOT);
+    }
+
+    public int getCardRemoveCount()
+    {
+        return getCount(APItemID.CARD_REMOVE_SLOT);
     }
 
 }

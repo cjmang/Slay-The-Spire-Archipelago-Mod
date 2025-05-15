@@ -24,12 +24,18 @@ public class SlotData {
     public int deathLink = 0;
 
     @SerializedName("include_floor_checks")
-    public int includeFloorChecks;
+    public int includeFloorChecks = 0;
 
     @SerializedName("characters")
     public List<CharacterConfig> characters = new ArrayList<>();
 
     @SerializedName("campfire_sanity")
     public int campfireSanity = 0;
+
+    @SerializedName("shop_sanity")
+    public int shopSanity = 0;
+
+    @SerializedName("shop_sanity_options")
+    public ShopSanityConfig shopSanityConfig = new ShopSanityConfig();
 
 }

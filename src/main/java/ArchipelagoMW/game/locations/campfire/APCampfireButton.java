@@ -1,7 +1,6 @@
-package ArchipelagoMW.game.locations.ui.campfire;
+package ArchipelagoMW.game.locations.campfire;
 
 import ArchipelagoMW.game.locations.LocationTracker;
-import ArchipelagoMW.game.locations.patches.campfire.FontHelperPatch;
 import ArchipelagoMW.game.ui.APTextures;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.megacrit.cardcrawl.dungeons.AbstractDungeon;

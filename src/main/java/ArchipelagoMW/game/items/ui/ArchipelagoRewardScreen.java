@@ -1,6 +1,7 @@
 package ArchipelagoMW.game.items.ui;
 
 import ArchipelagoMW.client.APClient;
+import ArchipelagoMW.client.APContext;
 import ArchipelagoMW.game.CharacterManager;
 import ArchipelagoMW.mod.Archipelago;
 import ArchipelagoMW.game.locations.LocationTracker;
@@ -82,6 +83,7 @@ public class ArchipelagoRewardScreen  extends CustomScreen {
     private OrthographicCamera camera = null;
 
     private AbstractDungeon.CurrentScreen previousScreen;
+    private final APContext ctx;
 
 
     @SpirePatch(clz = AbstractDungeon.class, method = "rollRarity", paramtypez = {Random.class})
@@ -128,6 +130,7 @@ public class ArchipelagoRewardScreen  extends CustomScreen {
         grabbedScreen = false;// 55
         grabStartY = 0.0F;// 56
         scrollBar = new ScrollBar(new ScrollListener(), (float) Settings.WIDTH / 2.0F + 270.0F * Settings.scale, (float) Settings.HEIGHT / 2.0F - 86.0F * Settings.scale, 500.0F * Settings.scale);// 46
+        ctx = APContext.getContext();
     }
 
     @Override
@@ -208,7 +211,7 @@ public class ArchipelagoRewardScreen  extends CustomScreen {
         AbstractDungeon.screen = Enum.ARCHIPELAGO_REWARD_SCREEN;
         tip = CardCrawlGame.tips.getTip();
 
-        ArrayList<NetworkItem> items = APClient.apClient.getItemManager().getReceivedItems();
+        ArrayList<NetworkItem> items = ctx.getItemManager().getReceivedItems();
         for (int i = receivedItemsIndex; i < items.size(); ++i) {
             receivedItemsIndex = i + 1;
             addReward(items.get(i));

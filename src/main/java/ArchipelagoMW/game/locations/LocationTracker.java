@@ -1,6 +1,6 @@
 package ArchipelagoMW.game.locations;
 
-import ArchipelagoMW.client.config.CharacterConfig;
+import ArchipelagoMW.client.APContext;
 import ArchipelagoMW.game.CharacterManager;
 import ArchipelagoMW.mod.Archipelago;
 import ArchipelagoMW.client.APClient;
@@ -17,67 +17,67 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class LocationTracker {
-    public static final Logger logger = LogManager.getLogger(LocationTracker.class.getName());
+    private static final Logger logger = LogManager.getLogger(LocationTracker.class.getName());
 
-    public static final LocationContainer cardDrawLocations = new LocationContainer();
-    public static final LocationContainer rareDrawLocations = new LocationContainer();
-    public static final LocationContainer relicLocations = new LocationContainer();
-    public static final LocationContainer bossRelicLocations = new LocationContainer();
-    public static final CampfireLocations campfireLocations = new CampfireLocations();
+    private final LocationContainer cardDrawLocations = new LocationContainer();
+    private final LocationContainer rareDrawLocations = new LocationContainer();
+    private final LocationContainer relicLocations = new LocationContainer();
+    private final LocationContainer bossRelicLocations = new LocationContainer();
+    private final CampfireLocations campfireLocations = new CampfireLocations();
 
-    private static final Map<Long, NetworkItem> scoutedLocations = new HashMap<>();
+    private final Map<Long, NetworkItem> scoutedLocations = new HashMap<>();
 
-    private static boolean cardDraw;
-    private static long currentOffset = -1;
-    private static final List<Long> extraOffsets = new ArrayList<>();
+    private boolean cardDraw;
+    private long currentOffset = -1;
+    private final List<Long> extraOffsets = new ArrayList<>();
 
-    public static void reset() {
-        bossRelicLocations.index = 0;
-        cardDrawLocations.index = 0;
-        rareDrawLocations.index = 0;
-        relicLocations.index = 0;
+    public void reset() {
+        getBossRelicLocations().index = 0;
+        getCardDrawLocations().index = 0;
+        getRareDrawLocations().index = 0;
+        getRelicLocations().index = 0;
         cardDraw = false;
     }
 
-    public static void loadFromSave(int cdIndex, int rdIndex, int relicIndex)
+    public void loadFromSave(int cdIndex, int rdIndex, int relicIndex)
     {
-        cardDrawLocations.index = cdIndex;
-        rareDrawLocations.index = rdIndex;
-        relicLocations.index = relicIndex;
+        getCardDrawLocations().index = cdIndex;
+        getRareDrawLocations().index = rdIndex;
+        getRelicLocations().index = relicIndex;
     }
 
-    public static void initialize(long charOffset, List<Long> extras)
+    public void initialize(long charOffset, List<Long> extras)
     {
         currentOffset = charOffset;
         extraOffsets.clear();
         extraOffsets.addAll(extras);
         reset();
-        APClient.logger.info("Intializing LocationTracker with {} and extras {}", charOffset, extraOffsets);
+        logger.info("Intializing LocationTracker with {} and extras {}", charOffset, extraOffsets);
 
-        cardDrawLocations.initialize(101L, 15L, charOffset);
-        campfireLocations.initialize(121L, 6L, charOffset);
-        campfireLocations.loadFromNetwork();
-        rareDrawLocations.initialize(131L, 2L, charOffset);
-        relicLocations.initialize(141L, 10L, charOffset);
-        bossRelicLocations.initialize(161L, 2L, charOffset);
+        getCardDrawLocations().initialize(101L, 15L, charOffset);
+        getCampfireLocations().initialize(121L, 6L, charOffset);
+        getCampfireLocations().loadFromNetwork();
+        getRareDrawLocations().initialize(131L, 2L, charOffset);
+        getRelicLocations().initialize(141L, 10L, charOffset);
+        getBossRelicLocations().initialize(161L, 2L, charOffset);
     }
 
     /**
      * @return a {@link NetworkItem} if this card draw was sent to AP,
      * null if you should keep this card draw locally.
      */
-    public static NetworkItem sendCardDraw(RewardItem reward) {
+    public NetworkItem sendCardDraw(RewardItem reward) {
         boolean isBoss = ReflectionHacks.getPrivate(reward, RewardItem.class, "isBoss");
         if (isBoss) {
-            if(rareDrawLocations.isExhausted()) {
+            if(getRareDrawLocations().isExhausted()) {
                 return null;
             }
-            long locationID = rareDrawLocations.getNext();
-            APClient.apClient.checkLocations(getLocationIDs(locationID));
+            long locationID = getRareDrawLocations().getNext();
+            APContext.getContext().getClient().checkLocations(getLocationIDs(locationID));
             NetworkItem item = scoutedLocations.get(locationID);
             if (item == null) {
                 NetworkItem networkItem = new NetworkItem();
-                networkItem.itemName = "Rare Card Draw " + (3 - rareDrawLocations.locations.size());
+                networkItem.itemName = "Rare Card Draw " + (3 - getRareDrawLocations().locations.size());
                 networkItem.playerName = "";
                 return networkItem;
             }
@@ -86,18 +86,18 @@ public class LocationTracker {
 
         cardDraw = !cardDraw;
         if (cardDraw) {
-            if(cardDrawLocations.isExhausted())
+            if(getCardDrawLocations().isExhausted())
             {
                 return null;
             }
-            long locationID = cardDrawLocations.getNext();
+            long locationID = getCardDrawLocations().getNext();
             Archipelago.logger.info("Sending Location Id {}", locationID);
-            APClient.apClient.checkLocations(getLocationIDs(locationID));
+            APContext.getContext().getClient().checkLocations(getLocationIDs(locationID));
             NetworkItem item = scoutedLocations.get(locationID);
 //            Archipelago.logger.info("Got Network item {}", item.itemName);
             if (item == null) {
                 NetworkItem networkItem = new NetworkItem();
-                networkItem.itemName = "Card Draw " + (15 - cardDrawLocations.locations.size());
+                networkItem.itemName = "Card Draw " + (15 - getCardDrawLocations().locations.size());
                 networkItem.playerName = "";
                 return networkItem;
             }
@@ -109,19 +109,19 @@ public class LocationTracker {
     /**
      * sends the next relic location to AP
      */
-    public static NetworkItem sendRelic() {
-        if(relicLocations.isExhausted())
+    public NetworkItem sendRelic() {
+        if(getRelicLocations().isExhausted())
         {
             return null;
         }
 
-        long locationID = relicLocations.getNext();
+        long locationID = getRelicLocations().getNext();
 
-        APClient.apClient.checkLocations(getLocationIDs(locationID));
+        APContext.getContext().getClient().checkLocations(getLocationIDs(locationID));
         NetworkItem item = scoutedLocations.get(locationID);
         if (item == null) {
             NetworkItem networkItem = new NetworkItem();
-            networkItem.itemName = "Relic " + (10 - relicLocations.locations.size());
+            networkItem.itemName = "Relic " + (10 - getRelicLocations().locations.size());
             networkItem.playerName = "";
             return networkItem;
         }
@@ -131,17 +131,17 @@ public class LocationTracker {
     /**
      * sends the next boss relic location to AP
      */
-    public static NetworkItem sendBossRelic(int act) {
+    public NetworkItem sendBossRelic(int act) {
         logger.info("Going to send relic from act " + act);
         long locationID;
         try {
-            locationID = bossRelicLocations.locations.get(act - 1);
+            locationID = getBossRelicLocations().locations.get(act - 1);
         } catch (IndexOutOfBoundsException e) {
             logger.info("Index out of bounds! Tried to access bossRelicLocation position {}", act - 1);
-            logger.info("while the length is {}", bossRelicLocations.locations.size());
+            logger.info("while the length is {}", getBossRelicLocations().locations.size());
             return null;
         }
-        APClient.apClient.checkLocations(getLocationIDs(locationID));
+        APContext.getContext().getClient().checkLocations(getLocationIDs(locationID));
         NetworkItem item = scoutedLocations.get(locationID);
         if (item == null) {
             NetworkItem networkItem = new NetworkItem();
@@ -152,20 +152,20 @@ public class LocationTracker {
         return item;
     }
 
-    public static void sendCampfireCheck(long locationId)
+    public void sendCampfireCheck(long locationId)
     {
-        campfireLocations.sendCheck(locationId);
+        getCampfireLocations().sendCheck(locationId);
     }
 
-    public static void sendFloorCheck(int floor)
+    public void sendFloorCheck(int floor)
     {
-        if(APClient.slotData.includeFloorChecks != 0) {
-            APClient.logger.info("Sending floor check for floor {} and id {}", floor, floor + (200L * currentOffset));
+        if(APContext.getContext().getSlotData().includeFloorChecks != 0) {
+            logger.info("Sending floor check for floor {} and id {}", floor, floor + (200L * currentOffset));
             APClient.client.checkLocations(getLocationIDs(floor + (200L * currentOffset)));
         }
     }
 
-    private static List<Long> getLocationIDs(long locationID)
+    private List<Long> getLocationIDs(long locationID)
     {
         List<Long> result = new ArrayList<>(extraOffsets.size() + 1);
         result.add(locationID);
@@ -174,41 +174,61 @@ public class LocationTracker {
         {
             result.add(locationID - (currentOffset * 200L) + (extra * 200L));
         }
-        APClient.logger.info("Sending location ids: {}", result);
+        logger.info("Sending location ids: {}", result);
         return result;
     }
 
-    public static void endOfTheRoad() {
+    public void endOfTheRoad() {
         List<Long> allLocations = new ArrayList<>() ;
-        allLocations.addAll(cardDrawLocations.locations);
-        allLocations.addAll(rareDrawLocations.locations);
-        allLocations.addAll(relicLocations.locations);
-        allLocations.addAll(bossRelicLocations.locations);
-        allLocations.addAll(campfireLocations.locations.keySet());
+        allLocations.addAll(getCardDrawLocations().locations);
+        allLocations.addAll(getRareDrawLocations().locations);
+        allLocations.addAll(getRelicLocations().locations);
+        allLocations.addAll(getBossRelicLocations().locations);
+        allLocations.addAll(getCampfireLocations().locations.keySet());
 
-        APClient.apClient.getLocationManager().checkLocations(allLocations);
+        APContext.getContext().getLocationManager().checkLocations(allLocations);
         SaveManager.getInstance().saveString(CharacterManager.getInstance().getCurrentCharacter().chosenClass.name(), "");
     }
 
-    public static void scoutAllLocations() {
+    public void scoutAllLocations() {
         ArrayList<Long> locations = new ArrayList<Long>();
-        locations.addAll(cardDrawLocations.locations);
-        locations.addAll(relicLocations.locations);
-        locations.addAll(rareDrawLocations.locations);
-        locations.addAll(bossRelicLocations.locations);
-        locations.addAll(campfireLocations.locations.keySet());
-        APClient.apClient.scoutLocations(locations);
+        locations.addAll(getCardDrawLocations().locations);
+        locations.addAll(getRelicLocations().locations);
+        locations.addAll(getRareDrawLocations().locations);
+        locations.addAll(getBossRelicLocations().locations);
+        locations.addAll(getCampfireLocations().locations.keySet());
+        APContext.getContext().getClient().scoutLocations(locations);
     }
 
-    public static void addToScoutedLocations(ArrayList<NetworkItem> networkItems) {
+    public void addToScoutedLocations(ArrayList<NetworkItem> networkItems) {
         for (NetworkItem item : networkItems) {
             scoutedLocations.put(item.locationID, item);
         }
     }
 
-    public static NetworkItem getScoutedItem(long location)
+    public NetworkItem getScoutedItem(long location)
     {
         return scoutedLocations.get(location);
+    }
+
+    public LocationContainer getCardDrawLocations() {
+        return cardDrawLocations;
+    }
+
+    public LocationContainer getRareDrawLocations() {
+        return rareDrawLocations;
+    }
+
+    public LocationContainer getRelicLocations() {
+        return relicLocations;
+    }
+
+    public LocationContainer getBossRelicLocations() {
+        return bossRelicLocations;
+    }
+
+    public CampfireLocations getCampfireLocations() {
+        return campfireLocations;
     }
 
     public static class LocationContainer {
@@ -258,7 +278,7 @@ public class LocationTracker {
 
         public void loadFromNetwork()
         {
-            for(Long checked : APClient.apClient.getLocationManager().getCheckedLocations())
+            for(Long checked : APContext.getContext().getLocationManager().getCheckedLocations())
             {
                 locations.computeIfPresent(checked, (__, ___) -> true);
             }
@@ -271,8 +291,8 @@ public class LocationTracker {
 
         void sendCheck(long locationId)
         {
-            APClient.logger.info("Sending campfire check: {}", locationId);
-            APClient.client.checkLocation(locationId);
+            logger.info("Sending campfire check: {}", locationId);
+            APContext.getContext().getClient().checkLocation(locationId);
             locations.put(locationId, true);
         }
 

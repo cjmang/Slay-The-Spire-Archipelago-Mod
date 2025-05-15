@@ -25,17 +25,18 @@ public class APClient extends Client {
 
     public static final Logger logger = LogManager.getLogger(APClient.class.getName());
 
-    public static APClient apClient;
-
-    public static SlotData slotData;
+    private final APContext ctx;
+    private SlotData slotData;
 
     private DataStorageWrapper dataStorageWrapper;
 
-    public static void newConnection(String address, String slotName, String password) {
+    public static void newConnection(APContext context, String address, String slotName, String password) {
+        APClient apClient = context.getClient();
         if (apClient != null) {
             apClient.close();
         }
-        apClient = new APClient();
+        apClient = new APClient(context);
+        context.setClient(apClient);
         apClient.dataStorageWrapper = new DataStorageWrapper(apClient);
         apClient.setPassword(password);
         apClient.setName(slotName);
@@ -49,15 +50,24 @@ public class APClient extends Client {
         //apClient.getEventManager().registerListener(new TestButton());
         try {
             apClient.connect(address);
-            CharacterManager.getInstance().reset();
         } catch (URISyntaxException e) {
             e.printStackTrace();
         }
     }
 
-    private APClient() {
+    private APClient(APContext ctx) {
         super();
         this.setGame("Slay the Spire");
+        this.ctx = ctx;
+    }
+
+    public SlotData getSlotData() {
+        return slotData;
+    }
+
+    public void setSlotData(SlotData slotData)
+    {
+        this.slotData = slotData;
     }
 
     @Override
@@ -108,15 +118,16 @@ public class APClient extends Client {
         @ArchipelagoEventListener
         public static void onReceiveItem(ReceiveItemEvent event)
         {
-            CharacterConfig character = CharacterManager.getInstance().getCurrentCharacterConfig();
+            CharacterManager charManager = APContext.getContext().getCharacterManager();
+            CharacterConfig character = charManager.getCurrentCharacterConfig();
             if(character == null)
             {
                 return;
             }
             if(event.getIndex() > ArchipelagoRewardScreen.receivedItemsIndex) {
-                if(CharacterManager.getInstance().isItemIDForCurrentCharacter(event.getItemID()))
+                if(charManager.isItemIDForCurrentCharacter(event.getItemID()))
                 {
-                    CharacterManager.getInstance().getItemTracker().addItem(event.getItemID());
+                    APContext.getContext().getItemTracker().addItem(event.getItemID());
                     // only increase counter, actual items get fetched when you open the reward screen.
                     ArchipelagoRewardScreen.rewardsQueued += 1;
                 }

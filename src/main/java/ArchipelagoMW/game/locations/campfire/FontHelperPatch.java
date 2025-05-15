@@ -1,4 +1,4 @@
-package ArchipelagoMW.game.locations.patches.campfire;
+package ArchipelagoMW.game.locations.campfire;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;

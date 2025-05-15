@@ -1,5 +1,6 @@
 package ArchipelagoMW.game.locations.patches;
 
+import ArchipelagoMW.client.APContext;
 import ArchipelagoMW.game.locations.LocationTracker;
 import ArchipelagoMW.game.items.patches.RewardItemPatch;
 import com.evacipated.cardcrawl.modthespire.lib.*;
@@ -20,15 +21,16 @@ public class CombatRewardScreenPatch {
         public static void Insert(CombatRewardScreen __instance, ArrayList<RewardItem> ___rewards) {
             Iterator<RewardItem> rewardItemIterator = ___rewards.iterator();
             ArrayList<RewardItem> toAdd = new ArrayList<>();
+            LocationTracker locationTracker = APContext.getContext().getLocationTracker();
             while (rewardItemIterator.hasNext()) {
                 RewardItem reward = rewardItemIterator.next();
                 NetworkItem item = null;
                 switch (reward.type) {
                     case CARD:
-                        item = LocationTracker.sendCardDraw(reward);
+                        item = locationTracker.sendCardDraw(reward);
                         break;
                     case RELIC:
-                        item = LocationTracker.sendRelic();
+                        item = locationTracker.sendRelic();
                         break;
                 }
 

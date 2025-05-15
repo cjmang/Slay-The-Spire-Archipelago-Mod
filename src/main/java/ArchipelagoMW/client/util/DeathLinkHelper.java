@@ -1,6 +1,7 @@
 package ArchipelagoMW.client.util;
 
 import ArchipelagoMW.client.APClient;
+import ArchipelagoMW.client.APContext;
 import ArchipelagoMW.game.teams.TeamManager;
 import basemod.ReflectionHacks;
 import com.evacipated.cardcrawl.modthespire.Loader;
@@ -145,10 +146,11 @@ public class DeathLinkHelper {
                 //APClient.apClient.disconnect();
                 return;
             }
+            APClient client = APContext.getContext().getClient();
 
             MonsterGroup monsters = ReflectionHacks.getPrivate(__instance, DeathScreen.class, "monsters");
             if (monsters == null) {
-                DeathLink.SendDeathLink(APClient.apClient.getAlias(), null);
+                DeathLink.SendDeathLink(client.getAlias(), null);
                 //APClient.apClient.disconnect();
                 return;
             }
@@ -162,7 +164,7 @@ public class DeathLinkHelper {
             }
 
             if (!mobs.isEmpty()) {
-                StringBuilder sb = new StringBuilder(APClient.apClient.getAlias())
+                StringBuilder sb = new StringBuilder(client.getAlias())
                         .append(" was slaughtered by ");
                 for (Map.Entry<String, Integer> entry : mobs.entrySet()) {
                     if (entry.getValue() > 1) {
@@ -175,11 +177,11 @@ public class DeathLinkHelper {
                         sb.append(" ");
                     }
                 }
-                DeathLink.SendDeathLink(APClient.apClient.getAlias(), sb.toString());
+                DeathLink.SendDeathLink(client.getAlias(), sb.toString());
                 //APClient.apClient.disconnect();
                 return;
             }
-            DeathLink.SendDeathLink(APClient.apClient.getAlias(), null);
+            DeathLink.SendDeathLink(client.getAlias(), null);
             //APClient.apClient.disconnect();
         }
     }

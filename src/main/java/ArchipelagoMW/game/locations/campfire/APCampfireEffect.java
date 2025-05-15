@@ -1,4 +1,4 @@
-package ArchipelagoMW.game.locations.ui.campfire;
+package ArchipelagoMW.game.locations.campfire;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;

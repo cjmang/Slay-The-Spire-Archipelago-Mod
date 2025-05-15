@@ -1,6 +1,7 @@
 package ArchipelagoMW.game;
 
 import ArchipelagoMW.client.APClient;
+import ArchipelagoMW.client.APContext;
 import ArchipelagoMW.client.config.CharacterConfig;
 import ArchipelagoMW.game.items.MiscItemTracker;
 import ArchipelagoMW.game.locations.LocationTracker;
@@ -9,35 +10,28 @@ import ArchipelagoMW.game.teams.TeamManager;
 import ArchipelagoMW.game.items.ui.ArchipelagoRewardScreen;
 import com.megacrit.cardcrawl.characters.AbstractPlayer;
 import com.megacrit.cardcrawl.core.CardCrawlGame;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
 
 public class CharacterManager {
+    private static final Logger logger = LogManager.getLogger(CharacterManager.class);
 
-    private static final CharacterManager INSTANCE = new CharacterManager();
 
-    private MiscItemTracker itemTracker = new MiscItemTracker(this);
     private List<CharacterConfig> characters = Collections.emptyList();
     private final Set<String> availableAPChars = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
 
     private AbstractPlayer currentCharacter;
     private CharacterConfig currentCharacterConfig;
     private final List<CharacterConfig> unrecognizedCharacters = new CopyOnWriteArrayList<>();
+    private final LocationTracker locationTracker;
 
-    public static CharacterManager getInstance() {
-        return INSTANCE;
-    }
-
-    public void reset()
+    public CharacterManager(APContext ctx)
     {
-        characters.clear();
-        availableAPChars.clear();
-        currentCharacter = null;
-        currentCharacterConfig = null;
-        unrecognizedCharacters.clear();
-        itemTracker = new MiscItemTracker(this);
+        this.locationTracker = ctx.getLocationTracker();
     }
 
     public void initialize(List<CharacterConfig> configs)
@@ -46,7 +40,7 @@ public class CharacterManager {
         availableAPChars.clear();
         for(CharacterConfig config : characters)
         {
-            APClient.logger.info(config.name);
+            logger.info(config.name);
             availableAPChars.add(config.officialName);
         }
 
@@ -58,10 +52,6 @@ public class CharacterManager {
                     .orElse(null);
         }
 
-    }
-
-    public MiscItemTracker getItemTracker() {
-        return itemTracker;
     }
 
     public List<CharacterConfig> getCharacters() {
@@ -108,13 +98,13 @@ public class CharacterManager {
                 .map(c -> c.officialName)
                 .filter(n -> CardCrawlGame.characterManager.getAllCharacters().stream().noneMatch(o -> o.chosenClass.name().equals(n)))
                 .collect(Collectors.toList());
-        APClient.logger.info("Unrecognized Characters {}", names);
+        logger.info("Unrecognized Characters {}", names);
         for(String name : names)
         {
             for(CharacterConfig config : characters)
             {
                 if(config.officialName.equals(name)) {
-                    APClient.logger.info("Found config for unrecognized character {}", name);
+                    logger.info("Found config for unrecognized character {}", name);
                     unrecognizedCharacters.add(config);
                 }
             }
@@ -154,7 +144,7 @@ public class CharacterManager {
                 .filter(c -> currentCharacterConfig.officialName.equalsIgnoreCase(c.chosenClass.name()))
                 .findFirst()
                 .get();
-        LocationTracker.initialize(config.charOffset, unrecognizedCharacters.stream()
+        locationTracker.initialize(config.charOffset, unrecognizedCharacters.stream()
                 .map(c -> (long) c.charOffset)
                 .collect(Collectors.toList()));
         ArchipelagoRewardScreen.rewards.clear();
@@ -162,7 +152,7 @@ public class CharacterManager {
         ArchipelagoRewardScreen.apRareReward = false;
         ArchipelagoRewardScreen.apReward= false;
         ArchipelagoRewardScreen.APScreen= false;
-        LocationTracker.scoutAllLocations();
+        locationTracker.scoutAllLocations();
         TeamManager.initialLoad();
         PlayerManager.initialLoad();
     }

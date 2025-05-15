@@ -1,8 +1,11 @@
 package ArchipelagoMW.game.save;
 
 import ArchipelagoMW.client.APClient;
+import ArchipelagoMW.client.APContext;
 import com.megacrit.cardcrawl.saveAndContinue.SaveFileObfuscator;
 import dev.koifysh.archipelago.network.client.SetPacket;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
@@ -15,10 +18,18 @@ import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
 public class SaveManager {
+    private static final Logger logger = LogManager.getLogger(SaveManager.class);
 
-    private static final SaveManager saveManager = new SaveManager();
+    // TODO: create inside APContext
+    private static final SaveManager saveManager = new SaveManager(APContext.getContext());
 
     private final Map<String, String> saveCache = new ConcurrentHashMap<>();
+    private final APContext context;
+
+    public SaveManager(APContext context)
+    {
+        this.context = context;
+    }
 
     public static SaveManager getInstance() {
         return saveManager;
@@ -26,7 +37,7 @@ public class SaveManager {
 
     public String getAPSaveKey()
     {
-        return "spire_" + APClient.apClient.getTeam() + "_" + APClient.apClient.getSlot() + "_save";
+        return "spire_" + context.getTeam() + "_" + context.getSlot() + "_save";
     }
 
     public boolean hasSave(String charName)
@@ -37,11 +48,12 @@ public class SaveManager {
 
     public void loadSaves()
     {
-        APClient.logger.info("Attempting to load saves");
-        APClient.apClient.asyncDSGet(Collections.singleton(getAPSaveKey()), event -> {
-            APClient.logger.info("Got Response for saves.");
+        APClient client = context.getClient();
+        logger.info("Attempting to load saves");
+        client.asyncDSGet(Collections.singleton(getAPSaveKey()), event -> {
+            logger.info("Got Response for saves.");
             if (event == null) {
-                APClient.logger.debug("No save files found");
+                logger.debug("No save files found");
                 return;
             }
             saveCache.clear();
@@ -53,7 +65,7 @@ public class SaveManager {
                     }
                 }
             }
-            APClient.logger.debug("Found saves for {}", saveCache.entrySet());
+            logger.debug("Found saves for {}", saveCache.entrySet());
         });
     }
 
@@ -62,7 +74,7 @@ public class SaveManager {
         String result = saveCache.get(charName);
         if(result == null || result.isEmpty())
         {
-            APClient.logger.info("No save file found for character {}", charName);
+            logger.info("No save file found for character {}", charName);
             return "";
         }
         String saveString = decompress(result);
@@ -82,8 +94,8 @@ public class SaveManager {
         SetPacket packet = new SetPacket(getAPSaveKey(), new HashMap<String, String>());
         packet.addDataStorageOperation(SetPacket.Operation.DEFAULT, "");
         packet.addDataStorageOperation(SetPacket.Operation.UPDATE, saveMe);
-        APClient.logger.info("Sending save data {}", saveMe);
-        APClient.apClient.asyncDSSet(packet, __ -> this.loadSaves());
+        logger.info("Sending save data {}", saveMe);
+        context.getClient().asyncDSSet(packet, __ -> this.loadSaves());
     }
 
     /**
@@ -97,14 +109,14 @@ public class SaveManager {
             return str;
         }
         try {
-            System.out.println("String length : " + str.length());
+//            System.out.println("String length : " + str.length());
             ByteArrayOutputStream obj = new ByteArrayOutputStream();
             GZIPOutputStream gzip = new GZIPOutputStream(obj);
             gzip.write(str.getBytes(StandardCharsets.UTF_8));
             gzip.flush();
             gzip.close();
             String outStr = Base64.getEncoder().encodeToString(obj.toByteArray());
-            System.out.println("Output String length : " + outStr.length());
+//            System.out.println("Output String length : " + outStr.length());
             return outStr;
         } catch (Exception ignored) {
             return Base64.getEncoder().encodeToString(str.getBytes());

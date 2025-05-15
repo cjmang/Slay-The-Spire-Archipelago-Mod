@@ -1,6 +1,7 @@
 package ArchipelagoMW.game.victory.patches;
 
 import ArchipelagoMW.client.APClient;
+import ArchipelagoMW.client.APContext;
 import ArchipelagoMW.client.config.CharacterConfig;
 import ArchipelagoMW.game.CharacterManager;
 import ArchipelagoMW.game.locations.LocationTracker;
@@ -56,7 +57,7 @@ public class VictoryScreenPatch {
         @SpireInsertPatch(locator = locator.class)
         public static void Clicked(DeathScreen __instance, ReturnToMenuButton ___returnButton) {
             if (___returnButton.hb.clicked || ___returnButton.show && CInputActionSet.select.isJustPressed()) {
-                APClient.apClient.disconnect();
+                APContext.getContext().getClient().disconnect();
             }
         }
 
@@ -95,7 +96,7 @@ public class VictoryScreenPatch {
         public void run() {
             try {
                 CharacterManager characterManager = CharacterManager.getInstance();
-                APClient client = APClient.apClient;
+                APClient client = APContext.getContext().getClient();
                 String victoryKey = createVictoryKey(client);
 
                 List<String> charsWonWith = new ArrayList<>();

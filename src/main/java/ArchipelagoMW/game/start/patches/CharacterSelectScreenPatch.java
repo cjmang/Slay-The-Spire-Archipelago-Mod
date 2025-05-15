@@ -1,6 +1,7 @@
 package ArchipelagoMW.game.start.patches;
 
 import ArchipelagoMW.client.APClient;
+import ArchipelagoMW.client.APContext;
 import ArchipelagoMW.mod.Archipelago;
 import ArchipelagoMW.client.config.CharacterConfig;
 import ArchipelagoMW.game.CharacterManager;
@@ -134,8 +135,10 @@ public class CharacterSelectScreenPatch {
         @SpireInsertPatch(rloc=298-280)
         public static void initializeAPSettings(CharacterSelectScreen __instance)
         {
-            CharacterConfig config = CharacterManager.getInstance().getCurrentCharacterConfig();
-            CharacterManager.getInstance().getItemTracker().initialize(APClient.apClient.getItemManager().getReceivedItemIDs());
+            APContext ctx = APContext.getContext();
+            CharacterManager charManager = ctx.getCharacterManager();
+            CharacterConfig config = charManager.getCurrentCharacterConfig();
+            ctx.getItemTracker().initialize(ctx.getItemManager().getReceivedItemIDs());
             // updateButtons is where game start happens, more or less
             SeedHelper.setSeed(config.seed);
             __instance.isAscensionMode = config.ascension > 0;
@@ -147,7 +150,7 @@ public class CharacterSelectScreenPatch {
                 EvilModeCharacterSelect.evilMode = config.downfall;
             }
 
-            if (APClient.slotData.deathLink > 0) {
+            if (APContext.getContext().getSlotData().deathLink > 0) {
                 DeathLink.setDeathLinkEnabled(true);
             }
 
