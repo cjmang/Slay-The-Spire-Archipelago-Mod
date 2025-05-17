@@ -1,5 +1,7 @@
 package ArchipelagoMW.game.items;
 
+import ArchipelagoMW.client.APClient;
+import ArchipelagoMW.client.APContext;
 import ArchipelagoMW.game.CharacterManager;
 
 import java.util.Arrays;

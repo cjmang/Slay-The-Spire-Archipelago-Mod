@@ -1,5 +1,6 @@
 package ArchipelagoMW.game.locations.shop;
 
+import ArchipelagoMW.client.APClient;
 import ArchipelagoMW.client.APContext;
 import ArchipelagoMW.game.ShopManager;
 import basemod.BaseMod;
@@ -8,20 +9,18 @@ import basemod.interfaces.PostCreateShopRelicSubscriber;
 import com.evacipated.cardcrawl.modthespire.lib.*;
 import com.megacrit.cardcrawl.cards.AbstractCard;
 import com.megacrit.cardcrawl.characters.AbstractPlayer;
-import com.megacrit.cardcrawl.dungeons.AbstractDungeon;
 import com.megacrit.cardcrawl.potions.AbstractPotion;
+import com.megacrit.cardcrawl.shop.OnSaleTag;
 import com.megacrit.cardcrawl.shop.ShopScreen;
 import com.megacrit.cardcrawl.shop.StorePotion;
 import com.megacrit.cardcrawl.shop.StoreRelic;
 import com.megacrit.cardcrawl.vfx.FastCardObtainEffect;
-import javassist.CannotCompileException;
-import javassist.expr.ExprEditor;
-import javassist.expr.MethodCall;
 
 import java.util.ArrayList;
 
-//@SpireInitializer
+@SpireInitializer
 public class ShopScreenPatch {
+
 
     public static void initialize()
     {
@@ -42,44 +41,67 @@ public class ShopScreenPatch {
     }
 
     @SpirePatch(clz = ShopScreen.class, method="init")
-    public static class initPatch {
+    public static class InitPatch {
 
-//        @SpireInsertPatch(locator=Locator.class)
         @SpirePrefixPatch
         public static void interceptCards(ShopScreen __instance, ArrayList<AbstractCard> coloredCards, ArrayList<AbstractCard> colorlessCards)
         {
             ShopManager shopManager = APContext.getContext().getShopManager();
+            shopManager.initializeShop();
             shopManager.mangleCards(coloredCards, __instance);
-            shopManager.mangleNeutralCards(coloredCards, __instance);
+            shopManager.mangleNeutralCards(colorlessCards, __instance);
         }
 
-        @SpirePostfixPatch
-        public static void changePrices(ShopScreen __instance, ArrayList<AbstractCard> coloredCards, ArrayList<AbstractCard> colorlessCards)
-        {
-//            SlotData data = APClient.getSlotData();
-//            if(data.shopSanity == 0)
-//            {
-//                return;
-//            }
-        }
+    }
 
+    @SpirePatch(clz = ShopScreen.class, method="open")
+    public static class OpenPatch
+    {
         @SpirePostfixPatch
-        public static void unsetCardRemove(ShopScreen __instance, ArrayList<AbstractCard> coloredCards, ArrayList<AbstractCard> colorlessCards)
+        public static void unsetCardRemove(ShopScreen __instance)
         {
+            APClient.logger.info("Card remove available: {}", APContext.getContext().getShopManager().isCardRemoveAvailable());
             if(!APContext.getContext().getShopManager().isCardRemoveAvailable())
             {
                 __instance.purgeAvailable = false;
             }
         }
+    }
 
-//        public static class Locator extends SpireInsertLocator
-//        {
-//            @Override
-//            public int[] Locate(CtBehavior ctBehavior) throws Exception {
-//                Matcher matcher = new Matcher.MethodCallMatcher(ShopScreen.class, "setStartingCardPositions");
-//                return LineFinder.findInOrder(ctBehavior, matcher);
-//            }
-//        }
+    @SpirePatch(clz=ShopScreen.class, method="initCards")
+    public static class InitCardsPatch
+    {
+
+        @SpirePostfixPatch
+        public static void changeAPPrice(ShopScreen __instance, ArrayList<AbstractCard> ___coloredCards, ArrayList<AbstractCard> ___colorlessCards, OnSaleTag ___saleTag)
+        {
+            ShopManager shopManager = APContext.getContext().getShopManager();
+            for(AbstractCard c : ___coloredCards)
+            {
+                if(!(c instanceof APShopItem))
+                {
+                    continue;
+                }
+                shopManager.setPrice(c, 1.0F);
+                if(___saleTag.card == c)
+                {
+                    c.price /= 2;
+                }
+            }
+
+            for(AbstractCard c : ___colorlessCards)
+            {
+                if(!(c instanceof APShopItem))
+                {
+                    continue;
+                }
+                shopManager.setPrice(c, 1.2F);
+                if(___saleTag.card == c)
+                {
+                    c.price /= 2;
+                }
+            }
+        }
     }
 
     @SpirePatch(clz = FastCardObtainEffect.class, method=SpirePatch.CONSTRUCTOR)
@@ -92,6 +114,8 @@ public class ShopScreenPatch {
             {
                 __instance.isDone = true;
                 __instance.duration = 0.0F;
+                APShopItem fake = (APShopItem) card;
+                APContext.getContext().getLocationManager().checkLocation(fake.getLocationId());
                 return SpireReturn.Return();
             }
             return SpireReturn.Continue();
@@ -108,21 +132,12 @@ public class ShopScreenPatch {
         {
             if(potionToObtain instanceof APShopItem)
             {
+                APFakePotion fake = (APFakePotion) potionToObtain;
+                APContext.getContext().getLocationManager().checkLocation(fake.getLocationId());
                 return SpireReturn.Return(true);
             }
             return SpireReturn.Continue();
         }
     }
 
-    @SpirePatch(clz=ShopScreen.class, method="purchasePotion")
-    public static class PurchasePotionPatch
-    {
-
-    }
-
-    @SpirePatch(clz=ShopScreen.class, method="purchaseRelic")
-    public static class PurchaseRelicPatch
-    {
-
-    }
 }

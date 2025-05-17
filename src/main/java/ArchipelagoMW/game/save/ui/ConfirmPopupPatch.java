@@ -30,7 +30,7 @@ public class ConfirmPopupPatch {
             if (___type == AP_SAVE_RESUME) {
                 CardCrawlGame.loadingSave = true;
 
-                CharacterManager.getInstance().markUnrecognziedCharacters();
+                APContext.getContext().getCharacterManager().markUnrecognziedCharacters();
 
                 CardCrawlGame.mainMenuScreen.isFadingOut = true;
                 CardCrawlGame.mainMenuScreen.fadeOutMusic();

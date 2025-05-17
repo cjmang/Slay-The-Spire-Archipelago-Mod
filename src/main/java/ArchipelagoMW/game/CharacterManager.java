@@ -91,6 +91,11 @@ public class CharacterManager {
         return false;
     }
 
+    public long toCharacterLocationID(long id)
+    {
+        return id + (200L * currentCharacterConfig.charOffset);
+    }
+
     public void markUnrecognziedCharacters()
     {
         unrecognizedCharacters.clear();
@@ -152,7 +157,10 @@ public class CharacterManager {
         ArchipelagoRewardScreen.apRareReward = false;
         ArchipelagoRewardScreen.apReward= false;
         ArchipelagoRewardScreen.APScreen= false;
+        // TODO: pass in shop manager?
+        APContext.getContext().getShopManager().initializeShop();
         locationTracker.scoutAllLocations();
+        locationTracker.scoutShop(APContext.getContext().getShopManager().getTotalSlots());
         TeamManager.initialLoad();
         PlayerManager.initialLoad();
     }

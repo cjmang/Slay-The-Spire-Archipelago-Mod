@@ -1,5 +1,6 @@
 package ArchipelagoMW.game.locations.campfire;
 
+import ArchipelagoMW.client.APContext;
 import ArchipelagoMW.game.locations.LocationTracker;
 import ArchipelagoMW.game.ui.APTextures;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -61,7 +62,7 @@ public class APCampfireButton  extends AbstractCampfireOption {
 
     @Override
     public void useOption() {
-        LocationTracker.sendCampfireCheck(locationId);
+        APContext.getContext().getLocationTracker().sendCampfireCheck(locationId);
         AbstractDungeon.effectList.add(new CampfireRecallEffect());
     }
 

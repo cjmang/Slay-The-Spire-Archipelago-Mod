@@ -112,7 +112,7 @@ public class ArchipelagoRewardScreen  extends CustomScreen {
     public static class FloorCheckPatch {
         @SpirePostfixPatch()
         public static void insert() {
-            LocationTracker.sendFloorCheck(AbstractDungeon.floorNum);
+            APContext.getContext().getLocationTracker().sendFloorCheck(AbstractDungeon.floorNum);
         }
 
     }
@@ -401,7 +401,7 @@ public class ArchipelagoRewardScreen  extends CustomScreen {
 
     public void addReward(NetworkItem networkItem) {
         long itemID = networkItem.itemID;
-        if(!CharacterManager.getInstance().isItemIDForCurrentCharacter(itemID))
+        if(!APContext.getContext().getCharacterManager().isItemIDForCurrentCharacter(itemID))
         {
             return;
         }

@@ -36,7 +36,7 @@ public class CharacterSelectScreenPatch {
     private static ArrayList<CharacterOption> options;
 
     public static void lockNonAPChars() {
-        CharacterManager charManager = CharacterManager.getInstance();
+        CharacterManager charManager = APContext.getContext().getCharacterManager();
         charSelectScreen.options = new ArrayList<>(options);
 
         charManager.markUnrecognziedCharacters();
@@ -111,19 +111,20 @@ public class CharacterSelectScreenPatch {
             if(!__instance.confirmButton.hb.clicked) {
                 return SpireReturn.Continue();
             }
+            CharacterManager characterManager = APContext.getContext().getCharacterManager();
             for (CharacterOption o : __instance.options) {
                 if(o.selected)
                 {
                     //TODO: cleanup
                     //ConnectionResult.character = o.c;
-                    if(!CharacterManager.getInstance().selectCharacter(o.c.chosenClass.name()))
+                    if(!characterManager.selectCharacter(o.c.chosenClass.name()))
                     {
                         throw new RuntimeException("Attempting to play AP with an unrecognized character " + o.c.chosenClass.name());
                     }
                     break;
                 }
             }
-            if(SaveManager.getInstance().hasSave(CharacterManager.getInstance().getCurrentCharacter().chosenClass.name()))
+            if(SaveManager.getInstance().hasSave(characterManager.getCurrentCharacter().chosenClass.name()))
             {
                 resumeSave.show();
                 __instance.confirmButton.hb.clicked = false;

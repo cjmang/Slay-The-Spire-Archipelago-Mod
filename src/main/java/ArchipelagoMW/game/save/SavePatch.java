@@ -1,6 +1,7 @@
 package ArchipelagoMW.game.save;
 
 import ArchipelagoMW.client.APClient;
+import ArchipelagoMW.client.APContext;
 import ArchipelagoMW.game.CharacterManager;
 import ArchipelagoMW.game.teams.TeamManager;
 import com.evacipated.cardcrawl.modthespire.lib.*;
@@ -20,7 +21,7 @@ public class SavePatch {
         @SpirePrefixPatch
         public static SpireReturn<String> Prefix() {
             // TODO: won't work as is, cause this is the wrong method to patch now I think
-            return SpireReturn.Return(SAVE_MANAGER.loadSaveString(CharacterManager.getInstance().getCurrentCharacter().chosenClass.name()));
+            return SpireReturn.Return(SAVE_MANAGER.loadSaveString(APContext.getContext().getCharacterManager().getCurrentCharacter().chosenClass.name()));
         }
     }
 
@@ -32,7 +33,7 @@ public class SavePatch {
             // hopefully Save data?
             if (save.current_room.equals(TreasureRoomBoss.class.getName()) && TeamManager.myTeam == null) {
 
-                String character = CharacterManager.getInstance().getCurrentCharacter().chosenClass.name();
+                String character = APContext.getContext().getCharacterManager().getCurrentCharacter().chosenClass.name();
                 APClient.logger.info("Attempting to save character {}", character);
                 SAVE_MANAGER.saveString(character, data);
                 return SpireReturn.Return();

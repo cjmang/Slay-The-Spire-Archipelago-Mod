@@ -1,5 +1,6 @@
 package ArchipelagoMW.game.ui.Components;
 
+import ArchipelagoMW.client.APContext;
 import ArchipelagoMW.game.ui.APTextures;
 import ArchipelagoMW.game.locations.LocationTracker;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -20,7 +21,7 @@ public class APChest extends AbstractChest {
         this.openedImg = APTextures.AP_CHEST;
         this.hb = new Hitbox(256.0F * Settings.scale, 256.0F * Settings.scale);
         this.hb.move(CHEST_LOC_X, CHEST_LOC_Y - 100.0F * Settings.scale);
-        this.item = LocationTracker.sendBossRelic(AbstractDungeon.actNum);
+        this.item = APContext.getContext().getLocationTracker().sendBossRelic(AbstractDungeon.actNum);
         AbstractDungeon.overlayMenu.proceedButton.setLabel(TEXT[0]);
     }
 

@@ -31,7 +31,7 @@ public class VictoryScreenPatch {
         public static void Postfix() {
             // check if this is a post-act3 death which the "isVictory" flag tracks
             // if we should be finishing final act, this is not a victory regardless of act3 boss's death
-            if (!GameOverScreen.isVictory || CharacterManager.getInstance().getCurrentCharacterConfig().finalAct)
+            if (!GameOverScreen.isVictory || APContext.getContext().getCharacterManager().getCurrentCharacterConfig().finalAct)
                 return;
 
             victoryForCurrentCharacter();
@@ -71,7 +71,7 @@ public class VictoryScreenPatch {
     }
 
     public static void victoryForCurrentCharacter() {
-        CharacterManager characterManager = CharacterManager.getInstance();
+        CharacterManager characterManager = APContext.getContext().getCharacterManager();
         AbstractPlayer character = characterManager.getCurrentCharacter();
 
         Thread t = new Thread(new VictoryCheck(character));
@@ -95,8 +95,9 @@ public class VictoryScreenPatch {
         @Override
         public void run() {
             try {
-                CharacterManager characterManager = CharacterManager.getInstance();
-                APClient client = APContext.getContext().getClient();
+                APContext apContext = APContext.getContext();
+                CharacterManager characterManager = apContext.getCharacterManager();
+                APClient client = apContext.getClient();
                 String victoryKey = createVictoryKey(client);
 
                 List<String> charsWonWith = new ArrayList<>();
@@ -123,7 +124,7 @@ public class VictoryScreenPatch {
                 if (eventChars.size() >= characterManager.getCharacters().size()) {
                     client.setGameState(ClientStatus.CLIENT_GOAL);
                 }
-                LocationTracker.endOfTheRoad();
+                apContext.getLocationTracker().endOfTheRoad();
             }
             catch (ExecutionException | InterruptedException ex)
             {

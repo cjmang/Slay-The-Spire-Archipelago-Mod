@@ -1,7 +1,7 @@
 package ArchipelagoMW.game.locations;
 
 import ArchipelagoMW.client.APContext;
-import ArchipelagoMW.game.CharacterManager;
+import ArchipelagoMW.game.ShopManager;
 import ArchipelagoMW.mod.Archipelago;
 import ArchipelagoMW.client.APClient;
 import ArchipelagoMW.game.save.SaveManager;
@@ -24,6 +24,7 @@ public class LocationTracker {
     private final LocationContainer relicLocations = new LocationContainer();
     private final LocationContainer bossRelicLocations = new LocationContainer();
     private final CampfireLocations campfireLocations = new CampfireLocations();
+    private final LocationContainerMap shopLocations = new LocationContainerMap();
 
     private final Map<Long, NetworkItem> scoutedLocations = new HashMap<>();
 
@@ -61,6 +62,14 @@ public class LocationTracker {
         getRelicLocations().initialize(141L, 10L, charOffset);
         getBossRelicLocations().initialize(161L, 2L, charOffset);
     }
+
+    public void scoutShop(long totalSlots)
+    {
+        shopLocations.initialize(164L, totalSlots, currentOffset);
+        shopLocations.loadFromNetwork();
+        APContext.getContext().getClient().scoutLocations(new ArrayList<>(shopLocations.locations.keySet()));
+    }
+
 
     /**
      * @return a {@link NetworkItem} if this card draw was sent to AP,
@@ -185,9 +194,10 @@ public class LocationTracker {
         allLocations.addAll(getRelicLocations().locations);
         allLocations.addAll(getBossRelicLocations().locations);
         allLocations.addAll(getCampfireLocations().locations.keySet());
-
-        APContext.getContext().getLocationManager().checkLocations(allLocations);
-        SaveManager.getInstance().saveString(CharacterManager.getInstance().getCurrentCharacter().chosenClass.name(), "");
+        allLocations.addAll(shopLocations.locations.keySet());
+        APContext apContext = APContext.getContext();
+        apContext.getLocationManager().checkLocations(allLocations);
+        SaveManager.getInstance().saveString(apContext.getCharacterManager().getCurrentCharacter().chosenClass.name(), "");
     }
 
     public void scoutAllLocations() {
@@ -197,11 +207,18 @@ public class LocationTracker {
         locations.addAll(getRareDrawLocations().locations);
         locations.addAll(getBossRelicLocations().locations);
         locations.addAll(getCampfireLocations().locations.keySet());
+        locations.addAll(shopLocations.locations.keySet());
+        logger.info("Scouting shop locations: {}", shopLocations.locations.keySet());
         APContext.getContext().getClient().scoutLocations(locations);
     }
 
     public void addToScoutedLocations(ArrayList<NetworkItem> networkItems) {
         for (NetworkItem item : networkItems) {
+            long base_id = item.locationID % 200L;
+            if(base_id >= 164 && base_id <= 180)
+            {
+                logger.info("Got scount for location {} has item {}", item.locationName, item.itemName);
+            }
             scoutedLocations.put(item.locationID, item);
         }
     }
@@ -210,6 +227,20 @@ public class LocationTracker {
     {
         return scoutedLocations.get(location);
     }
+
+    public NetworkItem getScoutedItemOrDefault(long location)
+    {
+        NetworkItem item = scoutedLocations.get(location);
+        if(item == null)
+        {
+            item = new NetworkItem();
+            item.locationID = location;
+            item.itemName = "An AP Item";
+            item.playerName = "Some Player";
+        }
+        return item;
+    }
+
 
     public LocationContainer getCardDrawLocations() {
         return cardDrawLocations;

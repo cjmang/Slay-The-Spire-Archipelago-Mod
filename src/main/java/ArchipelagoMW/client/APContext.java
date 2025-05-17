@@ -36,7 +36,7 @@ public class APContext {
         locationTracker = new LocationTracker();
         characterManager = new CharacterManager(this);
         itemTracker = new MiscItemTracker(characterManager);
-        shopManager = new ShopManager(itemTracker, client.getSlotData());
+        shopManager = new ShopManager(itemTracker, client.getLocationManager(), characterManager, locationTracker);
     }
 
     public ItemManager getItemManager()

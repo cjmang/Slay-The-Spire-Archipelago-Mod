@@ -20,5 +20,5 @@ public class ShopSanityConfig {
     @SerializedName("card_remove")
     public boolean cardRemove = false;
     @SerializedName("costs")
-    public int costs = 1;
+    public int costs = 2;
 }

@@ -95,15 +95,16 @@ public class ArchipelagoIcon extends TopPanelItem {
         float tipX = ReflectionHacks.getPrivateStatic(TopPanel.class, "TOP_RIGHT_TIP_X");
         float tipY = ReflectionHacks.getPrivateStatic(TopPanel.class, "TIP_Y");
         if (this.hitbox.hovered) {
+            LocationTracker locationTracker = APContext.getContext().getLocationTracker();
             TipHelper.renderGenericTip(tipX, tipY,
                     "Archipelago Rewards (" + APInputActionSet.apmenu.getKeyString() + ")",
                     "View unclaimed rewards that have been sent by Archipelago. NL NL " +
                             "#yChecked #yLocations: NL " +
-                            "TAB Card Draw: #b" + LocationTracker.getCardDrawLocations().getIndex() + " NL " +
-                            "TAB Rare Card Draw: #b" + LocationTracker.getRareDrawLocations().getIndex() + " NL " +
-                            "TAB Relic: #b" + LocationTracker.getRelicLocations().getIndex() + " NL " +
-                            "TAB Boss Relic: #b" + LocationTracker.getBossRelicLocations().getIndex() + " NL " +
-                            "TAB Campfires: #b" + LocationTracker.getCampfireLocations().getNumberChecked() + " NL " +
+                            "TAB Card Draw: #b" + locationTracker.getCardDrawLocations().getIndex() + " NL " +
+                            "TAB Rare Card Draw: #b" + locationTracker.getRareDrawLocations().getIndex() + " NL " +
+                            "TAB Relic: #b" + locationTracker.getRelicLocations().getIndex() + " NL " +
+                            "TAB Boss Relic: #b" + locationTracker.getBossRelicLocations().getIndex() + " NL " +
+                            "TAB Campfires: #b" + locationTracker.getCampfireLocations().getNumberChecked() + " NL " +
                             "TAB Floors Reached: #b" + AbstractDungeon.floorNum
             );
         }

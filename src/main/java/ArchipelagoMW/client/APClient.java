@@ -112,7 +112,7 @@ public class APClient extends Client {
         public static void onLocationInfo(LocationInfoEvent event)
         {
             APClient.logger.info("Got Location Scouts");
-            LocationTracker.addToScoutedLocations(event.locations);
+            APContext.getContext().getLocationTracker().addToScoutedLocations(event.locations);
         }
 
         @ArchipelagoEventListener
