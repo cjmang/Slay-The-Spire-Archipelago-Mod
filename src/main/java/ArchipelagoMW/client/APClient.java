@@ -29,6 +29,7 @@ public class APClient extends Client {
     private SlotData slotData;
 
     private DataStorageWrapper dataStorageWrapper;
+    private RecieveItemHandler recieveItemHandler = new RecieveItemHandler();
 
     public static void newConnection(APContext context, String address, String slotName, String password) {
         APClient apClient = context.getClient();
@@ -47,6 +48,7 @@ public class APClient extends Client {
         apClient.getEventManager().registerListener(apClient.dataStorageWrapper);
         apClient.getEventManager().registerListener(new PlayerManager());
         apClient.getEventManager().registerListener(new TeamManager());
+        apClient.getEventManager().registerListener(apClient.recieveItemHandler);
         //apClient.getEventManager().registerListener(new TestButton());
         try {
             apClient.connect(address);
@@ -59,6 +61,11 @@ public class APClient extends Client {
         super();
         this.setGame("Slay the Spire");
         this.ctx = ctx;
+    }
+
+    public boolean gotFirstReceiveItem()
+    {
+        return recieveItemHandler.firstReceivedItems;
     }
 
     public SlotData getSlotData() {
@@ -106,18 +113,14 @@ public class APClient extends Client {
         dataStorageWrapper.close();
     }
 
-    public static class EventHandlers
+    public static class RecieveItemHandler
     {
-        @ArchipelagoEventListener
-        public static void onLocationInfo(LocationInfoEvent event)
-        {
-            APClient.logger.info("Got Location Scouts");
-            APContext.getContext().getLocationTracker().addToScoutedLocations(event.locations);
-        }
+        private volatile boolean firstReceivedItems = false;
 
         @ArchipelagoEventListener
-        public static void onReceiveItem(ReceiveItemEvent event)
+        public void onReceiveItem(ReceiveItemEvent event)
         {
+            firstReceivedItems = true;
             CharacterManager charManager = APContext.getContext().getCharacterManager();
             CharacterConfig character = charManager.getCurrentCharacterConfig();
             if(character == null)
@@ -133,5 +136,17 @@ public class APClient extends Client {
                 }
             }
         }
+    }
+
+    public static class EventHandlers
+    {
+        @ArchipelagoEventListener
+        public static void onLocationInfo(LocationInfoEvent event)
+        {
+            APClient.logger.info("Got Location Scouts");
+            APContext.getContext().getLocationTracker().addToScoutedLocations(event.locations);
+        }
+
+
     }
 }

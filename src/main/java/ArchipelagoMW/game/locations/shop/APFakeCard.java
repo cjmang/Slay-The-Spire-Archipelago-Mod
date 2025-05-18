@@ -12,9 +12,9 @@ public class APFakeCard extends CustomCard implements APShopItem {
     private final long locationId;
     private final NetworkItem item;
 
-    public APFakeCard(long id, NetworkItem item)
+    public APFakeCard(long id, NetworkItem item, CardColor color)
     {
-        super(item.itemName, item.playerName, Archipelago.getModID() + "Resources/images/ui/APCampfire.png", 42, item.itemName, AbstractCard.CardType.STATUS, CardColor.COLORLESS, mapRarity(item.flags), CardTarget.NONE);
+        super(item.itemName, item.playerName, Archipelago.getModID() + "Resources/images/ui/APCampfire.png", 42, item.itemName, CardType.POWER, color, mapRarity(item.flags), CardTarget.NONE);
         this.locationId = id;
         this.item = item;
     }
@@ -31,7 +31,7 @@ public class APFakeCard extends CustomCard implements APShopItem {
 
     @Override
     public AbstractCard makeCopy() {
-        return new APFakeCard(locationId, item);
+        return new APFakeCard(locationId, item, color);
     }
 
     @Override

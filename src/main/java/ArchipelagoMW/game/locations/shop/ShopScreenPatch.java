@@ -3,6 +3,7 @@ package ArchipelagoMW.game.locations.shop;
 import ArchipelagoMW.client.APClient;
 import ArchipelagoMW.client.APContext;
 import ArchipelagoMW.game.ShopManager;
+import ArchipelagoMW.mod.Archipelago;
 import basemod.BaseMod;
 import basemod.interfaces.PostCreateShopPotionSubscriber;
 import basemod.interfaces.PostCreateShopRelicSubscriber;
@@ -15,6 +16,10 @@ import com.megacrit.cardcrawl.shop.ShopScreen;
 import com.megacrit.cardcrawl.shop.StorePotion;
 import com.megacrit.cardcrawl.shop.StoreRelic;
 import com.megacrit.cardcrawl.vfx.FastCardObtainEffect;
+import javassist.CannotCompileException;
+import javassist.bytecode.SignatureAttribute;
+import javassist.expr.ExprEditor;
+import javassist.expr.MethodCall;
 
 import java.util.ArrayList;
 
@@ -71,6 +76,25 @@ public class ShopScreenPatch {
     @SpirePatch(clz=ShopScreen.class, method="initCards")
     public static class InitCardsPatch
     {
+
+        @SpireInstrumentPatch
+        public static ExprEditor fixSaleTag()
+        {
+            return new ExprEditor() {
+                @Override
+                public void edit(MethodCall method) throws CannotCompileException
+                {
+//                    Archipelago.logger.info(method.getClassName());
+//                    Archipelago.logger.info(method.getMethodName());
+//                    Archipelago.logger.info(method.getSignature());
+                    if(method.getClassName().equals("com.megacrit.cardcrawl.random.Random") && method.getMethodName().equals("random") && method.getSignature().equals("(II)I"))
+                    {
+                        Archipelago.logger.info(method.getSignature());
+                        method.replace("{ $2 = this.coloredCards.size() - 1; $_ = $proceed($$); }");
+                    }
+                }
+            };
+        }
 
         @SpirePostfixPatch
         public static void changeAPPrice(ShopScreen __instance, ArrayList<AbstractCard> ___coloredCards, ArrayList<AbstractCard> ___colorlessCards, OnSaleTag ___saleTag)

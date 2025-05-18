@@ -1,6 +1,7 @@
 package ArchipelagoMW.game.locations;
 
 import ArchipelagoMW.client.APContext;
+import ArchipelagoMW.client.config.CharacterConfig;
 import ArchipelagoMW.game.ShopManager;
 import ArchipelagoMW.mod.Archipelago;
 import ArchipelagoMW.client.APClient;
@@ -68,6 +69,13 @@ public class LocationTracker {
         shopLocations.initialize(164L, totalSlots, currentOffset);
         shopLocations.loadFromNetwork();
         APContext.getContext().getClient().scoutLocations(new ArrayList<>(shopLocations.locations.keySet()));
+    }
+
+    public void sendPressStart(CharacterConfig config)
+    {
+        if(config.locked) {
+            APContext.getContext().getClient().checkLocation(163L + (200L * currentOffset));
+        }
     }
 
 

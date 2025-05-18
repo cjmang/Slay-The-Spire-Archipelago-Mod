@@ -78,7 +78,7 @@ public class ArchipelagoPreGameScreen {
     }
 
     public void toCharSelect() {
-        CharacterSelectScreenPatch.lockNonAPChars();
+        CharacterSelectScreenPatch.lockChars();
         CardCrawlGame.mainMenuScreen.screen = MainMenuScreen.CurScreen.CHAR_SELECT;
     }
 

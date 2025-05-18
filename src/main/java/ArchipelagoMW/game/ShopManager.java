@@ -108,11 +108,14 @@ public class ShopManager {
         ArrayList<Long> scoutMe = new ArrayList<>();
         if(emptySlots == 0 && shopContext.hasMore())
         {
-            slots.remove(0);
-            Long locationId = shopContext.getNextLocation();;
-            NetworkItem item = locationTracker.getScoutedItemOrDefault(locationId);
-            scoutMe.add(locationId);
-            slots.add(createFunc.apply(locationId, item));
+            int max = slots.size();
+            for(int i = 0; i < max && shopContext.hasMore(); i++) {
+                slots.remove(0);
+                Long locationId = shopContext.getNextLocation();
+                NetworkItem item = locationTracker.getScoutedItemOrDefault(locationId);
+                scoutMe.add(locationId);
+                slots.add(createFunc.apply(locationId, item));
+            }
         }
         else
         {
@@ -165,7 +168,8 @@ public class ShopManager {
         int availableSlots = getAvailableCardSlots();
         logger.info("Available Card Slots: {}", availableSlots);
         mangleSlots(cards, CARD_SLOTS, availableSlots);
-        addAPItem(cards, CARD_SLOTS - availableSlots, APFakeCard::new);
+        AbstractCard.CardColor color = characterManager.getCurrentCharacter().getCardColor();
+        addAPItem(cards, CARD_SLOTS - availableSlots, (id,i) -> new APFakeCard(id,i,color));
     }
 
     public void mangleNeutralCards(List<AbstractCard> cards, ShopScreen shopScreen)
@@ -173,7 +177,7 @@ public class ShopManager {
         int availableSlots = getAvailableNeutralSlots();
         logger.info("Available Neutral Slots: {}", availableSlots);
         mangleSlots(cards, NEUTRAL_SLOTS, availableSlots);
-        addAPItem(cards, NEUTRAL_SLOTS - availableSlots, APFakeCard::new);
+        addAPItem(cards, NEUTRAL_SLOTS - availableSlots, (id,i) -> new APFakeCard(id,i, AbstractCard.CardColor.COLORLESS));
     }
 
     public void setPrice(AbstractCard card, float mult)
@@ -271,7 +275,7 @@ public class ShopManager {
 
         boolean hasMore()
         {
-            return index >= missingLocations.size();
+            return index < missingLocations.size();
         }
 
         Long getNextLocation()

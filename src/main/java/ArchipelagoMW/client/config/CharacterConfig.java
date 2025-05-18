@@ -17,6 +17,8 @@ public class CharacterConfig {
     public int modNum;
     @SerializedName("seed")
     public String seed;
+    @SerializedName("locked")
+    public boolean locked = false;
     @SerializedName("ascension")
     public int ascension;
     @SerializedName("final_act")
@@ -33,6 +35,7 @@ public class CharacterConfig {
                 ", officialName='" + officialName + '\'' +
                 ", modNum=" + modNum +
                 ", seed='" + seed + '\'' +
+                ", locked=" + locked +
                 ", ascension=" + ascension +
                 ", finalAct=" + finalAct +
                 ", downfall=" + downfall +

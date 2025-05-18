@@ -108,7 +108,7 @@ public class VictoryScreenPatch {
 
                 SetPacket packet = new SetPacket(victoryKey, charsWonWith);
                 packet.defaultValue = new ArrayList<>();
-                packet.addDataStorageOperation(SetPacket.Operation.DEFAULT, null);
+                packet.addDataStorageOperation(SetPacket.Operation.DEFAULT, packet.defaultValue);
                 packet.addDataStorageOperation(SetPacket.Operation.UPDATE, charsWonWith);
 
                 Future<SetReplyEvent> reply = client.dataStorageSetFuture(packet);

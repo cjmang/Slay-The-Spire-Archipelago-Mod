@@ -10,6 +10,7 @@ import ArchipelagoMW.game.save.SaveManager;
 import ArchipelagoMW.client.util.DeathLinkHelper;
 import basemod.CustomCharacterSelectScreen;
 import basemod.ReflectionHacks;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.evacipated.cardcrawl.modthespire.Loader;
 import com.evacipated.cardcrawl.modthespire.lib.*;
@@ -25,7 +26,7 @@ import dev.koifysh.archipelago.helper.DeathLink;
 import downfall.downfallMod;
 import downfall.patches.EvilModeCharacterSelect;
 
-import java.util.ArrayList;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class CharacterSelectScreenPatch {
@@ -34,21 +35,46 @@ public class CharacterSelectScreenPatch {
     private static ConfirmPopup resumeSave;
     public static CustomCharacterSelectScreen charSelectScreen;
     private static ArrayList<CharacterOption> options;
+    private static final Map<String, Texture> originalImage = new HashMap<>();
 
-    public static void lockNonAPChars() {
+    public static void lockChars() {
         CharacterManager charManager = APContext.getContext().getCharacterManager();
         charSelectScreen.options = new ArrayList<>(options);
-
+        Map<String, Boolean> unlockedChars = new HashMap<>();
+        Map<Long, String> unlockItemIds = new HashMap<>();
         charManager.markUnrecognziedCharacters();
-        Archipelago.logger.info("Character Options {}", options.stream().map(o-> o.c.chosenClass.name()).collect(Collectors.toList()));
-        charSelectScreen.options.stream().filter(o -> !charManager.getAvailableAPChars().contains(o.c.chosenClass.name()))
-                .forEach(o -> {
-                    o.locked = true;
-                    ReflectionHacks.setPrivate(o, CharacterOption.class, "buttonImg", ImageMaster.CHAR_SELECT_LOCKED);
-                });
-        Archipelago.logger.info("Available AP Chars: {}", charManager.getAvailableAPChars());
-        if(charManager.getCharacters().size() == charManager.getUnrecognizedCharacters().size())
+        charManager.getCharacters().values().forEach(c -> {
+            unlockedChars.put(c.officialName, !c.locked);
+            unlockItemIds.put(14L + (20L * c.charOffset), c.officialName);
+        });
+
+        APContext.getContext().getItemManager().getReceivedItemIDs().forEach(id -> {
+            String name = unlockItemIds.get(id);
+            if(name != null)
+            {
+                unlockedChars.put(name, true);
+            }
+        });
+        Archipelago.logger.info("Character Options {}", options.stream().map(o -> o.c.chosenClass.name()).collect(Collectors.toList()));
+        for(Map.Entry<String, Boolean> entry : unlockedChars.entrySet())
         {
+            Archipelago.logger.info("Character {} is unlocked: {}", entry.getKey(), entry.getValue());
+        }
+        charSelectScreen.options.forEach(o -> {
+            originalImage.putIfAbsent(o.c.chosenClass.name(), ReflectionHacks.getPrivate(o, CharacterOption.class, "buttonImg"));
+            CharacterConfig config = charManager.getCharacters().get(o.c.chosenClass.name());
+            if (config == null || !charManager.getAvailableAPChars().contains(config.officialName) || !unlockedChars.getOrDefault(config.officialName, false)) {
+                o.locked = true;
+                ReflectionHacks.setPrivate(o, CharacterOption.class, "buttonImg", ImageMaster.CHAR_SELECT_LOCKED);
+            } else {
+                o.locked = false;
+                ReflectionHacks.setPrivate(o, CharacterOption.class, "buttonImg", originalImage.get(config.officialName));
+            }
+        });
+
+        Archipelago.logger.info("Available AP Chars: {}", charManager.getAvailableAPChars());
+        // TODO: this is wrong; if the unlocked character is an unrecognized modded character, this doesn't fire.
+        if (charManager.getCharacters().size() == charManager.getUnrecognizedCharacters().size()) {
             // Something went very wrong, force Ironclad
             options.stream()
                     .filter(o -> o.c.chosenClass.name().equals(AbstractPlayer.PlayerClass.IRONCLAD.name()))
@@ -61,12 +87,11 @@ public class CharacterSelectScreenPatch {
     }
 
 
-    @SpirePatch(clz = CustomCharacterSelectScreen.class, method="initialize")
+    @SpirePatch(clz = CustomCharacterSelectScreen.class, method = "initialize")
     public static class InitPatch {
 
         @SpirePostfixPatch
-        public static void captureCharSelect(CustomCharacterSelectScreen __instance,  ArrayList<CharacterOption> ___allOptions)
-        {
+        public static void captureCharSelect(CustomCharacterSelectScreen __instance, ArrayList<CharacterOption> ___allOptions) {
             charSelectScreen = __instance;
             APClient.logger.info("Intializing custom character select screen");
             options = new ArrayList<>(___allOptions);
@@ -74,58 +99,48 @@ public class CharacterSelectScreenPatch {
         }
     }
 
-    @SpirePatch(clz = CharacterSelectScreen.class, method="update")
-    public static class UpdatePatch
-    {
+    @SpirePatch(clz = CharacterSelectScreen.class, method = "update")
+    public static class UpdatePatch {
         // TODO: change to locator
-        @SpireInsertPatch(rloc=191-166)
-        public static void disableAscensionUnlocked(CharacterSelectScreen __instance, @ByRef boolean[] ___isAscensionModeUnlocked)
-        {
+        @SpireInsertPatch(rloc = 191 - 166)
+        public static void disableAscensionUnlocked(CharacterSelectScreen __instance, @ByRef boolean[] ___isAscensionModeUnlocked) {
             ___isAscensionModeUnlocked[0] = false;
         }
 
         @SpirePostfixPatch
-        public static void updateResumeSave(CharacterSelectScreen __instance)
-        {
+        public static void updateResumeSave(CharacterSelectScreen __instance) {
             resumeSave.update();
         }
     }
 
-    @SpirePatch(clz = CharacterSelectScreen.class, method="render", paramtypez={SpriteBatch.class})
-    public static class RenderPatch
-    {
+    @SpirePatch(clz = CharacterSelectScreen.class, method = "render", paramtypez = {SpriteBatch.class})
+    public static class RenderPatch {
         @SpirePostfixPatch
-        public static void renderConfirm(CharacterSelectScreen __instance, SpriteBatch sb)
-        {
+        public static void renderConfirm(CharacterSelectScreen __instance, SpriteBatch sb) {
             resumeSave.render(sb);
         }
     }
 
-    @SpirePatch(clz= CharacterSelectScreen.class, method="updateButtons")
-    public static class UpdateButtonsPatch
-    {
+    @SpirePatch(clz = CharacterSelectScreen.class, method = "updateButtons")
+    public static class UpdateButtonsPatch {
 
-        @SpireInsertPatch(rloc=297-280)
-        public static SpireReturn<Void> showSaveConfirm(CharacterSelectScreen __instance)
-        {
-            if(!__instance.confirmButton.hb.clicked) {
+        @SpireInsertPatch(rloc = 297 - 280)
+        public static SpireReturn<Void> showSaveConfirm(CharacterSelectScreen __instance) {
+            if (!__instance.confirmButton.hb.clicked) {
                 return SpireReturn.Continue();
             }
             CharacterManager characterManager = APContext.getContext().getCharacterManager();
             for (CharacterOption o : __instance.options) {
-                if(o.selected)
-                {
+                if (o.selected) {
                     //TODO: cleanup
                     //ConnectionResult.character = o.c;
-                    if(!characterManager.selectCharacter(o.c.chosenClass.name()))
-                    {
+                    if (!characterManager.selectCharacter(o.c.chosenClass.name())) {
                         throw new RuntimeException("Attempting to play AP with an unrecognized character " + o.c.chosenClass.name());
                     }
                     break;
                 }
             }
-            if(SaveManager.getInstance().hasSave(characterManager.getCurrentCharacter().chosenClass.name()))
-            {
+            if (SaveManager.getInstance().hasSave(characterManager.getCurrentCharacter().chosenClass.name())) {
                 resumeSave.show();
                 __instance.confirmButton.hb.clicked = false;
                 return SpireReturn.Return();
@@ -133,9 +148,8 @@ public class CharacterSelectScreenPatch {
             return SpireReturn.Continue();
         }
 
-        @SpireInsertPatch(rloc=298-280)
-        public static void initializeAPSettings(CharacterSelectScreen __instance)
-        {
+        @SpireInsertPatch(rloc = 298 - 280)
+        public static void initializeAPSettings(CharacterSelectScreen __instance) {
             APContext ctx = APContext.getContext();
             CharacterManager charManager = ctx.getCharacterManager();
             CharacterConfig config = charManager.getCurrentCharacterConfig();
@@ -146,8 +160,7 @@ public class CharacterSelectScreenPatch {
             __instance.ascensionLevel = config.ascension;
             Settings.isFinalActAvailable = config.finalAct;
 
-            if(Loader.isModLoaded("downfall"))
-            {
+            if (Loader.isModLoaded("downfall")) {
                 EvilModeCharacterSelect.evilMode = config.downfall;
             }
 
@@ -156,28 +169,23 @@ public class CharacterSelectScreenPatch {
             }
 
             DeathLinkHelper.update.sendDeath = false;
-
+            APContext.getContext().getLocationTracker().sendPressStart(config);
 
         }
     }
 
-    @SpirePatch(clz=CharacterSelectScreen.class, method="renderSeedSettings")
-    public static class PreventSeedRender
-    {
-        public static void Replace(CharacterSelectScreen __instance, SpriteBatch sb)
-        {
+    @SpirePatch(clz = CharacterSelectScreen.class, method = "renderSeedSettings")
+    public static class PreventSeedRender {
+        public static void Replace(CharacterSelectScreen __instance, SpriteBatch sb) {
             // Don't render seed selection
         }
     }
 
-    @SpirePatch(clz= CustomCharacterSelectScreen.class, method="initialize")
-    public static class ForceDownfallCrossover
-    {
+    @SpirePatch(clz = CustomCharacterSelectScreen.class, method = "initialize")
+    public static class ForceDownfallCrossover {
         @SpirePrefixPatch
-        public static void forceFullCrossover()
-        {
-            if(ModHelper.isModEnabled("downfall"))
-            {
+        public static void forceFullCrossover() {
+            if (ModHelper.isModEnabled("downfall")) {
                 downfallMod.crossoverCharacters = true;
                 downfallMod.crossoverModCharacters = true;
             }

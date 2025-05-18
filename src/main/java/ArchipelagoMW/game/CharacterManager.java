@@ -15,13 +15,14 @@ import org.apache.logging.log4j.Logger;
 
 import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class CharacterManager {
     private static final Logger logger = LogManager.getLogger(CharacterManager.class);
 
 
-    private List<CharacterConfig> characters = Collections.emptyList();
+    private Map<String, CharacterConfig> characters = Collections.emptyMap();
     private final Set<String> availableAPChars = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
 
     private AbstractPlayer currentCharacter;
@@ -36,9 +37,9 @@ public class CharacterManager {
 
     public void initialize(List<CharacterConfig> configs)
     {
-        characters = new ArrayList<>(configs);
+        characters = configs.stream().collect(Collectors.toMap(c -> c.officialName, Function.identity()));
         availableAPChars.clear();
-        for(CharacterConfig config : characters)
+        for(CharacterConfig config : characters.values())
         {
             logger.info(config.name);
             availableAPChars.add(config.officialName);
@@ -46,15 +47,12 @@ public class CharacterManager {
 
         if(currentCharacter != null)
         {
-            currentCharacterConfig = characters.stream().filter(c ->
-                    currentCharacter.chosenClass.name().equals(c.officialName))
-                    .findFirst()
-                    .orElse(null);
+            currentCharacterConfig = characters.get(currentCharacter.chosenClass.name());
         }
 
     }
 
-    public List<CharacterConfig> getCharacters() {
+    public Map<String, CharacterConfig> getCharacters() {
         return characters;
     }
 
@@ -76,19 +74,13 @@ public class CharacterManager {
 
     public boolean selectCharacter(String officialName)
     {
-        if(officialName == null || officialName.isEmpty())
+        CharacterConfig config = characters.get(officialName);
+        if(config == null)
         {
             return false;
         }
-        for(CharacterConfig config : characters)
-        {
-            if(officialName.equals(config.officialName))
-            {
-                selectCharacter(config);
-                return true;
-            }
-        }
-        return false;
+        selectCharacter(config);
+        return true;
     }
 
     public long toCharacterLocationID(long id)
@@ -99,25 +91,21 @@ public class CharacterManager {
     public void markUnrecognziedCharacters()
     {
         unrecognizedCharacters.clear();
-        List<String> names = getCharacters().stream()
-                .map(c -> c.officialName)
+        List<String> names = getCharacters().keySet().stream()
                 .filter(n -> CardCrawlGame.characterManager.getAllCharacters().stream().noneMatch(o -> o.chosenClass.name().equals(n)))
                 .collect(Collectors.toList());
         logger.info("Unrecognized Characters {}", names);
         for(String name : names)
         {
-            for(CharacterConfig config : characters)
-            {
-                if(config.officialName.equals(name)) {
-                    logger.info("Found config for unrecognized character {}", name);
-                    unrecognizedCharacters.add(config);
-                }
-            }
+            CharacterConfig config = characters.get(name);
+            logger.info("Found config for unrecognized character {}", name);
+            unrecognizedCharacters.add(config);
         }
     }
 
     public void handleIroncladOverride()
     {
+        // TODO: this doesn't work
         CharacterConfig config = new CharacterConfig();
         config.name = "Ironclad";
         config.officialName = AbstractPlayer.PlayerClass.IRONCLAD.name();
@@ -127,7 +115,7 @@ public class CharacterManager {
         config.ascension = 0;
         config.downfall = false;
         config.finalAct = false;
-        characters.add(config);
+        characters.put(config.officialName,config);
     }
 
     public boolean isItemIDForCurrentCharacter(long itemID)

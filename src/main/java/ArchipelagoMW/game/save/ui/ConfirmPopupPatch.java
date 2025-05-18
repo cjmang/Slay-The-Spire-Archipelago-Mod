@@ -14,10 +14,13 @@ import com.megacrit.cardcrawl.core.Settings;
 import com.megacrit.cardcrawl.dungeons.AbstractDungeon;
 import com.megacrit.cardcrawl.helpers.ModHelper;
 import com.megacrit.cardcrawl.helpers.SeedHelper;
+import com.megacrit.cardcrawl.random.Random;
+import com.megacrit.cardcrawl.screens.charSelect.CharacterSelectScreen;
 import com.megacrit.cardcrawl.screens.mainMenu.MainMenuScreen;
 import com.megacrit.cardcrawl.screens.options.ConfirmPopup;
 import dev.koifysh.archipelago.helper.DeathLink;
 import downfall.patches.EvilModeCharacterSelect;
+
 
 public class ConfirmPopupPatch {
     @SpireEnum
@@ -64,12 +67,19 @@ public class ConfirmPopupPatch {
 
                 Settings.isFinalActAvailable = config.finalAct;
                 SeedHelper.setSeed(config.seed);
+                if(Settings.seed == null)
+                {
+                    long sourceTime = System.nanoTime();
+                    Random rng = new Random(sourceTime);
+                    Settings.seedSourceTimestamp = sourceTime;
+                    Settings.seed = SeedHelper.generateUnoffensiveSeed(rng);
+                    Settings.seedSet = false;
+                }
 
                 AbstractDungeon.isAscensionMode = config.ascension > 0;
                 AbstractDungeon.ascensionLevel = config.ascension;
 
                 AbstractDungeon.generateSeeds();
-                Settings.seedSet = true;
 
                 CardCrawlGame.mainMenuScreen.screen = MainMenuScreen.CurScreen.MAIN_MENU;
                 CardCrawlGame.mainMenuScreen.isFadingOut = true;

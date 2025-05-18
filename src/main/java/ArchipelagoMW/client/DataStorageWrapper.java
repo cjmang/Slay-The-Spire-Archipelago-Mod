@@ -41,7 +41,7 @@ public class DataStorageWrapper implements Closeable {
         },15, 5, TimeUnit.SECONDS);
     }
 
-    private <T extends Event> Future<T> setupFuture(int requestId)
+    private synchronized <T extends Event> Future<T> setupFuture(int requestId)
     {
         CompletableFuture<T> future = new CompletableFuture<>();
         messageMap.put(requestId, new ResponseWrapper<>(future));
@@ -86,7 +86,7 @@ public class DataStorageWrapper implements Closeable {
     }
 
     @ArchipelagoEventListener
-    public void handleDataStorageGetEvent(RetrievedEvent event)
+    public synchronized void handleDataStorageGetEvent(RetrievedEvent event)
     {
         if(closed.get())
         {
@@ -100,7 +100,7 @@ public class DataStorageWrapper implements Closeable {
     }
 
     @ArchipelagoEventListener
-    public void handleDataStorageSetEvent(SetReplyEvent event)
+    public synchronized void handleDataStorageSetEvent(SetReplyEvent event)
     {
         if(closed.get())
         {

@@ -42,6 +42,7 @@ import org.apache.logging.log4j.Logger;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
 
 public class ArchipelagoRewardScreen  extends CustomScreen {
@@ -211,7 +212,7 @@ public class ArchipelagoRewardScreen  extends CustomScreen {
         AbstractDungeon.screen = Enum.ARCHIPELAGO_REWARD_SCREEN;
         tip = CardCrawlGame.tips.getTip();
 
-        ArrayList<NetworkItem> items = ctx.getItemManager().getReceivedItems();
+        List<NetworkItem> items = ctx.getItemManager().getReceivedItems();
         for (int i = receivedItemsIndex; i < items.size(); ++i) {
             receivedItemsIndex = i + 1;
             addReward(items.get(i));
