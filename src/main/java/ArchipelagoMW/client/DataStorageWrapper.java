@@ -10,6 +10,7 @@ import org.apache.logging.log4j.Logger;
 
 import java.io.Closeable;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.*;
@@ -20,7 +21,7 @@ public class DataStorageWrapper implements Closeable {
     private static final Logger logger = LogManager.getLogger(DataStorageWrapper.class);
     private static final ScheduledExecutorService cleanup = Executors.newScheduledThreadPool(1);
     private final APClient client;
-    private final Map<Integer, ResponseWrapper<? extends Event>> messageMap = new ConcurrentHashMap<>();
+    private final Map<Integer, ResponseWrapper<? extends Event>> messageMap = new HashMap<>();
     private final AtomicBoolean closed = new AtomicBoolean(false);
 
     public DataStorageWrapper(APClient client)
@@ -41,7 +42,7 @@ public class DataStorageWrapper implements Closeable {
         },15, 5, TimeUnit.SECONDS);
     }
 
-    private synchronized <T extends Event> Future<T> setupFuture(int requestId)
+    private <T extends Event> Future<T> setupFuture(int requestId)
     {
         CompletableFuture<T> future = new CompletableFuture<>();
         messageMap.put(requestId, new ResponseWrapper<>(future));
@@ -53,13 +54,13 @@ public class DataStorageWrapper implements Closeable {
         messageMap.put(requestId, new ResponseWrapper<>(consumer));
     }
 
-    public Future<RetrievedEvent> dataStorageGet(Collection<String> keys)
+    public synchronized Future<RetrievedEvent> dataStorageGet(Collection<String> keys)
     {
         int requestId = client.dataStorageGet(keys);
         return setupFuture(requestId);
     }
 
-    public Future<SetReplyEvent> dataStorageSet(SetPacket packet)
+    public synchronized Future<SetReplyEvent> dataStorageSet(SetPacket packet)
     {
         packet.want_reply = true;
         int requestId = client.dataStorageSet(packet);
@@ -72,14 +73,14 @@ public class DataStorageWrapper implements Closeable {
         client.dataStorageSet(packet);
     }
 
-    public void asyncDSSet(SetPacket packet, Consumer<SetReplyEvent> lambda)
+    public synchronized void asyncDSSet(SetPacket packet, Consumer<SetReplyEvent> lambda)
     {
         packet.want_reply = true;
         int requestId = client.dataStorageSet(packet);
         setupConsumer(requestId, lambda);
     }
 
-    public void asyncDSGet(Collection<String> keys, Consumer<RetrievedEvent> lambda)
+    public synchronized void asyncDSGet(Collection<String> keys, Consumer<RetrievedEvent> lambda)
     {
         int requestId = client.dataStorageGet(keys);
         setupConsumer(requestId, lambda);

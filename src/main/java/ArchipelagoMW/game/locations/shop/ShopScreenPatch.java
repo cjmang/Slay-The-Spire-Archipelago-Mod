@@ -3,7 +3,6 @@ package ArchipelagoMW.game.locations.shop;
 import ArchipelagoMW.client.APClient;
 import ArchipelagoMW.client.APContext;
 import ArchipelagoMW.game.ShopManager;
-import ArchipelagoMW.mod.Archipelago;
 import basemod.BaseMod;
 import basemod.interfaces.PostCreateShopPotionSubscriber;
 import basemod.interfaces.PostCreateShopRelicSubscriber;
@@ -17,7 +16,6 @@ import com.megacrit.cardcrawl.shop.StorePotion;
 import com.megacrit.cardcrawl.shop.StoreRelic;
 import com.megacrit.cardcrawl.vfx.FastCardObtainEffect;
 import javassist.CannotCompileException;
-import javassist.bytecode.SignatureAttribute;
 import javassist.expr.ExprEditor;
 import javassist.expr.MethodCall;
 
@@ -84,12 +82,10 @@ public class ShopScreenPatch {
                 @Override
                 public void edit(MethodCall method) throws CannotCompileException
                 {
-//                    Archipelago.logger.info(method.getClassName());
-//                    Archipelago.logger.info(method.getMethodName());
-//                    Archipelago.logger.info(method.getSignature());
                     if(method.getClassName().equals("com.megacrit.cardcrawl.random.Random") && method.getMethodName().equals("random") && method.getSignature().equals("(II)I"))
                     {
-                        Archipelago.logger.info(method.getSignature());
+                        // original method wasn't dynamic based on the size of the coloredCards list, so it threw
+                        // an exception when it went out of range
                         method.replace("{ $2 = this.coloredCards.size() - 1; $_ = $proceed($$); }");
                     }
                 }
@@ -139,29 +135,29 @@ public class ShopScreenPatch {
                 __instance.isDone = true;
                 __instance.duration = 0.0F;
                 APShopItem fake = (APShopItem) card;
-                APContext.getContext().getLocationManager().checkLocation(fake.getLocationId());
+                APContext.getContext().getShopManager().purchaseItem(fake);
                 return SpireReturn.Return();
             }
             return SpireReturn.Continue();
         }
 
     }
-    // TODO: relics should be handled in the AbstractRelic class instantObtain method
-    @SpirePatch(clz=AbstractPlayer.class, method="obtainPotion", paramtypez = AbstractPotion.class)
-    public static class ObtainPotionPatch
-    {
-
-        @SpirePrefixPatch
-        public static SpireReturn<Boolean> fakePotion(AbstractPlayer __instance, AbstractPotion potionToObtain)
-        {
-            if(potionToObtain instanceof APShopItem)
-            {
-                APFakePotion fake = (APFakePotion) potionToObtain;
-                APContext.getContext().getLocationManager().checkLocation(fake.getLocationId());
-                return SpireReturn.Return(true);
-            }
-            return SpireReturn.Continue();
-        }
-    }
+//    // TODO: relics should be handled in the AbstractRelic class instantObtain method
+//    @SpirePatch(clz=AbstractPlayer.class, method="obtainPotion", paramtypez = AbstractPotion.class)
+//    public static class ObtainPotionPatch
+//    {
+//
+//        @SpirePrefixPatch
+//        public static SpireReturn<Boolean> fakePotion(AbstractPlayer __instance, AbstractPotion potionToObtain)
+//        {
+//            if(potionToObtain instanceof APShopItem)
+//            {
+//                APFakePotion fake = (APFakePotion) potionToObtain;
+//                APContext.getContext().getLocationManager().checkLocation(fake.getLocationId());
+//                return SpireReturn.Return(true);
+//            }
+//            return SpireReturn.Continue();
+//        }
+//    }
 
 }

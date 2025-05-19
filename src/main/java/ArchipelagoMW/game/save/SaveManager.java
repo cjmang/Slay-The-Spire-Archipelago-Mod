@@ -20,19 +20,12 @@ import java.util.zip.GZIPOutputStream;
 public class SaveManager {
     private static final Logger logger = LogManager.getLogger(SaveManager.class);
 
-    // TODO: create inside APContext
-    private static final SaveManager saveManager = new SaveManager(APContext.getContext());
-
     private final Map<String, String> saveCache = new ConcurrentHashMap<>();
     private final APContext context;
 
     public SaveManager(APContext context)
     {
         this.context = context;
-    }
-
-    public static SaveManager getInstance() {
-        return saveManager;
     }
 
     public String getAPSaveKey()
@@ -94,7 +87,7 @@ public class SaveManager {
         SetPacket packet = new SetPacket(getAPSaveKey(), new HashMap<String, String>());
         packet.addDataStorageOperation(SetPacket.Operation.DEFAULT, "");
         packet.addDataStorageOperation(SetPacket.Operation.UPDATE, saveMe);
-        logger.info("Sending save data {}", saveMe);
+//        logger.info("Sending save data {}", saveMe);
         context.getClient().asyncDSSet(packet, __ -> this.loadSaves());
     }
 

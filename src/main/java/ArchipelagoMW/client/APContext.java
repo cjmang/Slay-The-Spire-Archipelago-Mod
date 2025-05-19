@@ -5,6 +5,7 @@ import ArchipelagoMW.game.CharacterManager;
 import ArchipelagoMW.game.ShopManager;
 import ArchipelagoMW.game.items.MiscItemTracker;
 import ArchipelagoMW.game.locations.LocationTracker;
+import ArchipelagoMW.game.save.SaveManager;
 import dev.koifysh.archipelago.ItemManager;
 import dev.koifysh.archipelago.LocationManager;
 
@@ -22,6 +23,11 @@ public class APContext {
     private MiscItemTracker itemTracker;
     private LocationTracker locationTracker;
     private ShopManager shopManager;
+    private SaveManager saveManager;
+
+    public SaveManager getSaveManager() {
+        return saveManager;
+    }
 
     public APClient getClient() {
         return client;
@@ -36,7 +42,8 @@ public class APContext {
         locationTracker = new LocationTracker();
         characterManager = new CharacterManager(this);
         itemTracker = new MiscItemTracker(characterManager);
-        shopManager = new ShopManager(itemTracker, client.getLocationManager(), characterManager, locationTracker);
+        shopManager = new ShopManager(this);
+        saveManager = new SaveManager(getContext());
     }
 
     public ItemManager getItemManager()

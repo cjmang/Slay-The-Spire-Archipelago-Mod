@@ -109,7 +109,6 @@ public class ArchipelagoPreGameScreen {
                         ArchipelagoMainMenuButton.archipelagoPreGameScreen.confirmButton.updateText("Select Character");
                         break;
 //                    case team:
-//                        // TODO: needs to start game, need to figure out how for multichar
 //                        ConnectionResult.start();
 //                        TeamManager.lockTeam();
 //                        break;

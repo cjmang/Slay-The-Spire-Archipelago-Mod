@@ -4,11 +4,12 @@ import ArchipelagoMW.client.config.CharacterConfig;
 import ArchipelagoMW.game.CharacterManager;
 import ArchipelagoMW.client.config.SlotData;
 import ArchipelagoMW.client.apEvents.ConnectionResult;
-import ArchipelagoMW.game.locations.LocationTracker;
+import ArchipelagoMW.game.TalkQueue;
 import ArchipelagoMW.game.teams.PlayerManager;
 import ArchipelagoMW.game.teams.TeamManager;
 import ArchipelagoMW.game.items.ui.ArchipelagoRewardScreen;
 import ArchipelagoMW.game.connect.ui.connection.ConnectionPanel;
+import com.megacrit.cardcrawl.core.CardCrawlGame;
 import dev.koifysh.archipelago.Client;
 import dev.koifysh.archipelago.events.*;
 import dev.koifysh.archipelago.flags.ItemsHandling;
@@ -29,11 +30,12 @@ public class APClient extends Client {
     private SlotData slotData;
 
     private DataStorageWrapper dataStorageWrapper;
-    private RecieveItemHandler recieveItemHandler = new RecieveItemHandler();
+    private final RecieveItemHandler recieveItemHandler = new RecieveItemHandler();
 
     public static void newConnection(APContext context, String address, String slotName, String password) {
         APClient apClient = context.getClient();
         if (apClient != null) {
+            TalkQueue.AbstractDungeonPatch.talkQueue.clear();
             apClient.close();
         }
         apClient = new APClient(context);
@@ -49,6 +51,7 @@ public class APClient extends Client {
         apClient.getEventManager().registerListener(new PlayerManager());
         apClient.getEventManager().registerListener(new TeamManager());
         apClient.getEventManager().registerListener(apClient.recieveItemHandler);
+//        apClient.getEventManager().registerListener(new OnJSONMessage());
         //apClient.getEventManager().registerListener(new TestButton());
         try {
             apClient.connect(address);
@@ -63,10 +66,6 @@ public class APClient extends Client {
         this.ctx = ctx;
     }
 
-    public boolean gotFirstReceiveItem()
-    {
-        return recieveItemHandler.firstReceivedItems;
-    }
 
     public SlotData getSlotData() {
         return slotData;
@@ -115,24 +114,44 @@ public class APClient extends Client {
 
     public static class RecieveItemHandler
     {
-        private volatile boolean firstReceivedItems = false;
 
         @ArchipelagoEventListener
         public void onReceiveItem(ReceiveItemEvent event)
         {
-            firstReceivedItems = true;
             CharacterManager charManager = APContext.getContext().getCharacterManager();
             CharacterConfig character = charManager.getCurrentCharacterConfig();
-            if(character == null)
+            if(character == null || CardCrawlGame.GameMode.GAMEPLAY != CardCrawlGame.mode)
             {
                 return;
             }
-            if(event.getIndex() > ArchipelagoRewardScreen.receivedItemsIndex) {
+            if(event.getIndex() > ArchipelagoRewardScreen.getReceivedItemsIndex()) {
+
                 if(charManager.isItemIDForCurrentCharacter(event.getItemID()))
                 {
                     APContext.getContext().getItemTracker().addItem(event.getItemID());
                     // only increase counter, actual items get fetched when you open the reward screen.
                     ArchipelagoRewardScreen.rewardsQueued += 1;
+                }
+            }
+        }
+    }
+
+    public static class OnJSONMessage
+    {
+
+        @ArchipelagoEventListener
+        public void onJSONMessage(PrintJSONEvent event)
+        {
+            if(CardCrawlGame.GameMode.GAMEPLAY == CardCrawlGame.mode)
+            {
+                switch(event.type)
+                {
+                    case Chat:
+                    case ItemSend:
+                    case ItemCheat:
+                    case Goal:
+                    case Hint:
+                        TalkQueue.AbstractDungeonPatch.talkQueue.add(event);
                 }
             }
         }
@@ -146,7 +165,6 @@ public class APClient extends Client {
             APClient.logger.info("Got Location Scouts");
             APContext.getContext().getLocationTracker().addToScoutedLocations(event.locations);
         }
-
-
     }
+
 }

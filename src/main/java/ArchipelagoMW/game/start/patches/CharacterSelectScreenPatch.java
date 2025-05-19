@@ -6,7 +6,6 @@ import ArchipelagoMW.mod.Archipelago;
 import ArchipelagoMW.client.config.CharacterConfig;
 import ArchipelagoMW.game.CharacterManager;
 import ArchipelagoMW.game.save.ui.ConfirmPopupPatch;
-import ArchipelagoMW.game.save.SaveManager;
 import ArchipelagoMW.client.util.DeathLinkHelper;
 import basemod.CustomCharacterSelectScreen;
 import basemod.ReflectionHacks;
@@ -73,7 +72,8 @@ public class CharacterSelectScreenPatch {
         });
 
         Archipelago.logger.info("Available AP Chars: {}", charManager.getAvailableAPChars());
-        // TODO: this is wrong; if the unlocked character is an unrecognized modded character, this doesn't fire.
+        // Fallbacks; two cases possible: either all characters are unrecognized, or all the ones which are
+        // recognized are locked
         if (charManager.getCharacters().size() == charManager.getUnrecognizedCharacters().size()) {
             // Something went very wrong, force Ironclad
             options.stream()
@@ -82,7 +82,18 @@ public class CharacterSelectScreenPatch {
                         o.locked = false;
                         ReflectionHacks.setPrivate(o, CharacterOption.class, "buttonImg", ImageMaster.CHAR_SELECT_IRONCLAD);
                     });
-            charManager.handleIroncladOverride();
+            charManager.handleIroncladOverride(charManager.getUnrecognizedCharacters().get(0));
+        } else if(charSelectScreen.options.stream().allMatch(o -> o.locked)) {
+            // Unlock the first recognized one
+            for(CharacterOption option : charSelectScreen.options)
+            {
+                if(charManager.getAvailableAPChars().contains(option.c.chosenClass.name()))
+                {
+                    option.locked = false;
+                    ReflectionHacks.setPrivate(option, CharacterOption.class, "buttonImg", originalImage.get(option.c.chosenClass.name()));
+                    break;
+                }
+            }
         }
     }
 
@@ -101,7 +112,6 @@ public class CharacterSelectScreenPatch {
 
     @SpirePatch(clz = CharacterSelectScreen.class, method = "update")
     public static class UpdatePatch {
-        // TODO: change to locator
         @SpireInsertPatch(rloc = 191 - 166)
         public static void disableAscensionUnlocked(CharacterSelectScreen __instance, @ByRef boolean[] ___isAscensionModeUnlocked) {
             ___isAscensionModeUnlocked[0] = false;
@@ -129,7 +139,8 @@ public class CharacterSelectScreenPatch {
             if (!__instance.confirmButton.hb.clicked) {
                 return SpireReturn.Continue();
             }
-            CharacterManager characterManager = APContext.getContext().getCharacterManager();
+            APContext ctx = APContext.getContext();
+            CharacterManager characterManager = ctx.getCharacterManager();
             for (CharacterOption o : __instance.options) {
                 if (o.selected) {
                     //TODO: cleanup
@@ -140,7 +151,7 @@ public class CharacterSelectScreenPatch {
                     break;
                 }
             }
-            if (SaveManager.getInstance().hasSave(characterManager.getCurrentCharacter().chosenClass.name())) {
+            if (ctx.getSaveManager().hasSave(characterManager.getCurrentCharacter().chosenClass.name())) {
                 resumeSave.show();
                 __instance.confirmButton.hb.clicked = false;
                 return SpireReturn.Return();

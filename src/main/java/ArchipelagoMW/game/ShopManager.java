@@ -3,11 +3,13 @@ package ArchipelagoMW.game;
 import ArchipelagoMW.client.APContext;
 import ArchipelagoMW.client.config.ShopSanityConfig;
 import ArchipelagoMW.client.config.SlotData;
+import ArchipelagoMW.client.util.Utils;
 import ArchipelagoMW.game.items.MiscItemTracker;
 import ArchipelagoMW.game.locations.LocationTracker;
 import ArchipelagoMW.game.locations.shop.APFakeCard;
 import ArchipelagoMW.game.locations.shop.APFakePotion;
 import ArchipelagoMW.game.locations.shop.APShopItem;
+import ArchipelagoMW.mod.Archipelago;
 import com.megacrit.cardcrawl.cards.AbstractCard;
 import com.megacrit.cardcrawl.dungeons.AbstractDungeon;
 import com.megacrit.cardcrawl.potions.AbstractPotion;
@@ -24,6 +26,7 @@ import org.apache.logging.log4j.Logger;
 import java.util.*;
 import java.util.function.BiFunction;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 public class ShopManager {
     private static final Logger logger = LogManager.getLogger(ShopManager.class);
@@ -38,13 +41,15 @@ public class ShopManager {
     private final LocationTracker locationTracker;
     private final LocationManager locationManager;
     private final CharacterManager characterManager;
+    private final APContext ctx;
     private ShopContext shopContext;
 
-    public ShopManager(MiscItemTracker itemTracker, LocationManager locationManager, CharacterManager characterManager, LocationTracker locationTracker) {
-        this.itemTracker = itemTracker;
-        this.locationManager = locationManager;
-        this.characterManager = characterManager;
-        this.locationTracker = locationTracker;
+    public ShopManager(APContext ctx) {
+        this.itemTracker = ctx.getItemTracker();
+        this.locationManager = ctx.getLocationManager();
+        this.characterManager = ctx.getCharacterManager();
+        this.locationTracker = ctx.getLocationTracker();
+        this.ctx = ctx;
     }
 
     public void initializeShop()
@@ -62,6 +67,11 @@ public class ShopManager {
             return 0;
         }
         return config.cardSlots + config.potionSlots + config.relicSlots + config.neutralSlots + (config.cardRemove ? 3 : 0);
+    }
+
+    public int getFoundChecks()
+    {
+        return (shopContext != null) ? shopContext.getFoundChecks() : 0;
     }
 
     public int getAvailableCardSlots()
@@ -103,7 +113,7 @@ public class ShopManager {
         }
     }
 
-    private <T> void addAPItem(List<T> slots, int emptySlots, BiFunction<Long, NetworkItem,T> createFunc)
+    private <T> void addAPItem(List<T> slots, int emptySlots, Utils.TriFunction<Long, NetworkItem,Integer, T> createFunc)
     {
         ArrayList<Long> scoutMe = new ArrayList<>();
         if(emptySlots == 0 && shopContext.hasMore())
@@ -114,25 +124,40 @@ public class ShopManager {
                 Long locationId = shopContext.getNextLocation();
                 NetworkItem item = locationTracker.getScoutedItemOrDefault(locationId);
                 scoutMe.add(locationId);
-                slots.add(createFunc.apply(locationId, item));
+                slots.add(createFunc.apply(locationId, item, i));
             }
         }
         else
         {
+            // 3
+            int currentSize = slots.size();
+            // i < 2
             for(int i = 0; i < emptySlots; i++)
             {
                 Long locationId = shopContext.getNextLocation();
                 if(locationId == null)
                 {
-                    return;
+                    continue;
                 }
                 scoutMe.add(locationId);
                 NetworkItem item = locationTracker.getScoutedItemOrDefault(locationId);
-                slots.add(createFunc.apply(locationId, item));
+                slots.add(createFunc.apply(locationId, item, currentSize + i));
             }
         }
-        // TODO: pass in client
-        APContext.getContext().getClient().scoutLocations(scoutMe, CreateAsHint.BROADCAST_NEW);
+        ctx.getClient().scoutLocations(scoutMe, CreateAsHint.BROADCAST_NEW);
+    }
+
+    public void purchaseItem(APShopItem item)
+    {
+        long locationId = item.getLocationId();
+        logger.info("Sending shop check: {}", locationId);
+        List<Long> locationIds = new ArrayList<>();
+        locationIds.add(locationId);
+        for(long extra : shopContext.extraOffsets)
+        {
+            locationIds.add(locationId - (200L * characterManager.getCurrentCharacterConfig().charOffset) + (200L * extra));
+        }
+        APContext.getContext().getClient().checkLocations(locationIds);
     }
 
     public void manglePotions(List<StorePotion> potions, ShopScreen shopScreen)
@@ -169,7 +194,24 @@ public class ShopManager {
         logger.info("Available Card Slots: {}", availableSlots);
         mangleSlots(cards, CARD_SLOTS, availableSlots);
         AbstractCard.CardColor color = characterManager.getCurrentCharacter().getCardColor();
-        addAPItem(cards, CARD_SLOTS - availableSlots, (id,i) -> new APFakeCard(id,i,color));
+        addAPItem(cards, CARD_SLOTS - availableSlots, (id,item, index) -> {
+            AbstractCard.CardType type;
+            switch(index)
+            {
+                case 0:
+                case 1:
+                default:
+                    type = AbstractCard.CardType.ATTACK;
+                    break;
+                case 2:
+                case 3:
+                    type = AbstractCard.CardType.SKILL;
+                    break;
+                case 4:
+                    type = AbstractCard.CardType.POWER;
+            }
+            return new APFakeCard(id,item,type,color);
+        });
     }
 
     public void mangleNeutralCards(List<AbstractCard> cards, ShopScreen shopScreen)
@@ -177,7 +219,8 @@ public class ShopManager {
         int availableSlots = getAvailableNeutralSlots();
         logger.info("Available Neutral Slots: {}", availableSlots);
         mangleSlots(cards, NEUTRAL_SLOTS, availableSlots);
-        addAPItem(cards, NEUTRAL_SLOTS - availableSlots, (id,i) -> new APFakeCard(id,i, AbstractCard.CardColor.COLORLESS));
+        addAPItem(cards, NEUTRAL_SLOTS - availableSlots, (id,item, __) ->
+                new APFakeCard(id,item, AbstractCard.CardType.SKILL, AbstractCard.CardColor.COLORLESS));
     }
 
     public void setPrice(AbstractCard card, float mult)
@@ -259,18 +302,38 @@ public class ShopManager {
         }
 
         private final int act;
-        private int index;
+        private int index = 0;
+        private final List<Integer> extraOffsets;
         private final List<Long> missingLocations = new ArrayList<>();
+        private final List<Long> foundChecks = new ArrayList<>();
 
         ShopContext(LocationManager locationManager, int act, CharacterManager charManager)
         {
             this.act = Math.min(act, 3);
             for(int i = 1; i <= act; i++) {
-                shopLocationsByAct.get(this.act).stream()
+                shopLocationsByAct.get(i).stream()
                         .map(charManager::toCharacterLocationID)
                         .filter(locationManager.getMissingLocations()::contains)
+                        .distinct()
                         .forEach(this.missingLocations::add);
             }
+
+            for(int i = 1; i <= act; i++) {
+                shopLocationsByAct.get(i).stream()
+                        .map(charManager::toCharacterLocationID)
+                        .filter(locationManager.getCheckedLocations()::contains)
+                        .distinct()
+                        .forEach(this.foundChecks::add);
+            }
+
+            extraOffsets = charManager.getUnrecognizedCharacters().stream()
+                    .map(c -> c.charOffset)
+                    .collect(Collectors.toList());
+        }
+
+        public int getFoundChecks()
+        {
+            return foundChecks.size();
         }
 
         boolean hasMore()

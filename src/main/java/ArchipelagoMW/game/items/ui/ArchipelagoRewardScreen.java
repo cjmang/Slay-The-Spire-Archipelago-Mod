@@ -1,10 +1,7 @@
 package ArchipelagoMW.game.items.ui;
 
-import ArchipelagoMW.client.APClient;
 import ArchipelagoMW.client.APContext;
-import ArchipelagoMW.game.CharacterManager;
 import ArchipelagoMW.mod.Archipelago;
-import ArchipelagoMW.game.locations.LocationTracker;
 import ArchipelagoMW.game.items.patches.RewardItemPatch;
 import basemod.ReflectionHacks;
 import basemod.abstracts.CustomScreen;
@@ -47,6 +44,14 @@ import java.util.List;
 
 public class ArchipelagoRewardScreen  extends CustomScreen {
 
+    public static int getReceivedItemsIndex() {
+        return receivedItemsIndex;
+    }
+
+    public static void setReceivedItemsIndex(int receivedItemsIndex) {
+        ArchipelagoRewardScreen.receivedItemsIndex = receivedItemsIndex;
+    }
+
     public static class Enum {
         @SpireEnum
         public static AbstractDungeon.CurrentScreen ARCHIPELAGO_REWARD_SCREEN;
@@ -74,7 +79,7 @@ public class ArchipelagoRewardScreen  extends CustomScreen {
     private boolean grabbedScreen;
     private float grabStartY;
 
-    public static int receivedItemsIndex = 0;
+    private static int receivedItemsIndex = 0;
     public static boolean apReward = false;
     public static boolean apRareReward = false;
     public static int apGold = 0;
@@ -213,8 +218,8 @@ public class ArchipelagoRewardScreen  extends CustomScreen {
         tip = CardCrawlGame.tips.getTip();
 
         List<NetworkItem> items = ctx.getItemManager().getReceivedItems();
-        for (int i = receivedItemsIndex; i < items.size(); ++i) {
-            receivedItemsIndex = i + 1;
+        for (int i = getReceivedItemsIndex(); i < items.size(); ++i) {
+            setReceivedItemsIndex(i + 1);
             addReward(items.get(i));
         }
         if(apGold > 0)

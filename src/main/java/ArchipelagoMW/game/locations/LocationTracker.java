@@ -2,10 +2,8 @@ package ArchipelagoMW.game.locations;
 
 import ArchipelagoMW.client.APContext;
 import ArchipelagoMW.client.config.CharacterConfig;
-import ArchipelagoMW.game.ShopManager;
 import ArchipelagoMW.mod.Archipelago;
 import ArchipelagoMW.client.APClient;
-import ArchipelagoMW.game.save.SaveManager;
 import basemod.ReflectionHacks;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -171,7 +169,7 @@ public class LocationTracker {
 
     public void sendCampfireCheck(long locationId)
     {
-        getCampfireLocations().sendCheck(locationId);
+        getCampfireLocations().sendCheck(locationId, extraOffsets);
     }
 
     public void sendFloorCheck(int floor)
@@ -205,7 +203,7 @@ public class LocationTracker {
         allLocations.addAll(shopLocations.locations.keySet());
         APContext apContext = APContext.getContext();
         apContext.getLocationManager().checkLocations(allLocations);
-        SaveManager.getInstance().saveString(apContext.getCharacterManager().getCurrentCharacter().chosenClass.name(), "");
+        apContext.getSaveManager().saveString(apContext.getCharacterManager().getCurrentCharacter().chosenClass.name(), "");
     }
 
     public void scoutAllLocations() {
@@ -328,10 +326,16 @@ public class LocationTracker {
             return locations.values().stream().mapToInt(b -> b ? 1 : 0).sum();
         }
 
-        void sendCheck(long locationId)
+        void sendCheck(long locationId, List<Long> extras)
         {
             logger.info("Sending campfire check: {}", locationId);
-            APContext.getContext().getClient().checkLocation(locationId);
+            List<Long> locationIds = new ArrayList<>();
+            locationIds.add(locationId);
+            for(long extra : extras)
+            {
+                locationIds.add(locationId - (200L * charOffset) + (200L * extra));
+            }
+            APContext.getContext().getClient().checkLocations(locationIds);
             locations.put(locationId, true);
         }
 

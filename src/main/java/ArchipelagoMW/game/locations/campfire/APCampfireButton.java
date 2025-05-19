@@ -65,12 +65,4 @@ public class APCampfireButton  extends AbstractCampfireOption {
         APContext.getContext().getLocationTracker().sendCampfireCheck(locationId);
         AbstractDungeon.effectList.add(new CampfireRecallEffect());
     }
-
-    @Override
-    public void render(SpriteBatch sb)
-    {
-        FontHelperPatch.forceWrap = true;
-        super.render(sb);
-        FontHelperPatch.forceWrap = false;
-    }
 }

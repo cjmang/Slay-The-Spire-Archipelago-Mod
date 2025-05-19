@@ -4,8 +4,6 @@ import ArchipelagoMW.client.APClient;
 import ArchipelagoMW.client.APContext;
 import ArchipelagoMW.client.config.CharacterConfig;
 import ArchipelagoMW.client.config.SlotData;
-import ArchipelagoMW.game.CharacterManager;
-import ArchipelagoMW.game.save.SaveManager;
 import ArchipelagoMW.game.items.ui.ArchipelagoRewardScreen;
 import ArchipelagoMW.game.connect.ui.connection.ArchipelagoPreGameScreen;
 import ArchipelagoMW.game.connect.ui.connection.ConnectionPanel;
@@ -63,12 +61,17 @@ public class ConnectionResult {
         if (CardCrawlGame.mode != CardCrawlGame.GameMode.CHAR_SELECT)
             return;
 
+        APContext ctx = APContext.getContext();
         SlotData slotData = event.getSlotData(SlotData.class);
-        APContext.getContext().getClient().setSlotData(slotData);
+        ctx.getClient().setSlotData(slotData);
         Archipelago.logger.info(slotData.characters.toString());
-        APContext.getContext().getCharacterManager().initialize(slotData.characters);
+        ctx.getCharacterManager().initialize(slotData.characters);
         Archipelago.logger.info("slot data parsed");
-        SaveManager.getInstance().loadSaves();
+        ctx.getSaveManager().loadSaves();
+        if(slotData.chattyMC != 0)
+        {
+            ctx.getClient().getEventManager().registerListener(new APClient.OnJSONMessage());
+        }
 
         ArchipelagoMainMenuButton.archipelagoPreGameScreen.screen = ArchipelagoPreGameScreen.APScreen.charSelect;
     }

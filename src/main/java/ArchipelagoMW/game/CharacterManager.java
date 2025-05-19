@@ -1,9 +1,7 @@
 package ArchipelagoMW.game;
 
-import ArchipelagoMW.client.APClient;
 import ArchipelagoMW.client.APContext;
 import ArchipelagoMW.client.config.CharacterConfig;
-import ArchipelagoMW.game.items.MiscItemTracker;
 import ArchipelagoMW.game.locations.LocationTracker;
 import ArchipelagoMW.game.teams.PlayerManager;
 import ArchipelagoMW.game.teams.TeamManager;
@@ -29,10 +27,12 @@ public class CharacterManager {
     private CharacterConfig currentCharacterConfig;
     private final List<CharacterConfig> unrecognizedCharacters = new CopyOnWriteArrayList<>();
     private final LocationTracker locationTracker;
+    private final APContext ctx;
 
     public CharacterManager(APContext ctx)
     {
         this.locationTracker = ctx.getLocationTracker();
+        this.ctx = ctx;
     }
 
     public void initialize(List<CharacterConfig> configs)
@@ -103,18 +103,18 @@ public class CharacterManager {
         }
     }
 
-    public void handleIroncladOverride()
+    public void handleIroncladOverride(CharacterConfig other)
     {
-        // TODO: this doesn't work
         CharacterConfig config = new CharacterConfig();
         config.name = "Ironclad";
         config.officialName = AbstractPlayer.PlayerClass.IRONCLAD.name();
-        config.modNum = 0;
+        config.modNum = other.modNum;
         config.optionName = "the_ironclad";
-        config.charOffset = 0;
-        config.ascension = 0;
-        config.downfall = false;
-        config.finalAct = false;
+        config.charOffset = other.charOffset;
+        config.ascension = other.ascension;
+        config.downfall = other.downfall;
+        config.finalAct = other.finalAct;
+        config.seed = "";
         characters.put(config.officialName,config);
     }
 
@@ -141,12 +141,11 @@ public class CharacterManager {
                 .map(c -> (long) c.charOffset)
                 .collect(Collectors.toList()));
         ArchipelagoRewardScreen.rewards.clear();
-        ArchipelagoRewardScreen.receivedItemsIndex = 0;
+        ArchipelagoRewardScreen.setReceivedItemsIndex(0);
         ArchipelagoRewardScreen.apRareReward = false;
         ArchipelagoRewardScreen.apReward= false;
         ArchipelagoRewardScreen.APScreen= false;
-        // TODO: pass in shop manager?
-        APContext.getContext().getShopManager().initializeShop();
+        ctx.getShopManager().initializeShop();
         locationTracker.scoutAllLocations();
         locationTracker.scoutShop(APContext.getContext().getShopManager().getTotalSlots());
         TeamManager.initialLoad();

@@ -2,6 +2,8 @@ package ArchipelagoMW.game.items.ui;
 
 import ArchipelagoMW.client.APClient;
 import ArchipelagoMW.client.APContext;
+import ArchipelagoMW.client.config.SlotData;
+import ArchipelagoMW.game.ShopManager;
 import ArchipelagoMW.game.ui.APTextures;
 import ArchipelagoMW.mod.Archipelago;
 import ArchipelagoMW.game.locations.LocationTracker;
@@ -73,7 +75,7 @@ public class ArchipelagoIcon extends TopPanelItem {
         if (this.hitbox.justHovered)
             CardCrawlGame.sound.play("UI_HOVER");
 
-        if (pendingRewards.size() > 0)
+        if (!pendingRewards.isEmpty())
             for (NetworkItem reward : pendingRewards)
                 ((ArchipelagoRewardScreen) BaseMod.getCustomScreen(ArchipelagoRewardScreen.Enum.ARCHIPELAGO_REWARD_SCREEN)).addReward(reward);
 
@@ -96,16 +98,45 @@ public class ArchipelagoIcon extends TopPanelItem {
         float tipY = ReflectionHacks.getPrivateStatic(TopPanel.class, "TIP_Y");
         if (this.hitbox.hovered) {
             LocationTracker locationTracker = APContext.getContext().getLocationTracker();
+
+            SlotData slotData = ctx.getSlotData();
+            StringBuilder body = new StringBuilder("View unclaimed rewards that have been sent by Archipelago. NL NL ")
+                    .append("#yChecked #yLocations: NL ")
+                    .append("TAB Card Draw: #b").append(locationTracker.getCardDrawLocations().getIndex()).append(" NL ")
+                    .append("TAB Rare Card Draw: #b").append(locationTracker.getRareDrawLocations().getIndex()).append(" NL ")
+                    .append("TAB Relic: #b").append(locationTracker.getRelicLocations().getIndex()).append(" NL ")
+                    .append("TAB Boss Relic: #b").append(locationTracker.getBossRelicLocations().getIndex());
+
+            if(slotData.campfireSanity != 0)
+            {
+                body.append(" NL ")
+                        .append("TAB Campfires: #b").append(locationTracker.getCampfireLocations().getNumberChecked());
+            }
+
+            if(slotData.shopSanity != 0)
+            {
+                ShopManager shop = ctx.getShopManager();
+                body.append(" NL ")
+                        .append("TAB Shop Slots: #b").append(shop.getFoundChecks());
+            }
+
+            if(slotData.includeFloorChecks != 0)
+            {
+                body.append(" NL ")
+                        .append("TAB Floors Reached: #b").append(AbstractDungeon.floorNum);
+            }
+
             TipHelper.renderGenericTip(tipX, tipY,
                     "Archipelago Rewards (" + APInputActionSet.apmenu.getKeyString() + ")",
-                    "View unclaimed rewards that have been sent by Archipelago. NL NL " +
-                            "#yChecked #yLocations: NL " +
-                            "TAB Card Draw: #b" + locationTracker.getCardDrawLocations().getIndex() + " NL " +
-                            "TAB Rare Card Draw: #b" + locationTracker.getRareDrawLocations().getIndex() + " NL " +
-                            "TAB Relic: #b" + locationTracker.getRelicLocations().getIndex() + " NL " +
-                            "TAB Boss Relic: #b" + locationTracker.getBossRelicLocations().getIndex() + " NL " +
-                            "TAB Campfires: #b" + locationTracker.getCampfireLocations().getNumberChecked() + " NL " +
-                            "TAB Floors Reached: #b" + AbstractDungeon.floorNum
+                        body.toString()
+//                    "View unclaimed rewards that have been sent by Archipelago. NL NL " +
+//                            "#yChecked #yLocations: NL " +
+//                            "TAB Card Draw: #b" + locationTracker.getCardDrawLocations().getIndex() + " NL " +
+//                            "TAB Rare Card Draw: #b" + locationTracker.getRareDrawLocations().getIndex() + " NL " +
+//                            "TAB Relic: #b" + locationTracker.getRelicLocations().getIndex() + " NL " +
+//                            "TAB Boss Relic: #b" + locationTracker.getBossRelicLocations().getIndex() + " NL " +
+//                            "TAB Campfires: #b" + locationTracker.getCampfireLocations().getNumberChecked() + " NL " +
+//                            "TAB Floors Reached: #b" + AbstractDungeon.floorNum
             );
         }
 

@@ -1,8 +1,6 @@
 package ArchipelagoMW.game.save;
 
-import ArchipelagoMW.client.APClient;
 import ArchipelagoMW.client.APContext;
-import ArchipelagoMW.game.CharacterManager;
 import ArchipelagoMW.game.locations.LocationTracker;
 import ArchipelagoMW.game.items.patches.RewardItemPatch;
 import ArchipelagoMW.game.items.ui.ArchipelagoRewardScreen;
@@ -59,7 +57,7 @@ public class APSaveable implements CustomSavableRaw {
 
 
         save.add("rewards_remaining", new JsonPrimitive(ArchipelagoRewardScreen.rewardsQueued));
-        save.add("received_index", new JsonPrimitive(ArchipelagoRewardScreen.receivedItemsIndex));
+        save.add("received_index", new JsonPrimitive(ArchipelagoRewardScreen.getReceivedItemsIndex()));
         save.add("card_draw_index", new JsonPrimitive(locationTracker.getCardDrawLocations().getIndex()));
         save.add("rare_card_draw_index", new JsonPrimitive(locationTracker.getRareDrawLocations().getIndex()));
         save.add("relic_index", new JsonPrimitive(locationTracker.getRelicLocations().getIndex()));
@@ -105,15 +103,17 @@ public class APSaveable implements CustomSavableRaw {
 
         ArchipelagoRewardScreen.rewards = rewards;
         ArchipelagoRewardScreen.rewardsQueued = save.get("rewards_remaining").getAsInt();
-        ArchipelagoRewardScreen.receivedItemsIndex = save.get("received_index").getAsInt();
+        ArchipelagoRewardScreen.setReceivedItemsIndex(save.get("received_index").getAsInt());
+//        logger.info("ReceivedItems index from save: {}", ArchipelagoRewardScreen.getReceivedItemsIndex());
         locationTracker.loadFromSave(
                 save.get("card_draw_index").getAsInt(),
                 save.get("rare_card_draw_index").getAsInt(),
                 save.get("relic_index").getAsInt()
         );
-        if(!APContext.getContext().getCharacterManager().selectCharacter(save.get("character").getAsString()))
-        {
-            throw new RuntimeException("Could not select character from save file " + save.get("character").getAsString());
-        }
+        // I don't think this code is needed, since we load the save after the character is selected now.
+//        if(!APContext.getContext().getCharacterManager().selectCharacter(save.get("character").getAsString()))
+//        {
+//            throw new RuntimeException("Could not select character from save file " + save.get("character").getAsString());
+//        }
     }
 }

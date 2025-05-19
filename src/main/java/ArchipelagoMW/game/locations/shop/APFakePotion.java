@@ -5,13 +5,7 @@ import com.megacrit.cardcrawl.core.AbstractCreature;
 import com.megacrit.cardcrawl.potions.AbstractPotion;
 import dev.koifysh.archipelago.parts.NetworkItem;
 
-/**
- * TODO:
- * 1. Create fake potion
- * 2. Add fake potion to shop when relevant
- * 3. Add price setup
- * 4. Add acquisition interception
- */
+// TOOD: delete? making a fake potion item is annoying
 public class APFakePotion extends AbstractPotion implements APShopItem {
 
 

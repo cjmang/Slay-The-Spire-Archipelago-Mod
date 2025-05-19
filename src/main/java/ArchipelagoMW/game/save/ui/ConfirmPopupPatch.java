@@ -1,9 +1,7 @@
 package ArchipelagoMW.game.save.ui;
 
-import ArchipelagoMW.client.APClient;
 import ArchipelagoMW.client.APContext;
 import ArchipelagoMW.client.config.CharacterConfig;
-import ArchipelagoMW.game.CharacterManager;
 import ArchipelagoMW.client.util.DeathLinkHelper;
 import com.evacipated.cardcrawl.modthespire.Loader;
 import com.evacipated.cardcrawl.modthespire.lib.SpireEnum;
@@ -15,7 +13,6 @@ import com.megacrit.cardcrawl.dungeons.AbstractDungeon;
 import com.megacrit.cardcrawl.helpers.ModHelper;
 import com.megacrit.cardcrawl.helpers.SeedHelper;
 import com.megacrit.cardcrawl.random.Random;
-import com.megacrit.cardcrawl.screens.charSelect.CharacterSelectScreen;
 import com.megacrit.cardcrawl.screens.mainMenu.MainMenuScreen;
 import com.megacrit.cardcrawl.screens.options.ConfirmPopup;
 import dev.koifysh.archipelago.helper.DeathLink;

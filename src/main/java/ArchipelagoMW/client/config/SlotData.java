@@ -26,6 +26,9 @@ public class SlotData {
     @SerializedName("include_floor_checks")
     public int includeFloorChecks = 0;
 
+    @SerializedName("chatty_mc")
+    public int chattyMC = 1;
+
     @SerializedName("characters")
     public List<CharacterConfig> characters = new ArrayList<>();
 
