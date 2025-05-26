@@ -8,8 +8,8 @@ import java.util.List;
 
 public class SlotData {
 
-    @SerializedName("character")
-    public String character = "The Ironclad";
+//    @SerializedName("character")
+//    public List<String> character = new ArrayList<>();
 
     @SerializedName("ascension")
     public int ascension = 0;

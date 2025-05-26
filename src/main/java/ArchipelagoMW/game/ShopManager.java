@@ -310,7 +310,7 @@ public class ShopManager {
         ShopContext(LocationManager locationManager, int act, CharacterManager charManager)
         {
             this.act = Math.min(act, 3);
-            for(int i = 1; i <= act; i++) {
+            for(int i = 1; i <= this.act; i++) {
                 shopLocationsByAct.get(i).stream()
                         .map(charManager::toCharacterLocationID)
                         .filter(locationManager.getMissingLocations()::contains)
@@ -318,7 +318,7 @@ public class ShopManager {
                         .forEach(this.missingLocations::add);
             }
 
-            for(int i = 1; i <= act; i++) {
+            for(int i = 1; i <= this.act; i++) {
                 shopLocationsByAct.get(i).stream()
                         .map(charManager::toCharacterLocationID)
                         .filter(locationManager.getCheckedLocations()::contains)

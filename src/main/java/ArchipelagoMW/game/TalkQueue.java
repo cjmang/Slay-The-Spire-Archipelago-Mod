@@ -18,7 +18,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 public class TalkQueue {
-    private static final float SPEECH_DURATION = 3.0f;
+    private static final float SPEECH_DURATION = 5.0f;
 
 
     @SpirePatch(clz= AbstractDungeon.class, method="update")

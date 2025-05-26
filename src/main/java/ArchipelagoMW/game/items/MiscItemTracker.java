@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
 public class MiscItemTracker {
     private static final Set<Long> validIds = Arrays.stream(APItemID.values())
             .map(i -> i.value)
-            .filter(v -> v >=7 && v <= 14)
+            .filter(v -> v >=7 && v <= 13)
             .collect(Collectors.toSet());
 
     private final Map<Long, Integer> itemCount = new ConcurrentHashMap<>();

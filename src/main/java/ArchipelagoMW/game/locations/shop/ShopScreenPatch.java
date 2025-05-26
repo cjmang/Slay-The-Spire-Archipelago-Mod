@@ -4,6 +4,7 @@ import ArchipelagoMW.client.APClient;
 import ArchipelagoMW.client.APContext;
 import ArchipelagoMW.game.ShopManager;
 import basemod.BaseMod;
+import basemod.ReflectionHacks;
 import basemod.interfaces.PostCreateShopPotionSubscriber;
 import basemod.interfaces.PostCreateShopRelicSubscriber;
 import com.evacipated.cardcrawl.modthespire.lib.*;
@@ -16,10 +17,12 @@ import com.megacrit.cardcrawl.shop.StorePotion;
 import com.megacrit.cardcrawl.shop.StoreRelic;
 import com.megacrit.cardcrawl.vfx.FastCardObtainEffect;
 import javassist.CannotCompileException;
+import javassist.CtBehavior;
 import javassist.expr.ExprEditor;
 import javassist.expr.MethodCall;
 
 import java.util.ArrayList;
+import java.util.List;
 
 @SpireInitializer
 public class ShopScreenPatch {
@@ -52,8 +55,44 @@ public class ShopScreenPatch {
             ShopManager shopManager = APContext.getContext().getShopManager();
             shopManager.initializeShop();
             shopManager.mangleCards(coloredCards, __instance);
-            shopManager.mangleNeutralCards(colorlessCards, __instance);
         }
+
+        @SpirePostfixPatch
+        public static void interceptColorlessCards(ShopScreen __instance, ArrayList<AbstractCard> coloredCards, ArrayList<AbstractCard> colorlessCards, OnSaleTag ___saleTag)
+        {
+            // Mangling neutral cards here because of downfall
+            ShopManager shopManager = APContext.getContext().getShopManager();
+            shopManager.mangleNeutralCards(colorlessCards, __instance);
+            ReflectionHacks.privateMethod(ShopScreen.class, "setStartingCardPositions").invoke(__instance);
+
+            for(AbstractCard c : coloredCards)
+            {
+                if(!(c instanceof APShopItem))
+                {
+                    continue;
+                }
+                shopManager.setPrice(c, 1.0F);
+                if(___saleTag.card == c)
+                {
+                    c.price /= 2;
+                }
+            }
+
+            for(AbstractCard c : colorlessCards)
+            {
+                if(!(c instanceof APShopItem))
+                {
+                    continue;
+                }
+                shopManager.setPrice(c, 1.2F);
+                if(___saleTag.card == c)
+                {
+                    c.price /= 2;
+                }
+            }
+        }
+
+
 
     }
 
@@ -75,10 +114,13 @@ public class ShopScreenPatch {
     public static class InitCardsPatch
     {
 
+
         @SpireInstrumentPatch
         public static ExprEditor fixSaleTag()
         {
             return new ExprEditor() {
+
+
                 @Override
                 public void edit(MethodCall method) throws CannotCompileException
                 {
@@ -86,42 +128,42 @@ public class ShopScreenPatch {
                     {
                         // original method wasn't dynamic based on the size of the coloredCards list, so it threw
                         // an exception when it went out of range
-                        method.replace("{ $2 = this.coloredCards.size() - 1; $_ = $proceed($$); }");
+                        method.replace("{ $2 = this.coloredCards.size(); $_ = $proceed($$); }");
                     }
                 }
             };
         }
 
-        @SpirePostfixPatch
-        public static void changeAPPrice(ShopScreen __instance, ArrayList<AbstractCard> ___coloredCards, ArrayList<AbstractCard> ___colorlessCards, OnSaleTag ___saleTag)
+        @SpireInsertPatch(locator= Locator.class)
+        public static SpireReturn<Void> fixSaleTag(ShopScreen __instance, ArrayList<AbstractCard> ___coloredCards)
         {
-            ShopManager shopManager = APContext.getContext().getShopManager();
-            for(AbstractCard c : ___coloredCards)
+            if(___coloredCards.isEmpty())
             {
-                if(!(c instanceof APShopItem))
-                {
-                    continue;
-                }
-                shopManager.setPrice(c, 1.0F);
-                if(___saleTag.card == c)
-                {
-                    c.price /= 2;
-                }
+                // This call will get circumvented otherwise
+                ReflectionHacks.privateMethod(ShopScreen.class, "setStartingCardPositions").invoke(__instance);
+                return SpireReturn.Return();
             }
+            return SpireReturn.Continue();
+        }
 
-            for(AbstractCard c : ___colorlessCards)
-            {
-                if(!(c instanceof APShopItem))
+        public static class Locator extends SpireInsertLocator
+        {
+            @Override
+            public int[] Locate(CtBehavior ctBehavior) throws Exception {
+                Matcher finalMatcher = new Matcher.MethodCallMatcher(ArrayList.class, "get");
+                List<Matcher> intermediateMatchers = new ArrayList<>();
+                for(int i = 0; i < 4; i++)
                 {
-                    continue;
+                    intermediateMatchers.add(new Matcher.MethodCallMatcher(ArrayList.class, "get"));
                 }
-                shopManager.setPrice(c, 1.2F);
-                if(___saleTag.card == c)
-                {
-                    c.price /= 2;
-                }
+                return LineFinder.findInOrder(ctBehavior, intermediateMatchers, finalMatcher);
             }
         }
+
+//        @SpirePostfixPatch
+//        public static void changeAPPrice(ShopScreen __instance, ArrayList<AbstractCard> ___coloredCards, ArrayList<AbstractCard> ___colorlessCards, OnSaleTag ___saleTag)
+//        {
+//        }
     }
 
     @SpirePatch(clz = FastCardObtainEffect.class, method=SpirePatch.CONSTRUCTOR)
@@ -136,6 +178,8 @@ public class ShopScreenPatch {
                 __instance.duration = 0.0F;
                 APShopItem fake = (APShopItem) card;
                 APContext.getContext().getShopManager().purchaseItem(fake);
+                // Downfall breaks without this.
+                ReflectionHacks.setPrivate(__instance, FastCardObtainEffect.class, "card", card);
                 return SpireReturn.Return();
             }
             return SpireReturn.Continue();

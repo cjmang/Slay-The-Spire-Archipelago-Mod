@@ -32,7 +32,6 @@ public class APCampfireEffect extends AbstractGameEffect {
             CardCrawlGame.sound.play("ATTACK_MAGIC_SLOW_2");
             (AbstractDungeon.getCurrRoom()).rewards.clear();
             (AbstractDungeon.getCurrRoom()).phase = AbstractRoom.RoomPhase.COMPLETE;
-            CardCrawlGame.metricData.addCampfireChoiceData("RECALL");
         }
         if (this.duration < 0.0F) {
             this.isDone = true;

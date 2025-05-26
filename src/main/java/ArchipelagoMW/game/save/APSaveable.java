@@ -79,7 +79,11 @@ public class APSaveable implements CustomSavableRaw {
         for (APRewardSave reward : rewardSave) {
             switch (reward.type) {
                 case "GOLD":
-                    rewards.add(new RewardItem(reward.amount));
+                    // TODO: cleanup
+                    RewardItem gold = new RewardItem(null, RewardItem.RewardType.GOLD);
+                    gold.goldAmt = reward.amount;
+                    gold.text = gold.goldAmt + RewardItem.TEXT[1];
+                    rewards.add(gold);
                     break;
                 case "RELIC":
                     rewards.add(new RewardItem(RelicLibrary.getRelic(reward.id).makeCopy()));

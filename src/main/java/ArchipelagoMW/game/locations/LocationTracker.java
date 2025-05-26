@@ -365,15 +365,16 @@ public class LocationTracker {
         public List<Long> getLocationsForAct(int act)
         {
             List<Long> ret = new ArrayList<>();
-            long first = 121L + (charOffset * 200L) + Math.min((act-1)*2L, 4L);
-            long second = 122L + (charOffset * 200L) + Math.min((act-1)*2L, 4L);
-            if(!locations.get(first))
-            {
-                ret.add(first);
-            }
-            if(!locations.get(second))
-            {
-                ret.add(second);
+            int max = Math.min(act,3);
+            for(int i = max - 1; i >= 0; i--) {
+                long rest = 121L + (charOffset * 200L) + (i * 2L);
+                long smith = 122L + (charOffset * 200L) + (i * 2L);
+                if (!locations.getOrDefault(rest, true)) {
+                    ret.add(rest);
+                }
+                if (!locations.getOrDefault(smith, true)) {
+                    ret.add(smith);
+                }
             }
             return ret;
         }

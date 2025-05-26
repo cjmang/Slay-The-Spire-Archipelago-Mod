@@ -4,12 +4,14 @@ import ArchipelagoMW.client.APContext;
 import ArchipelagoMW.game.items.MiscItemTracker;
 import ArchipelagoMW.game.locations.LocationTracker;
 import com.evacipated.cardcrawl.modthespire.lib.*;
+import com.megacrit.cardcrawl.core.Settings;
 import com.megacrit.cardcrawl.dungeons.AbstractDungeon;
 import com.megacrit.cardcrawl.rooms.CampfireUI;
 import com.megacrit.cardcrawl.ui.campfire.AbstractCampfireOption;
 import com.megacrit.cardcrawl.ui.campfire.RestOption;
 import com.megacrit.cardcrawl.ui.campfire.SmithOption;
 import dev.koifysh.archipelago.network.client.CreateAsHint;
+import javassist.CtBehavior;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,7 +21,8 @@ public class APCampfirePatch {
     @SpirePatch(clz = CampfireUI.class, method="initializeButtons")
     public static class AddAPLocationsPatch {
 
-        @SpireInsertPatch(rloc=117-92)
+//        @SpireInsertPatch(rloc=117-92)
+        @SpireInsertPatch(locator = Locator.class)
         public static void changeValidOptions(CampfireUI __instance, ArrayList<AbstractCampfireOption> ___buttons)
         {
             APContext ctx = APContext.getContext();
@@ -33,9 +36,13 @@ public class APCampfirePatch {
 
             for (AbstractCampfireOption opt : ___buttons) {
                 if (opt instanceof RestOption) {
-                    opt.usable = restCount >= Math.min(AbstractDungeon.actNum, 3);
+                    if(restCount < Math.min(AbstractDungeon.actNum, 3)) {
+                        opt.usable = false;
+                    }
                 } else if (opt instanceof SmithOption) {
-                    opt.usable = smithCount >= Math.min(AbstractDungeon.actNum, 3);
+                    if(smithCount < Math.min(AbstractDungeon.actNum, 3)) {
+                        opt.usable = false;
+                    }
                 }
             }
 
@@ -48,6 +55,14 @@ public class APCampfirePatch {
             }
         }
 
+        public static class Locator extends SpireInsertLocator
+        {
+            @Override
+            public int[] Locate(CtBehavior ctBehavior) throws Exception {
+                Matcher matcher = new Matcher.FieldAccessMatcher(Settings.class, "isFinalActAvailable");
+                return LineFinder.findInOrder(ctBehavior, matcher);
+            }
+        }
 
     }
 }

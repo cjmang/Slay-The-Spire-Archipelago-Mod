@@ -4,6 +4,7 @@ import ArchipelagoMW.client.APClient;
 import ArchipelagoMW.client.APContext;
 import ArchipelagoMW.game.teams.TeamManager;
 import com.evacipated.cardcrawl.modthespire.lib.*;
+import com.megacrit.cardcrawl.dungeons.AbstractDungeon;
 import com.megacrit.cardcrawl.helpers.AsyncSaver;
 import com.megacrit.cardcrawl.rooms.TreasureRoomBoss;
 import com.megacrit.cardcrawl.saveAndContinue.SaveAndContinue;
@@ -29,7 +30,7 @@ public class SavePatch {
         @SpireInsertPatch(locator = Locator.class, localvars = {"data", "save"})
         public static SpireReturn<Void> Insert(String data, SaveFile save) {
             // hopefully Save data?
-            if (save.current_room.equals(TreasureRoomBoss.class.getName()) && TeamManager.myTeam == null) {
+            if (save.current_room.equals(TreasureRoomBoss.class.getName()) && TeamManager.myTeam == null && AbstractDungeon.actNum != 3) {
 
                 String character = APContext.getContext().getCharacterManager().getCurrentCharacter().chosenClass.name();
                 APClient.logger.info("Attempting to save character {}", character);

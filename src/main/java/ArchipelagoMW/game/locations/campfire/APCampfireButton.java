@@ -63,6 +63,6 @@ public class APCampfireButton  extends AbstractCampfireOption {
     @Override
     public void useOption() {
         APContext.getContext().getLocationTracker().sendCampfireCheck(locationId);
-        AbstractDungeon.effectList.add(new CampfireRecallEffect());
+        AbstractDungeon.effectList.add(new APCampfireEffect());
     }
 }

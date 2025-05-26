@@ -29,9 +29,9 @@ public class ConfirmPopupPatch {
         public static void Postfix(ConfirmPopup __instance, ConfirmPopup.ConfirmType ___type) {
             if (___type == AP_SAVE_RESUME) {
                 CardCrawlGame.loadingSave = true;
-
-                APContext.getContext().getCharacterManager().markUnrecognziedCharacters();
-
+                APContext ctx = APContext.getContext();
+                ctx.getCharacterManager().markUnrecognziedCharacters();
+                ctx.getItemTracker().initialize(ctx.getItemManager().getReceivedItemIDs());
                 CardCrawlGame.mainMenuScreen.isFadingOut = true;
                 CardCrawlGame.mainMenuScreen.fadeOutMusic();
                 Settings.isDailyRun = false;

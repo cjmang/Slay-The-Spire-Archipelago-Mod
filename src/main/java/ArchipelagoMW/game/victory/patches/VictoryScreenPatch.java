@@ -100,14 +100,14 @@ public class VictoryScreenPatch {
                 APClient client = apContext.getClient();
                 String victoryKey = createVictoryKey(client);
 
-                List<String> charsWonWith = new ArrayList<>();
-                charsWonWith.add(character.chosenClass.name());
+                Map<String, Boolean> charsWonWith = new HashMap<>();
+                charsWonWith.put(character.chosenClass.name(), true);
                 for (CharacterConfig config : characterManager.getUnrecognizedCharacters()) {
-                    charsWonWith.add(config.officialName);
+                    charsWonWith.put(config.officialName, true);
                 }
 
                 SetPacket packet = new SetPacket(victoryKey, charsWonWith);
-                packet.defaultValue = new ArrayList<>();
+                packet.defaultValue = new HashMap<>();
                 packet.addDataStorageOperation(SetPacket.Operation.DEFAULT, packet.defaultValue);
                 packet.addDataStorageOperation(SetPacket.Operation.UPDATE, charsWonWith);
 
@@ -118,9 +118,9 @@ public class VictoryScreenPatch {
                     return;
                 }
 
-                List<String> eventChars = (List<String>) event.value;
+                Map<String, Boolean> eventChars = (Map<String, Boolean>) event.value;
 
-                APClient.logger.info("Won with the following characters: {}", eventChars);
+                APClient.logger.info("Won with the following characters: {}", eventChars.keySet());
                 if (eventChars.size() >= characterManager.getCharacters().size()) {
                     client.setGameState(ClientStatus.CLIENT_GOAL);
                 }
