@@ -14,7 +14,7 @@ plugins {
 }
 
 description = "Archipelago Multi-World Integration into Slay the Spire"
-version = "1.15-rc-2"
+version = "1.16-rc-3"
 
 repositories {
     // Use Maven Central for resolving dependencies.
