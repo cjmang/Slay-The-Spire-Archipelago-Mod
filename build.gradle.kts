@@ -61,3 +61,26 @@ tasks.register<Copy>("deployLocal") {
     into("${steamPath}/common/SlayTheSpire/mods/")
     dependsOn("shadowJar")
 }
+
+tasks.register<Copy>("workshopUpload") {
+    val mwJar = fileTree(project.layout.buildDirectory.dir("libs")).filter { f: File ->
+        f.name.matches(Regex("ArchipelagoMW-${Pattern.quote(project.version.toString())}-all\\.jar"))
+    }
+    val configJson = fileTree(project.layout.buildDirectory.dir("resources")).filter { f: File  ->
+        f.name.matches(Regex("ModTheSpire\\.json"))
+    }
+    val workshopImage = fileTree(project.layout.buildDirectory.dir("resources")).filter { f: File  ->
+        f.name.matches(Regex("workshop_image\\.jpg"))
+    }
+    into("${steamPath}/common/SlayTheSpire/ap/")
+    from(mwJar) {
+        into("content")
+    }
+    from(configJson) {
+        rename("ModTheSpire.json", "config.json")
+    }
+    from(workshopImage) {
+        rename("workshop_image.jpg", "image.jpg")
+    }
+    dependsOn("shadowJar")
+}
