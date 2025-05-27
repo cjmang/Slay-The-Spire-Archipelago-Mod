@@ -89,7 +89,7 @@ public class APClient extends Client {
         // from the Windows StS release always.
         SSLContext context = SSLContext.getInstance("TLS");
         TrustManagerFactory factory = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
-        try(InputStream is = ArchipelagoMW.APClient.class.getResourceAsStream("/cacerts"))
+        try(InputStream is = APClient.class.getResourceAsStream("/cacerts"))
         {
             KeyStore keystore = KeyStore.getInstance("JKS");
             keystore.load(is, "changeit".toCharArray());
