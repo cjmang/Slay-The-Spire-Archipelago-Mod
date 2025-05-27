@@ -14,10 +14,19 @@ import dev.koifysh.archipelago.Client;
 import dev.koifysh.archipelago.events.*;
 import dev.koifysh.archipelago.flags.ItemsHandling;
 import dev.koifysh.archipelago.network.client.SetPacket;
+import org.apache.hc.core5.net.URIBuilder;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSocketFactory;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.TrustManagerFactory;
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.URISyntaxException;
+import java.security.GeneralSecurityException;
+import java.security.KeyStore;
 import java.util.Collection;
 import java.util.concurrent.Future;
 import java.util.function.Consumer;
@@ -53,11 +62,43 @@ public class APClient extends Client {
         apClient.getEventManager().registerListener(apClient.recieveItemHandler);
 //        apClient.getEventManager().registerListener(new OnJSONMessage());
         //apClient.getEventManager().registerListener(new TestButton());
+
         try {
-            apClient.connect(address);
-        } catch (URISyntaxException e) {
+            URIBuilder builder = new URIBuilder(!address.contains("//") ? "//" + address : address);
+            if (builder.getPort() == -1) {
+                builder.setPort(38281);
+            }
+            SSLSocketFactory socketFactory = apClient.getSocketFactory();
+            if (builder.getScheme() == null) {
+                builder.setScheme("wss");
+                apClient.connect(builder.build(), true, socketFactory);
+            } else if ("wss".equals(builder.getScheme()) ){
+                apClient.connect(builder.build(), false, socketFactory);
+            } else {
+
+                apClient.connect(builder.build() );
+            }
+        } catch (URISyntaxException | IOException | GeneralSecurityException e) {
             e.printStackTrace();
         }
+    }
+
+    private SSLSocketFactory getSocketFactory() throws IOException, GeneralSecurityException
+    {
+        // On linux, the cacerts is missing the Let's Encrypt root CA.  So we're loading the cacerts
+        // from the Windows StS release always.
+        SSLContext context = SSLContext.getInstance("TLS");
+        TrustManagerFactory factory = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
+        try(InputStream is = ArchipelagoMW.APClient.class.getResourceAsStream("/cacerts"))
+        {
+            KeyStore keystore = KeyStore.getInstance("JKS");
+            keystore.load(is, "changeit".toCharArray());
+            factory.init(keystore);
+        }
+        TrustManager[] trust = factory.getTrustManagers();
+
+        context.init(null, trust, null);
+        return context.getSocketFactory();
     }
 
     private APClient(APContext ctx) {
