@@ -59,6 +59,7 @@ public class APSaveable implements CustomSavableRaw {
         save.add("rewards_remaining", new JsonPrimitive(ArchipelagoRewardScreen.rewardsQueued));
         save.add("received_index", new JsonPrimitive(ArchipelagoRewardScreen.getReceivedItemsIndex()));
         save.add("card_draw_index", new JsonPrimitive(locationTracker.getCardDrawLocations().getIndex()));
+        save.add("card_draw_toggle", new JsonPrimitive(locationTracker.getCardDrawToggle()));
         save.add("rare_card_draw_index", new JsonPrimitive(locationTracker.getRareDrawLocations().getIndex()));
         save.add("relic_index", new JsonPrimitive(locationTracker.getRelicLocations().getIndex()));
         save.add("character", new JsonPrimitive(APContext.getContext().getCharacterManager().getCurrentCharacter().chosenClass.name()));
@@ -112,7 +113,8 @@ public class APSaveable implements CustomSavableRaw {
         locationTracker.loadFromSave(
                 save.get("card_draw_index").getAsInt(),
                 save.get("rare_card_draw_index").getAsInt(),
-                save.get("relic_index").getAsInt()
+                save.get("relic_index").getAsInt(),
+                save.get("card_draw_toggle").getAsBoolean()
         );
         // I don't think this code is needed, since we load the save after the character is selected now.
 //        if(!APContext.getContext().getCharacterManager().selectCharacter(save.get("character").getAsString()))

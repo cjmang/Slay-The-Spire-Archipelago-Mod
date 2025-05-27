@@ -18,6 +18,8 @@ import java.util.concurrent.ConcurrentHashMap;
 public class LocationTracker {
     private static final Logger logger = LogManager.getLogger(LocationTracker.class.getName());
 
+    public static final long CARD_DRAW_NUM = 12L;
+
     private final LocationContainer cardDrawLocations = new LocationContainer();
     private final LocationContainer rareDrawLocations = new LocationContainer();
     private final LocationContainer relicLocations = new LocationContainer();
@@ -39,11 +41,12 @@ public class LocationTracker {
         cardDraw = false;
     }
 
-    public void loadFromSave(int cdIndex, int rdIndex, int relicIndex)
+    public void loadFromSave(int cdIndex, int rdIndex, int relicIndex, boolean cardDraw)
     {
         getCardDrawLocations().index = cdIndex;
         getRareDrawLocations().index = rdIndex;
         getRelicLocations().index = relicIndex;
+        this.cardDraw = cardDraw;
     }
 
     public void initialize(long charOffset, List<Long> extras)
@@ -54,7 +57,7 @@ public class LocationTracker {
         reset();
         logger.info("Intializing LocationTracker with {} and extras {}", charOffset, extraOffsets);
 
-        getCardDrawLocations().initialize(101L, 15L, charOffset);
+        getCardDrawLocations().initialize(101L, CARD_DRAW_NUM, charOffset);
         getCampfireLocations().initialize(121L, 6L, charOffset);
         getCampfireLocations().loadFromNetwork();
         getRareDrawLocations().initialize(131L, 2L, charOffset);
@@ -112,7 +115,7 @@ public class LocationTracker {
 //            Archipelago.logger.info("Got Network item {}", item.itemName);
             if (item == null) {
                 NetworkItem networkItem = new NetworkItem();
-                networkItem.itemName = "Card Draw " + (15 - getCardDrawLocations().locations.size());
+                networkItem.itemName = "Card Draw " + (CARD_DRAW_NUM - getCardDrawLocations().locations.size());
                 networkItem.playerName = "";
                 return networkItem;
             }
@@ -250,6 +253,11 @@ public class LocationTracker {
 
     public LocationContainer getCardDrawLocations() {
         return cardDrawLocations;
+    }
+
+    public boolean getCardDrawToggle()
+    {
+        return cardDraw;
     }
 
     public LocationContainer getRareDrawLocations() {

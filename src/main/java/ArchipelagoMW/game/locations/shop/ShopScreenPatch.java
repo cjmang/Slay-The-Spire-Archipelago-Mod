@@ -128,7 +128,7 @@ public class ShopScreenPatch {
                     {
                         // original method wasn't dynamic based on the size of the coloredCards list, so it threw
                         // an exception when it went out of range
-                        method.replace("{ $2 = this.coloredCards.size(); $_ = $proceed($$); }");
+                        method.replace("{ $2 = this.coloredCards.size() - 1; $_ = $proceed($$); }");
                     }
                 }
             };
