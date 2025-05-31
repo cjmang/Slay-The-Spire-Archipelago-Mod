@@ -37,7 +37,8 @@ public class ArchipelagoIcon extends TopPanelItem {
 
     public static final String ID = Archipelago.makeID("ClaimRewards");
 
-    public static List<NetworkItem> pendingRewards = new LinkedList<>();
+    // TODO: this field was completely unused?
+//    public static List<NetworkItem> pendingRewards = new LinkedList<>();
     private final APContext ctx;
 
     public ArchipelagoIcon() {
@@ -75,11 +76,11 @@ public class ArchipelagoIcon extends TopPanelItem {
         if (this.hitbox.justHovered)
             CardCrawlGame.sound.play("UI_HOVER");
 
-        if (!pendingRewards.isEmpty())
-            for (NetworkItem reward : pendingRewards)
-                ((ArchipelagoRewardScreen) BaseMod.getCustomScreen(ArchipelagoRewardScreen.Enum.ARCHIPELAGO_REWARD_SCREEN)).addReward(reward);
-
-        pendingRewards.clear();
+//        if (!pendingRewards.isEmpty())
+//            for (NetworkItem reward : pendingRewards)
+//                ((ArchipelagoRewardScreen) BaseMod.getCustomScreen(ArchipelagoRewardScreen.Enum.ARCHIPELAGO_REWARD_SCREEN)).addReward(reward);
+//
+//        pendingRewards.clear();
     }
 
     @Override

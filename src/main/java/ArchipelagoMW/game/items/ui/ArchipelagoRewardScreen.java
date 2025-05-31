@@ -1,6 +1,8 @@
 package ArchipelagoMW.game.items.ui;
 
 import ArchipelagoMW.client.APContext;
+import ArchipelagoMW.game.items.MiscItemTracker;
+import ArchipelagoMW.game.locations.LocationTracker;
 import ArchipelagoMW.mod.Archipelago;
 import ArchipelagoMW.game.items.patches.RewardItemPatch;
 import basemod.ReflectionHacks;
@@ -44,14 +46,6 @@ import java.util.List;
 
 public class ArchipelagoRewardScreen  extends CustomScreen {
 
-    public static int getReceivedItemsIndex() {
-        return receivedItemsIndex;
-    }
-
-    public static void setReceivedItemsIndex(int receivedItemsIndex) {
-        ArchipelagoRewardScreen.receivedItemsIndex = receivedItemsIndex;
-    }
-
     public static class Enum {
         @SpireEnum
         public static AbstractDungeon.CurrentScreen ARCHIPELAGO_REWARD_SCREEN;
@@ -80,6 +74,15 @@ public class ArchipelagoRewardScreen  extends CustomScreen {
     private float grabStartY;
 
     private static int receivedItemsIndex = 0;
+
+    public static int getReceivedItemsIndex() {
+        return receivedItemsIndex;
+    }
+
+    public static void setReceivedItemsIndex(int receivedItemsIndex) {
+        ArchipelagoRewardScreen.receivedItemsIndex = receivedItemsIndex;
+    }
+
     public static boolean apReward = false;
     public static boolean apRareReward = false;
     public static int apGold = 0;
@@ -138,6 +141,7 @@ public class ArchipelagoRewardScreen  extends CustomScreen {
         scrollBar = new ScrollBar(new ScrollListener(), (float) Settings.WIDTH / 2.0F + 270.0F * Settings.scale, (float) Settings.HEIGHT / 2.0F - 86.0F * Settings.scale, 500.0F * Settings.scale);// 46
         ctx = APContext.getContext();
     }
+
 
     @Override
     public AbstractDungeon.CurrentScreen curScreen() {
@@ -218,9 +222,16 @@ public class ArchipelagoRewardScreen  extends CustomScreen {
         tip = CardCrawlGame.tips.getTip();
 
         List<NetworkItem> items = ctx.getItemManager().getReceivedItems();
-        for (int i = getReceivedItemsIndex(); i < items.size(); ++i) {
-            setReceivedItemsIndex(i + 1);
-            addReward(items.get(i));
+        MiscItemTracker itemTracker = ctx.getItemTracker();
+        for (int i = receivedItemsIndex; i < items.size(); ++i) {
+            receivedItemsIndex++;
+            NetworkItem item = items.get(i);
+            if(!APContext.getContext().getCharacterManager().isItemIDForCurrentCharacter(item.itemID))
+            {
+                continue;
+            }
+            itemTracker.maybeAddDraw(item.itemID);
+            addReward(item, itemTracker.getCount(item.itemID));
         }
         if(apGold > 0)
         {
@@ -405,67 +416,102 @@ public class ArchipelagoRewardScreen  extends CustomScreen {
         positionRewards();
     }
 
-    public void addReward(NetworkItem networkItem) {
-        long itemID = networkItem.itemID;
-        if(!APContext.getContext().getCharacterManager().isItemIDForCurrentCharacter(itemID))
+    private static float getAPUpgradeChance(int drawCount)
+    {
+        float apUpgradeChance = 0.0f;
+        int actNum = ((drawCount - 1) / (int) (LocationTracker.CARD_DRAW_NUM / 3)) + 1;
+        logger.info("Calculated act num {}; drawcount {}", actNum, drawCount);
+        switch(actNum)
         {
-            return;
+            case 4:
+            case 3:
+                apUpgradeChance = AbstractDungeon.ascensionLevel >= 12 ? 0.25f : 0.5f;
+                break;
+            case 2:
+                apUpgradeChance = AbstractDungeon.ascensionLevel >= 12 ? 0.125f : 0.25f;
+                break;
+            case 1:
+            default:
+                break;
         }
+        return apUpgradeChance;
+    }
+
+    public void addReward(NetworkItem networkItem, int itemCount) {
+        long itemID = networkItem.itemID;
         String location = networkItem.locationName;
         String player = networkItem.playerName;
+        RewardItem reward;
+        int itemType = (int) (itemID % 20L);
+        switch(itemType)
+        {
+            case 1: //card draw
+                apReward = true;
+                float apUpgradeChance = getAPUpgradeChance(itemCount);
+                logger.info("Ap Upgrade Chance {}", apUpgradeChance);
+                float upgradeChance = ReflectionHacks.getPrivateStatic(AbstractDungeon.class, "cardUpgradedChance");
+                ReflectionHacks.setPrivateStatic(AbstractDungeon.class, "cardUpgradedChance", apUpgradeChance);
 
-        if (itemID % 20L == 1L) { //card draw
-            apReward = true;
-            ArrayList<AbstractCard> cards = AbstractDungeon.getRewardCards();
-            apReward = false;
-            RewardItem reward = new RewardItem(1);
-            reward.goldAmt = 0;
-            reward.type = RewardItem.RewardType.CARD;
-            reward.cards = cards;
-            RewardItemPatch.CustomFields.apReward.set(reward, true);
-            reward.text = player + " NL " + location;
-            addReward(reward);
-        } else if (itemID % 20L == 2L) { //rare card draw
-            apRareReward = true;
-            ArrayList<AbstractCard> rareCards = AbstractDungeon.getRewardCards();
-            apRareReward = false;
-            RewardItem reward = new RewardItem(1);
-            reward.goldAmt = 0;
-            reward.type = RewardItem.RewardType.CARD;
-            reward.cards = rareCards;
-            RewardItemPatch.CustomFields.apReward.set(reward, true);
-            try {
-                Field f = RewardItem.class.getDeclaredField("isBoss");
-                f.setAccessible(true);
-                f.set(reward, true);
-            } catch (Exception ignored) {
-            }
+                ArrayList<AbstractCard> cards = AbstractDungeon.getRewardCards();
 
-            reward.text = player + " NL " + location;
-            addReward(reward);
-        } else if (itemID % 20L == 3L) { // Relic
-            AbstractRelic relic = AbstractDungeon.returnRandomRelic(getRandomRelicTier());
-            RewardItem reward = new RewardItem(relic);
-            reward.text = player + " NL " + location;
-            RewardItemPatch.CustomFields.apReward.set(reward, true);
-            addReward(reward);
-        } else if (itemID % 20L == 4L) { // Boss Relic
-            ArrayList<AbstractRelic> bossRelics = new ArrayList<AbstractRelic>() {{
-                add(AbstractDungeon.returnRandomRelic(AbstractRelic.RelicTier.BOSS));
-                add(AbstractDungeon.returnRandomRelic(AbstractRelic.RelicTier.BOSS));
-                add(AbstractDungeon.returnRandomRelic(AbstractRelic.RelicTier.BOSS));
-            }};
-            RewardItem reward = new RewardItem(1);
-            reward.goldAmt = 0;
-            reward.type = RewardItemPatch.RewardType.BOSS_RELIC;
-            RewardItemPatch.CustomFields.bossRelics.set(reward, bossRelics);
-            RewardItemPatch.CustomFields.apReward.set(reward, true);
-            reward.text = player + " NL " + location;
-            addReward(reward);
-        } else if (itemID % 20L == 5L) { // One Gold
-            apGold += 1;
-        } else if (itemID % 20L == 6L) { // Five Gold
-            apGold += 5;
+                ReflectionHacks.setPrivateStatic(AbstractDungeon.class, "cardUpgradedChance", upgradeChance);
+                apReward = false;
+
+                reward = new RewardItem(1);
+                reward.goldAmt = 0;
+                reward.type = RewardItem.RewardType.CARD;
+                reward.cards = cards;
+                RewardItemPatch.CustomFields.apReward.set(reward, true);
+                reward.text = player + " NL " + location;
+                addReward(reward);
+                break;
+            case 2: //rare card draw
+                apRareReward = true;
+                ArrayList<AbstractCard> rareCards = AbstractDungeon.getRewardCards();
+                apRareReward = false;
+                reward = new RewardItem(1);
+                reward.goldAmt = 0;
+                reward.type = RewardItem.RewardType.CARD;
+                reward.cards = rareCards;
+                RewardItemPatch.CustomFields.apReward.set(reward, true);
+                try {
+                    Field f = RewardItem.class.getDeclaredField("isBoss");
+                    f.setAccessible(true);
+                    f.set(reward, true);
+                } catch (Exception ignored) {
+                }
+
+                reward.text = player + " NL " + location;
+                addReward(reward);
+                break;
+            case 3: //Relic
+                AbstractRelic relic = AbstractDungeon.returnRandomRelic(getRandomRelicTier());
+                reward = new RewardItem(relic);
+                reward.text = player + " NL " + location;
+                RewardItemPatch.CustomFields.apReward.set(reward, true);
+                addReward(reward);
+                break;
+            case 4: //Boss Relic
+                ArrayList<AbstractRelic> bossRelics = new ArrayList<AbstractRelic>() {{
+                    add(AbstractDungeon.returnRandomRelic(AbstractRelic.RelicTier.BOSS));
+                    add(AbstractDungeon.returnRandomRelic(AbstractRelic.RelicTier.BOSS));
+                    add(AbstractDungeon.returnRandomRelic(AbstractRelic.RelicTier.BOSS));
+                }};
+                reward = new RewardItem(1);
+                reward.goldAmt = 0;
+                reward.type = RewardItemPatch.RewardType.BOSS_RELIC;
+                RewardItemPatch.CustomFields.bossRelics.set(reward, bossRelics);
+                RewardItemPatch.CustomFields.apReward.set(reward, true);
+                reward.text = player + " NL " + location;
+                addReward(reward);
+                break;
+            case 5: //One Gold
+                apGold += 1;
+                break;
+            case 6://Five Gold
+                apGold += 5;
+                break;
+            default:
         }
 
     }

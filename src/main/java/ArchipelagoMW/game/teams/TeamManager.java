@@ -253,7 +253,7 @@ public class TeamManager {
         TeamInfo oldTeam = teams.get(team.name);
         if(myTeam != null && myTeam.name.equals(team.name) && !oldTeam.locked && team.locked) {
             // initiate game start!
-            // TODO: what is this team manager nonsense?
+            // TODO: what is this team manager stuffs?
             ConnectionResult.start();
         }
         oldTeam.update(team);

@@ -7,17 +7,23 @@ public enum APItemID {
     BOSS_RELIC(4),
     ONE_GOLD(5),
     FIVE_GOLD(6),
-    PROGRESSIVE_REST(7),
-    PROGRESSIVE_SMITH(8),
-    CARD_SLOT(9),
-    NEUTRAL_CARD_SLOT(10),
-    RELIC_SLOT(11),
-    POTION_SLOT(12),
-    CARD_REMOVE_SLOT(13);
+    PROGRESSIVE_REST(7, true),
+    PROGRESSIVE_SMITH(8, true),
+    CARD_SLOT(9, true),
+    NEUTRAL_CARD_SLOT(10, true),
+    RELIC_SLOT(11, true),
+    POTION_SLOT(12, true),
+    CARD_REMOVE_SLOT(13, true);
     public final long value;
+    public final boolean isSanity;
 
-    private APItemID(long val)
+    APItemID(long val)
+    {
+        this(val, false);
+    }
+    APItemID(long val, boolean isSanity)
     {
         this.value = val;
+        this.isSanity = isSanity;
     }
 }

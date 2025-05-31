@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class SlotData {
+    public static int EXPECTED_MOD_VERSION = 2;
 
 //    @SerializedName("character")
 //    public List<String> character = new ArrayList<>();
@@ -37,6 +38,9 @@ public class SlotData {
 
     @SerializedName("shop_sanity")
     public int shopSanity = 0;
+
+    @SerializedName("mod_version")
+    public int modVersion = 1;
 
     @SerializedName("shop_sanity_options")
     public ShopSanityConfig shopSanityConfig = new ShopSanityConfig();

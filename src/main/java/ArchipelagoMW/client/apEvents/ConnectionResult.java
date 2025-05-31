@@ -22,13 +22,6 @@ import dev.koifysh.archipelago.events.ConnectionResultEvent;
 import dev.koifysh.archipelago.helper.DeathLink;
 
 public class ConnectionResult {
-    /**
-     * character offset for locations
-     *
-     */
-//    public static AbstractPlayer character = CardCrawlGame.characterManager.getCharacter(AbstractPlayer.PlayerClass.IRONCLAD);
-//    public static Set<String> availableAPChars = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
-
 
     @ArchipelagoEventListener
     public void onConnectionResult(ConnectionResultEvent event) {
@@ -61,8 +54,14 @@ public class ConnectionResult {
         if (CardCrawlGame.mode != CardCrawlGame.GameMode.CHAR_SELECT)
             return;
 
-        APContext ctx = APContext.getContext();
         SlotData slotData = event.getSlotData(SlotData.class);
+        if(slotData.modVersion != SlotData.EXPECTED_MOD_VERSION)
+        {
+            ConnectionPanel.connectionResultText = "Mod is not compatible with generated world; generated world version: " +
+                    slotData.modVersion + " expected version " + SlotData.EXPECTED_MOD_VERSION;
+            return;
+        }
+        APContext ctx = APContext.getContext();
         ctx.getClient().setSlotData(slotData);
         Archipelago.logger.info(slotData.characters.toString());
         ctx.getCharacterManager().initialize(slotData.characters);

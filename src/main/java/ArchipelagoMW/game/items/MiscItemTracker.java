@@ -1,7 +1,5 @@
 package ArchipelagoMW.game.items;
 
-import ArchipelagoMW.client.APClient;
-import ArchipelagoMW.client.APContext;
 import ArchipelagoMW.game.CharacterManager;
 
 import java.util.Arrays;
@@ -10,11 +8,11 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
-
+// TODO: refactor; I guess this needs to track whether the item in question has been given to the player
 public class MiscItemTracker {
-    private static final Set<Long> validIds = Arrays.stream(APItemID.values())
+    private static final Set<Long> sanityIds = Arrays.stream(APItemID.values())
+            .filter(v -> v.isSanity)
             .map(i -> i.value)
-            .filter(v -> v >=7 && v <= 13)
             .collect(Collectors.toSet());
 
     private final Map<Long, Integer> itemCount = new ConcurrentHashMap<>();
@@ -28,14 +26,23 @@ public class MiscItemTracker {
     {
         itemIDs.stream()
                 .filter(charManager::isItemIDForCurrentCharacter)
-                .filter(i -> validIds.contains(i%20L))
-                .forEach(this::addItem);
+                .filter(i -> sanityIds.contains(i%20L))
+                .forEach(this::addSanityItem);
     }
 
-    public void addItem(long itemID)
+    public void maybeAddDraw(long itemID)
     {
         long remainder = itemID % 20L;
-        if(!validIds.contains(remainder))
+        if(remainder == APItemID.CARD_DRAW.value)
+        {
+            itemCount.merge(remainder, 1, Integer::sum);
+        }
+    }
+
+    public void addSanityItem(long itemID)
+    {
+        long remainder = itemID % 20L;
+        if(!sanityIds.contains(remainder))
         {
             return;
         }

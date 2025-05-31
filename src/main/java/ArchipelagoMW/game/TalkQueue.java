@@ -2,10 +2,13 @@ package ArchipelagoMW.game;
 
 import ArchipelagoMW.client.APClient;
 import basemod.ReflectionHacks;
-import com.evacipated.cardcrawl.modthespire.lib.SpirePatch;
-import com.evacipated.cardcrawl.modthespire.lib.SpirePostfixPatch;
+import com.badlogic.gdx.graphics.Color;
+import com.evacipated.cardcrawl.modthespire.lib.*;
 import com.megacrit.cardcrawl.characters.AbstractPlayer;
+import com.megacrit.cardcrawl.core.Settings;
 import com.megacrit.cardcrawl.dungeons.AbstractDungeon;
+import com.megacrit.cardcrawl.ui.DialogWord;
+import com.megacrit.cardcrawl.ui.SpeechWord;
 import com.megacrit.cardcrawl.vfx.SpeechBubble;
 import dev.koifysh.archipelago.Print.APPrintColor;
 import dev.koifysh.archipelago.Print.APPrintPart;
@@ -36,10 +39,6 @@ public class TalkQueue {
         @SpirePostfixPatch
         public static void checkForTalking()
         {
-//            if(AbstractDungeon.getCurrRoom().phase != AbstractRoom.RoomPhase.COMBAT || talkQueue.isEmpty())
-//            {
-//                return;
-//            }
             if(talkQueue.isEmpty())
             {
                 return;
@@ -55,21 +54,6 @@ public class TalkQueue {
                     break;
                 }
             }
-//            switch(event.type)
-//            {
-//                case ItemSend:
-//                case ItemCheat:
-//                case Chat:
-//                    AbstractPlayer player = AbstractDungeon.player;
-////                    AbstractDungeon.actionManager.addToBottom(new TalkAction(AbstractDungeon.player, event.apPrint.getPlainText()));
-//                    SpeechBubble bubble = new SpeechBubble(player.dialogX - 300F, player.dialogY, 20.F, transformMessage(event), true);
-//                    ReflectionHacks.setPrivate(bubble, SpeechBubble.class, "facingRight", true);
-//                    AbstractDungeon.effectList.add(bubble);
-//                    AbstractDungeon.effectList.add(new SpeechBubble(player.dialogX - 300F, player.dialogY - 210F, SPEECH_DURATION, event.apPrint.getPlainText() + " Message 2", true));
-//                    AbstractDungeon.effectList.add(new SpeechBubble(player.dialogX - 300F, player.dialogY + 210F, SPEECH_DURATION, event.apPrint.getPlainText() + " Message 3", true));
-////                    AbstractDungeon.effectList.add(new ThoughtBubble(player.dialogX, player.dialogY, event.apPrint.getPlainText(), true));
-//                default:
-//            }
         }
 
         public static String transformMessage(PrintJSONEvent event)
@@ -110,6 +94,7 @@ public class TalkQueue {
                     break;
                 case locationID:
                 case locationName:
+                    perWord(sb, part.text, "#g", "");
                 case text:
                 default:
                     sb.append(part.text);
@@ -144,20 +129,48 @@ public class TalkQueue {
             {
                 if((NetworkItem.USEFUL & part.flags) > 0)
                 {
-                    perWord(sb, part.text, "#b", "~");
+                    perWord(sb, part.text, "#p", "~");
                 }
                 else
                 {
-                    perWord(sb, part.text, "#b", "");
+                    perWord(sb, part.text, "#p", "");
                 }
                 return;
             }
             if((NetworkItem.USEFUL & part.flags) > 0)
             {
-                perWord(sb, part.text, "#y", "");
+                perWord(sb, part.text, "#b", "");
                 return;
             }
             perWord(sb, part.text, "#g", "");
+        }
+
+        @SpirePatch(clz= SpeechWord.class, method="getColor")
+        public static class AddPurplePatch
+        {
+            @SpirePrefixPatch
+            public static SpireReturn<Color> addPurple(SpeechWord __instance, DialogWord.WordColor ___wColor)
+            {
+                if(___wColor == DialogWord.WordColor.PURPLE)
+                {
+                    return SpireReturn.Return(Settings.PURPLE_COLOR.cpy());
+                }
+                return SpireReturn.Continue();
+            }
+        }
+
+        @SpirePatch(clz=SpeechWord.class, method="identifyWordColor", paramtypez = String.class)
+        public static class FindPurplePatch
+        {
+            @SpireInsertPatch(rloc=168-167)
+            public static SpireReturn<DialogWord.WordColor> findPurple(SpeechWord __instance, String word)
+            {
+                if(word.charAt(1) == 'p')
+                {
+                    return SpireReturn.Return(DialogWord.WordColor.PURPLE);
+                }
+                return SpireReturn.Continue();
+            }
         }
 
         private static class BubbleGenerator
@@ -204,10 +217,11 @@ public class TalkQueue {
                 case blue:
                 case cyan_bg:
                 case cyan:
+                    return "#b";
                 case magenta:
                 case magenta_bg:
                 case purple_bg:
-                    return "#b";
+                    return "#p";
                 case white:
                 case black_bg:
 //                case magenta_bg:
