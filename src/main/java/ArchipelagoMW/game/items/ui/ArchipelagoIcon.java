@@ -37,8 +37,6 @@ public class ArchipelagoIcon extends TopPanelItem {
 
     public static final String ID = Archipelago.makeID("ClaimRewards");
 
-    // TODO: this field was completely unused?
-//    public static List<NetworkItem> pendingRewards = new LinkedList<>();
     private final APContext ctx;
 
     public ArchipelagoIcon() {
@@ -76,11 +74,6 @@ public class ArchipelagoIcon extends TopPanelItem {
         if (this.hitbox.justHovered)
             CardCrawlGame.sound.play("UI_HOVER");
 
-//        if (!pendingRewards.isEmpty())
-//            for (NetworkItem reward : pendingRewards)
-//                ((ArchipelagoRewardScreen) BaseMod.getCustomScreen(ArchipelagoRewardScreen.Enum.ARCHIPELAGO_REWARD_SCREEN)).addReward(reward);
-//
-//        pendingRewards.clear();
     }
 
     @Override
@@ -130,14 +123,6 @@ public class ArchipelagoIcon extends TopPanelItem {
             TipHelper.renderGenericTip(tipX, tipY,
                     "Archipelago Rewards (" + APInputActionSet.apmenu.getKeyString() + ")",
                         body.toString()
-//                    "View unclaimed rewards that have been sent by Archipelago. NL NL " +
-//                            "#yChecked #yLocations: NL " +
-//                            "TAB Card Draw: #b" + locationTracker.getCardDrawLocations().getIndex() + " NL " +
-//                            "TAB Rare Card Draw: #b" + locationTracker.getRareDrawLocations().getIndex() + " NL " +
-//                            "TAB Relic: #b" + locationTracker.getRelicLocations().getIndex() + " NL " +
-//                            "TAB Boss Relic: #b" + locationTracker.getBossRelicLocations().getIndex() + " NL " +
-//                            "TAB Campfires: #b" + locationTracker.getCampfireLocations().getNumberChecked() + " NL " +
-//                            "TAB Floors Reached: #b" + AbstractDungeon.floorNum
             );
         }
 
