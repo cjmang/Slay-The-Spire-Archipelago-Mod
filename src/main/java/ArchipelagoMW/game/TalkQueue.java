@@ -23,6 +23,33 @@ import java.util.concurrent.TimeUnit;
 public class TalkQueue {
     private static final float SPEECH_DURATION = 5.0f;
 
+    @SpirePatch(clz= SpeechWord.class, method="getColor")
+    public static class AddPurplePatch
+    {
+        @SpirePrefixPatch
+        public static SpireReturn<Color> addPurple(SpeechWord __instance, DialogWord.WordColor ___wColor)
+        {
+            if(___wColor == DialogWord.WordColor.PURPLE)
+            {
+                return SpireReturn.Return(Settings.PURPLE_COLOR.cpy());
+            }
+            return SpireReturn.Continue();
+        }
+    }
+
+    @SpirePatch(clz=SpeechWord.class, method="identifyWordColor", paramtypez = {String.class})
+    public static class FindPurplePatch
+    {
+        @SpireInsertPatch(rloc=187-186)
+        public static SpireReturn<DialogWord.WordColor> findPurple(String word)
+        {
+            if(word.charAt(1) == 'p')
+            {
+                return SpireReturn.Return(DialogWord.WordColor.PURPLE);
+            }
+            return SpireReturn.Continue();
+        }
+    }
 
     @SpirePatch(clz= AbstractDungeon.class, method="update")
     public static class AbstractDungeonPatch
@@ -94,7 +121,6 @@ public class TalkQueue {
                     break;
                 case locationID:
                 case locationName:
-                    perWord(sb, part.text, "#g", "");
                 case text:
                 default:
                     sb.append(part.text);
@@ -145,33 +171,6 @@ public class TalkQueue {
             perWord(sb, part.text, "#g", "");
         }
 
-        @SpirePatch(clz= SpeechWord.class, method="getColor")
-        public static class AddPurplePatch
-        {
-            @SpirePrefixPatch
-            public static SpireReturn<Color> addPurple(SpeechWord __instance, DialogWord.WordColor ___wColor)
-            {
-                if(___wColor == DialogWord.WordColor.PURPLE)
-                {
-                    return SpireReturn.Return(Settings.PURPLE_COLOR.cpy());
-                }
-                return SpireReturn.Continue();
-            }
-        }
-
-        @SpirePatch(clz=SpeechWord.class, method="identifyWordColor", paramtypez = String.class)
-        public static class FindPurplePatch
-        {
-            @SpireInsertPatch(rloc=168-167)
-            public static SpireReturn<DialogWord.WordColor> findPurple(SpeechWord __instance, String word)
-            {
-                if(word.charAt(1) == 'p')
-                {
-                    return SpireReturn.Return(DialogWord.WordColor.PURPLE);
-                }
-                return SpireReturn.Continue();
-            }
-        }
 
         private static class BubbleGenerator
         {

@@ -32,6 +32,7 @@ public class ConfirmPopupPatch {
                 APContext ctx = APContext.getContext();
                 ctx.getCharacterManager().markUnrecognziedCharacters();
                 ctx.getItemTracker().initialize(ctx.getItemManager().getReceivedItemIDs());
+                APContext.getContext().getShopManager().initializeShop();
                 CardCrawlGame.mainMenuScreen.isFadingOut = true;
                 CardCrawlGame.mainMenuScreen.fadeOutMusic();
                 Settings.isDailyRun = false;

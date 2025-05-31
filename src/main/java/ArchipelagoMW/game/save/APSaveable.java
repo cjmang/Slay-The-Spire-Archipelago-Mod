@@ -56,12 +56,15 @@ public class APSaveable implements CustomSavableRaw {
         save.add("rewards", gson.toJsonTree(rewards, REWARD_SAVE_LIST_TYPE));
 
 
+        // TODO: this has gotten complicated enough that it's probably time for a full blown proper memento object
         save.add("rewards_remaining", new JsonPrimitive(ArchipelagoRewardScreen.rewardsQueued));
         save.add("received_index", new JsonPrimitive(ArchipelagoRewardScreen.getReceivedItemsIndex()));
         save.add("card_draw_index", new JsonPrimitive(locationTracker.getCardDrawLocations().getIndex()));
         save.add("card_draw_toggle", new JsonPrimitive(locationTracker.getCardDrawToggle()));
         save.add("rare_card_draw_index", new JsonPrimitive(locationTracker.getRareDrawLocations().getIndex()));
         save.add("relic_index", new JsonPrimitive(locationTracker.getRelicLocations().getIndex()));
+        save.add("boss_relic_index", new JsonPrimitive(locationTracker.getBossRelicLocations().getIndex()));
+        save.add("floor_index", new JsonPrimitive(locationTracker.getFloorIndex()));
         save.add("character", new JsonPrimitive(APContext.getContext().getCharacterManager().getCurrentCharacter().chosenClass.name()));
 
         return save;
@@ -114,6 +117,8 @@ public class APSaveable implements CustomSavableRaw {
                 save.get("card_draw_index").getAsInt(),
                 save.get("rare_card_draw_index").getAsInt(),
                 save.get("relic_index").getAsInt(),
+                save.get("boss_relic_index").getAsInt(),
+                save.get("floor_index").getAsInt(),
                 save.get("card_draw_toggle").getAsBoolean()
         );
         // I don't think this code is needed, since we load the save after the character is selected now.

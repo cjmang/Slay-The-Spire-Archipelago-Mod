@@ -26,6 +26,7 @@ public class LocationTracker {
     private final LocationContainer bossRelicLocations = new LocationContainer();
     private final CampfireLocations campfireLocations = new CampfireLocations();
     private final LocationContainerMap shopLocations = new LocationContainerMap();
+    private int floorIndex = 0;
 
     private final Map<Long, NetworkItem> scoutedLocations = new HashMap<>();
 
@@ -34,18 +35,21 @@ public class LocationTracker {
     private final List<Long> extraOffsets = new ArrayList<>();
 
     public void reset() {
-        getBossRelicLocations().index = 0;
-        getCardDrawLocations().index = 0;
-        getRareDrawLocations().index = 0;
-        getRelicLocations().index = 0;
+        bossRelicLocations.index = 0;
+        cardDrawLocations.index = 0;
+        rareDrawLocations.index = 0;
+        relicLocations.index = 0;
+        floorIndex = 0;
         cardDraw = false;
     }
 
-    public void loadFromSave(int cdIndex, int rdIndex, int relicIndex, boolean cardDraw)
+    public void loadFromSave(int cdIndex, int rdIndex, int relicIndex, int bossRelicLocation, int floorIndex, boolean cardDraw)
     {
-        getCardDrawLocations().index = cdIndex;
-        getRareDrawLocations().index = rdIndex;
-        getRelicLocations().index = relicIndex;
+        cardDrawLocations.index = cdIndex;
+        rareDrawLocations.index = rdIndex;
+        relicLocations.index = relicIndex;
+        bossRelicLocations.index = bossRelicLocation;
+        this.floorIndex = floorIndex;
         this.cardDraw = cardDraw;
     }
 
@@ -63,6 +67,11 @@ public class LocationTracker {
         getRareDrawLocations().initialize(131L, 2L, charOffset);
         getRelicLocations().initialize(141L, 10L, charOffset);
         getBossRelicLocations().initialize(161L, 2L, charOffset);
+    }
+
+    public int getFloorIndex()
+    {
+        return floorIndex;
     }
 
     public void scoutShop(long totalSlots)
@@ -153,11 +162,15 @@ public class LocationTracker {
         logger.info("Going to send relic from act " + act);
         long locationID;
         try {
-            locationID = getBossRelicLocations().locations.get(act - 1);
+            locationID = bossRelicLocations.locations.get(act - 1);
         } catch (IndexOutOfBoundsException e) {
             logger.info("Index out of bounds! Tried to access bossRelicLocation position {}", act - 1);
             logger.info("while the length is {}", getBossRelicLocations().locations.size());
             return null;
+        }
+        if(act > bossRelicLocations.index)
+        {
+            bossRelicLocations.index = act;
         }
         APContext.getContext().getClient().checkLocations(getLocationIDs(locationID));
         NetworkItem item = scoutedLocations.get(locationID);
@@ -180,6 +193,10 @@ public class LocationTracker {
         if(APContext.getContext().getSlotData().includeFloorChecks != 0) {
             logger.info("Sending floor check for floor {} and id {}", floor, floor + (200L * currentOffset));
             APClient.client.checkLocations(getLocationIDs(floor + (200L * currentOffset)));
+            if(floor > floorIndex)
+            {
+                floorIndex = floor;
+            }
         }
     }
 

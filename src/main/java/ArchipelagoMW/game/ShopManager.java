@@ -158,6 +158,7 @@ public class ShopManager {
             locationIds.add(locationId - (200L * characterManager.getCurrentCharacterConfig().charOffset) + (200L * extra));
         }
         APContext.getContext().getClient().checkLocations(locationIds);
+        shopContext.foundChecks.add(locationId);
     }
 
     public void manglePotions(List<StorePotion> potions, ShopScreen shopScreen)
@@ -318,7 +319,7 @@ public class ShopManager {
                         .forEach(this.missingLocations::add);
             }
 
-            for(int i = 1; i <= this.act; i++) {
+            for(int i = 1; i <= 3; i++) {
                 shopLocationsByAct.get(i).stream()
                         .map(charManager::toCharacterLocationID)
                         .filter(locationManager.getCheckedLocations()::contains)

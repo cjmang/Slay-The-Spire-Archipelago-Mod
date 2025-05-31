@@ -124,7 +124,7 @@ public class ArchipelagoIcon extends TopPanelItem {
             if(slotData.includeFloorChecks != 0)
             {
                 body.append(" NL ")
-                        .append("TAB Floors Reached: #b").append(AbstractDungeon.floorNum);
+                        .append("TAB Floors Reached: #b").append(locationTracker.getFloorIndex());
             }
 
             TipHelper.renderGenericTip(tipX, tipY,
