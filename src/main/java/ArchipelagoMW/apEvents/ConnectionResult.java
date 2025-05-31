@@ -65,6 +65,12 @@ public class ConnectionResult {
 
         APClient.slotData = event.getSlotData(SlotData.class);
 
+        if(APClient.slotData.modVersion != 1)
+        {
+            ConnectionPanel.connectionResultText = "World was generated with an unsupported version! Generated world: "
+                    + APClient.slotData.modVersion + " Expected version: " + SlotData.EXPECTED_MOD_VERSION;
+            return;
+        }
 
         SlotData slotData = APClient.slotData;
         Archipelago.logger.info("slot data parsed");

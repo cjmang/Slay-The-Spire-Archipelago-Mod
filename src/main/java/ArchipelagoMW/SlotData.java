@@ -4,6 +4,7 @@ package ArchipelagoMW;
 import io.cjmang.google.gson.annotations.SerializedName;
 
 public class SlotData {
+    public static final int EXPECTED_MOD_VERSION = 1;
 
     @SerializedName("seed")
     public String seed;
@@ -22,6 +23,9 @@ public class SlotData {
 
     @SerializedName("downfall")
     public int downfall = 0;
+
+    @SerializedName("mod_version")
+    public int modVersion = 1;
 
     @SerializedName("death_link")
     public int deathLink = 0;
