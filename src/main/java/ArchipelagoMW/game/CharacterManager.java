@@ -92,7 +92,7 @@ public class CharacterManager {
     {
         unrecognizedCharacters.clear();
         List<String> names = getCharacters().keySet().stream()
-                .filter(n -> CardCrawlGame.characterManager.getAllCharacters().stream().noneMatch(o -> o.chosenClass.name().equals(n)))
+                .filter(n -> CardCrawlGame.characterManager.getAllCharacters().stream().noneMatch(o -> o.chosenClass.name().toLowerCase().equals(n)))
                 .collect(Collectors.toList());
         logger.info("Unrecognized Characters {}", names);
         for(String name : names)
