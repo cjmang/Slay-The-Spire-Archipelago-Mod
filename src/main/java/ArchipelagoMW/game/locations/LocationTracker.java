@@ -18,7 +18,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class LocationTracker {
     private static final Logger logger = LogManager.getLogger(LocationTracker.class.getName());
 
-    public static final long CARD_DRAW_NUM = 12L;
+    public static final long CARD_DRAW_NUM = 13L;
 
     private final LocationContainer cardDrawLocations = new LocationContainer();
     private final LocationContainer rareDrawLocations = new LocationContainer();

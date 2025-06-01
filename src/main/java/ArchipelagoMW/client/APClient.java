@@ -183,7 +183,7 @@ public class APClient extends Client {
         @ArchipelagoEventListener
         public void onJSONMessage(PrintJSONEvent event)
         {
-            if(CardCrawlGame.GameMode.GAMEPLAY == CardCrawlGame.mode)
+            if(CardCrawlGame.GameMode.GAMEPLAY == CardCrawlGame.mode && involvesPlayer(event))
             {
                 switch(event.type)
                 {
@@ -195,6 +195,15 @@ public class APClient extends Client {
                         TalkQueue.AbstractDungeonPatch.talkQueue.add(event);
                 }
             }
+        }
+
+        private boolean involvesPlayer(PrintJSONEvent event)
+        {
+            int mySlot = APContext.getContext().getSlot();
+            return event.player == mySlot ||
+                    // TODO: add team; though the client may have wrong datatype right now?
+                    (event.apPrint != null && (event.apPrint.slot == mySlot || event.apPrint.receiving == mySlot));
+//                    (event.item != null && (event.item.playerID == mySlot));
         }
     }
 

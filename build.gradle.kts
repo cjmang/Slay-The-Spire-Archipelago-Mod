@@ -6,7 +6,7 @@ plugins {
 }
 
 description = "Archipelago Multi-World Integration into Slay the Spire"
-version = "2.0-rc-1"
+version = "2.0"
 
 defaultTasks = mutableListOf("deployLocal")
 
@@ -43,17 +43,8 @@ tasks.processResources {
     }
 }
 
-//tasks.shadowJar {
-//    isEnableRelocation = true
-//    relocationPrefix = "io.cjmang"
-//}
-
-//tasks.named<Test>("test") {
-//    // Use JUnit Platform for unit tests.
-//    useJUnitPlatform()
-//}
-
 tasks.register<Copy>("deployLocal") {
+    project.version = project.version.toString() + "-dev"
     val mwJar = fileTree(project.layout.buildDirectory.dir("libs")).filter { f: File ->
         f.name.matches(Regex("ArchipelagoMW-${Pattern.quote(project.version.toString())}-all\\.jar"))
     }
