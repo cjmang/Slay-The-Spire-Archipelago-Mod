@@ -2,6 +2,7 @@ package ArchipelagoMW.game.locations;
 
 import ArchipelagoMW.client.APContext;
 import ArchipelagoMW.client.config.CharacterConfig;
+import ArchipelagoMW.client.config.SlotData;
 import ArchipelagoMW.mod.Archipelago;
 import ArchipelagoMW.client.APClient;
 import basemod.ReflectionHacks;
@@ -214,26 +215,35 @@ public class LocationTracker {
     }
 
     public void endOfTheRoad() {
+        APContext apContext = APContext.getContext();
+        SlotData slotData = apContext.getSlotData();
         List<Long> allLocations = new ArrayList<>() ;
         allLocations.addAll(getCardDrawLocations().locations);
         allLocations.addAll(getRareDrawLocations().locations);
         allLocations.addAll(getRelicLocations().locations);
         allLocations.addAll(getBossRelicLocations().locations);
-        allLocations.addAll(getCampfireLocations().locations.keySet());
-        allLocations.addAll(shopLocations.locations.keySet());
-        APContext apContext = APContext.getContext();
+        if(slotData.campfireSanity != 0) {
+            allLocations.addAll(getCampfireLocations().locations.keySet());
+        }
+        if(slotData.shopSanity != 0) {
+            allLocations.addAll(shopLocations.locations.keySet());
+        }
         apContext.getLocationManager().checkLocations(allLocations);
         apContext.getSaveManager().saveString(apContext.getCharacterManager().getCurrentCharacter().chosenClass.name(), "");
     }
 
-    public void scoutAllLocations() {
+    public void scoutAllLocations(SlotData data) {
         ArrayList<Long> locations = new ArrayList<Long>();
         locations.addAll(getCardDrawLocations().locations);
         locations.addAll(getRelicLocations().locations);
         locations.addAll(getRareDrawLocations().locations);
         locations.addAll(getBossRelicLocations().locations);
-        locations.addAll(getCampfireLocations().locations.keySet());
-        locations.addAll(shopLocations.locations.keySet());
+        if(data.campfireSanity != 0) {
+            locations.addAll(getCampfireLocations().locations.keySet());
+        }
+        if(data.shopSanity != 0) {
+            locations.addAll(shopLocations.locations.keySet());
+        }
         logger.info("Scouting shop locations: {}", shopLocations.locations.keySet());
         APContext.getContext().getClient().scoutLocations(locations);
     }
