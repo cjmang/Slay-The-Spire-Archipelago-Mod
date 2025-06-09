@@ -34,12 +34,12 @@ public class CharacterSelectScreenPatch {
     private static ConfirmPopup resumeSave;
     public static CustomCharacterSelectScreen charSelectScreen;
     private static ArrayList<CharacterOption> options;
-    private static final Map<String, Texture> originalImage = new HashMap<>();
+    private static final Map<String, Texture> originalImage = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
 
     public static void lockChars() {
         CharacterManager charManager = APContext.getContext().getCharacterManager();
         charSelectScreen.options = new ArrayList<>(options);
-        Map<String, Boolean> unlockedChars = new HashMap<>();
+        Map<String, Boolean> unlockedChars = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
         Map<Long, String> unlockItemIds = new HashMap<>();
         charManager.markUnrecognziedCharacters();
         charManager.getCharacters().values().forEach(c -> {

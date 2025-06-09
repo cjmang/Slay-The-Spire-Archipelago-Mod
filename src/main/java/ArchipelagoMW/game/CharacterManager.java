@@ -20,7 +20,7 @@ public class CharacterManager {
     private static final Logger logger = LogManager.getLogger(CharacterManager.class);
 
 
-    private Map<String, CharacterConfig> characters = Collections.emptyMap();
+    private final Map<String, CharacterConfig> characters = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
     private final Set<String> availableAPChars = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
 
     private AbstractPlayer currentCharacter;
@@ -37,7 +37,8 @@ public class CharacterManager {
 
     public void initialize(List<CharacterConfig> configs)
     {
-        characters = configs.stream().collect(Collectors.toMap(c -> c.officialName, Function.identity()));
+        characters.clear();
+        configs.forEach(c -> characters.put(c.officialName, c));
         availableAPChars.clear();
         for(CharacterConfig config : characters.values())
         {
