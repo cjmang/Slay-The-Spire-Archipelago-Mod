@@ -60,7 +60,12 @@ public class CharacterSelectScreenPatch {
             Archipelago.logger.info("Character {} is unlocked: {}", entry.getKey(), entry.getValue());
         }
         charSelectScreen.options.forEach(o -> {
-            originalImage.putIfAbsent(o.c.chosenClass.name(), ReflectionHacks.getPrivate(o, CharacterOption.class, "buttonImg"));
+            Texture originalTexture = ReflectionHacks.getPrivate(o, CharacterOption.class, "buttonImg");
+            if(originalTexture == ImageMaster.CHAR_SELECT_LOCKED)
+            {
+                originalTexture = ImageMaster.loadImage("images/ui/charSelect/crowbotButton.png");
+            }
+            originalImage.putIfAbsent(o.c.chosenClass.name(), originalTexture);
             CharacterConfig config = charManager.getCharacters().get(o.c.chosenClass.name());
             if (config == null || !charManager.getAvailableAPChars().contains(config.officialName) || !unlockedChars.getOrDefault(config.officialName, false)) {
                 o.locked = true;
