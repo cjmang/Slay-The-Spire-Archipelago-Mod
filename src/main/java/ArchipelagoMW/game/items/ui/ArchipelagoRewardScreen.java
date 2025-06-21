@@ -42,6 +42,7 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 
 public class ArchipelagoRewardScreen  extends CustomScreen {
@@ -85,7 +86,7 @@ public class ArchipelagoRewardScreen  extends CustomScreen {
 
     public static boolean apReward = false;
     public static boolean apRareReward = false;
-    public static int apGold = 0;
+    public static final AtomicInteger apGold = new AtomicInteger();
 
     public static boolean APScreen = false;
 
@@ -233,10 +234,10 @@ public class ArchipelagoRewardScreen  extends CustomScreen {
             itemTracker.maybeAddDraw(item.itemID);
             addReward(item, itemTracker.getCount(item.itemID));
         }
-        if(apGold > 0)
+        int gold = apGold.getAndSet(0);
+        if(gold > 0)
         {
-            addReward(new RewardItem(apGold));
-            apGold = 0;
+            addReward(new RewardItem(gold));
         }
     }
 
@@ -506,10 +507,10 @@ public class ArchipelagoRewardScreen  extends CustomScreen {
                 addReward(reward);
                 break;
             case 5: //One Gold
-                apGold += 1;
+                apGold.addAndGet(1);
                 break;
             case 6://Five Gold
-                apGold += 5;
+                apGold.addAndGet(5);
                 break;
             default:
         }
