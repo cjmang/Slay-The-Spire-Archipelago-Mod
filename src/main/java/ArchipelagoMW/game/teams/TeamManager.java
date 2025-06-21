@@ -17,7 +17,6 @@ import dev.koifysh.archipelago.events.ArchipelagoEventListener;
 import dev.koifysh.archipelago.events.BouncedEvent;
 import dev.koifysh.archipelago.events.RetrievedEvent;
 import dev.koifysh.archipelago.events.SetReplyEvent;
-import dev.koifysh.archipelago.helper.DeathLink;
 import dev.koifysh.archipelago.network.client.BouncePacket;
 import dev.koifysh.archipelago.network.client.SetPacket;
 
@@ -375,7 +374,7 @@ public class TeamManager {
             //INITALIZE PAIN!
 
             //no death link.. just.. no
-            DeathLink.setDeathLinkEnabled(false);
+            client.setDeathLinkEnabled(false);
 
             int health = 0;
             for (String member : myTeam.members) {
@@ -432,7 +431,7 @@ public class TeamManager {
         if(myTeam != null && event.containsKey("spire_team_"+myTeam.name+"_locked")) {
             if(myTeam.healthLink) {
                 //no death link.. just.. no
-                DeathLink.setDeathLinkEnabled(false);
+                client.setDeathLinkEnabled(false);
                 client.dataStorageSetNotify(Arrays.asList("spire_team_" + myTeam.name + "_hp", "spire_team_" + myTeam.name + "_maxhp"));
                 client.dataStorageGet(Arrays.asList("spire_team_" + myTeam.name + "_maxhp", "spire_team_" + myTeam.name + "_hp"));
             }

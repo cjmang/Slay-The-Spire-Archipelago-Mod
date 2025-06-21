@@ -1,5 +1,6 @@
 package ArchipelagoMW.game.save.ui;
 
+import ArchipelagoMW.client.APClient;
 import ArchipelagoMW.client.APContext;
 import ArchipelagoMW.client.config.CharacterConfig;
 import ArchipelagoMW.client.util.DeathLinkHelper;
@@ -15,7 +16,6 @@ import com.megacrit.cardcrawl.helpers.SeedHelper;
 import com.megacrit.cardcrawl.random.Random;
 import com.megacrit.cardcrawl.screens.mainMenu.MainMenuScreen;
 import com.megacrit.cardcrawl.screens.options.ConfirmPopup;
-import dev.koifysh.archipelago.helper.DeathLink;
 import downfall.patches.EvilModeCharacterSelect;
 
 
@@ -57,8 +57,9 @@ public class ConfirmPopupPatch {
                 if (Loader.isModLoaded("downfall"))
                     EvilModeCharacterSelect.evilMode = config.downfall;
 
-                if (APContext.getContext().getSlotData().deathLink > 0) {
-                    DeathLink.setDeathLinkEnabled(true);
+                APClient client = APContext.getContext().getClient();
+                if (client.getSlotData().deathLink > 0) {
+                    client.setDeathLinkEnabled(true);
                 }
 
                 DeathLinkHelper.update.sendDeath = false;

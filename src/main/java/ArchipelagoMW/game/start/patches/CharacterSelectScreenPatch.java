@@ -21,7 +21,6 @@ import com.megacrit.cardcrawl.helpers.SeedHelper;
 import com.megacrit.cardcrawl.screens.charSelect.CharacterOption;
 import com.megacrit.cardcrawl.screens.charSelect.CharacterSelectScreen;
 import com.megacrit.cardcrawl.screens.options.ConfirmPopup;
-import dev.koifysh.archipelago.helper.DeathLink;
 import downfall.downfallMod;
 import downfall.patches.EvilModeCharacterSelect;
 
@@ -179,9 +178,8 @@ public class CharacterSelectScreenPatch {
             if (Loader.isModLoaded("downfall")) {
                 EvilModeCharacterSelect.evilMode = config.downfall;
             }
-
             if (APContext.getContext().getSlotData().deathLink > 0) {
-                DeathLink.setDeathLinkEnabled(true);
+                APContext.getContext().getClient().setDeathLinkEnabled(true);
             }
 
             DeathLinkHelper.update.sendDeath = false;

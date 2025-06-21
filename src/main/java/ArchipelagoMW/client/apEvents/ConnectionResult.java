@@ -19,7 +19,6 @@ import com.megacrit.cardcrawl.screens.mainMenu.MainMenuScreen;
 import downfall.patches.EvilModeCharacterSelect;
 import dev.koifysh.archipelago.events.ArchipelagoEventListener;
 import dev.koifysh.archipelago.events.ConnectionResultEvent;
-import dev.koifysh.archipelago.helper.DeathLink;
 
 public class ConnectionResult {
 
@@ -94,9 +93,9 @@ public class ConnectionResult {
 
             if (Loader.isModLoaded("downfall"))
                 EvilModeCharacterSelect.evilMode = config.downfall;
-
-            if (APContext.getContext().getClient().getSlotData().deathLink > 0) {
-                DeathLink.setDeathLinkEnabled(true);
+            APClient client = APContext.getContext().getClient();
+            if (client.getSlotData().deathLink > 0) {
+                client.setDeathLinkEnabled(true);
             }
 
             DeathLinkHelper.update.sendDeath = false;

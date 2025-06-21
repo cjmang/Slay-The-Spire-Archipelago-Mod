@@ -9,7 +9,7 @@ repositories {
 }
 
 dependencies {
-    api("io.github.ArchipelagoMW:Java-Client:latest.integration")
+    api("io.github.archipelagomw:Java-Client:latest.integration")
 }
 
 tasks.shadowJar {

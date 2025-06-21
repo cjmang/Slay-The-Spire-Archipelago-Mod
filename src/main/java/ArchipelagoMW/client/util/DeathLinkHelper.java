@@ -15,7 +15,6 @@ import com.megacrit.cardcrawl.screens.GameOverScreen;
 import com.megacrit.cardcrawl.screens.options.ConfirmPopup;
 import dev.koifysh.archipelago.events.ArchipelagoEventListener;
 import dev.koifysh.archipelago.events.DeathLinkEvent;
-import dev.koifysh.archipelago.helper.DeathLink;
 import gremlin.actions.GremlinSwapAction;
 import gremlin.characters.GremlinCharacter;
 import gremlin.orbs.GremlinStandby;
@@ -150,7 +149,7 @@ public class DeathLinkHelper {
 
             MonsterGroup monsters = ReflectionHacks.getPrivate(__instance, DeathScreen.class, "monsters");
             if (monsters == null) {
-                DeathLink.SendDeathLink(client.getAlias(), null);
+                client.sendDeathlink(client.getAlias(), null);
                 //APClient.apClient.disconnect();
                 return;
             }
@@ -177,11 +176,11 @@ public class DeathLinkHelper {
                         sb.append(" ");
                     }
                 }
-                DeathLink.SendDeathLink(client.getAlias(), sb.toString());
+                client.sendDeathlink(client.getAlias(), sb.toString());
                 //APClient.apClient.disconnect();
                 return;
             }
-            DeathLink.SendDeathLink(client.getAlias(), null);
+            client.sendDeathlink(client.getAlias(), null);
             //APClient.apClient.disconnect();
         }
     }
