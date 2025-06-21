@@ -137,7 +137,7 @@ public class ArchipelagoIcon extends TopPanelItem {
 
         // if we are disconnected, and we click the ap button try new connection.
         if (!ctx.getClient().isConnected() && !AbstractDungeon.player.isDead) {
-            APClient.newConnection(APContext.getContext(), Archipelago.address, Archipelago.slotName, Archipelago.password);
+            ctx.getClient().reconnect();
         } else if (AbstractDungeon.screen == ArchipelagoRewardScreen.Enum.ARCHIPELAGO_REWARD_SCREEN) {
             AbstractDungeon.closeCurrentScreen();
         } else {
