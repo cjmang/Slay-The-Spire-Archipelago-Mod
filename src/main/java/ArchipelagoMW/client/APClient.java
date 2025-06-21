@@ -9,7 +9,11 @@ import ArchipelagoMW.game.teams.PlayerManager;
 import ArchipelagoMW.game.teams.TeamManager;
 import ArchipelagoMW.game.items.ui.ArchipelagoRewardScreen;
 import ArchipelagoMW.game.connect.ui.connection.ConnectionPanel;
+import ArchipelagoMW.mod.APSettings;
+import com.megacrit.cardcrawl.actions.AbstractGameAction;
+import com.megacrit.cardcrawl.actions.utility.SFXAction;
 import com.megacrit.cardcrawl.core.CardCrawlGame;
+import com.megacrit.cardcrawl.dungeons.AbstractDungeon;
 import dev.koifysh.archipelago.Client;
 import dev.koifysh.archipelago.events.*;
 import dev.koifysh.archipelago.flags.ItemsHandling;
@@ -169,6 +173,9 @@ public class APClient extends Client {
 
                 if(charManager.isItemIDForCurrentCharacter(event.getItemID()))
                 {
+                    if(APSettings.isSoundEnabled()) {
+                        CardCrawlGame.sound.play("VO_CULTIST_1A");
+                    }
                     APContext.getContext().getItemTracker().addSanityItem(event.getItemID());
                     // only increase counter, actual items get fetched when you open the reward screen.
                     ArchipelagoRewardScreen.rewardsQueued += 1;

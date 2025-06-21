@@ -22,6 +22,7 @@ public class APSettings {
     private static final String PLAYER_FILTER_KEY = "PlayerFilter";
     private static final String CONNECT_SCREEN_ADDRESS_KEY = "ConnectAddress";
     private static final String CONNECT_SCREEN_SLOT_KEY = "ConnectSlot";
+    private static final String RECEIVE_ITEM_SOUND = "makeReceiveNoise";
 
 
     public enum FilterType {
@@ -30,6 +31,7 @@ public class APSettings {
 
     private static final Properties defaultSettings = new Properties();
     public static SpireConfig config;
+    private static ModToggleButton soundToggle;
     private static ModToggleButton teamToggle;
     private static ModToggleButton recentToggle;
     private static ModToggleButton allToggle;
@@ -38,6 +40,7 @@ public class APSettings {
         defaultSettings.setProperty(PLAYER_FILTER_KEY, "RECENT");
         defaultSettings.setProperty(CONNECT_SCREEN_ADDRESS_KEY, "Archipelago.gg");
         defaultSettings.setProperty(CONNECT_SCREEN_SLOT_KEY, "");
+        defaultSettings.setProperty(RECEIVE_ITEM_SOUND, "true");
 
         try {
             config = new SpireConfig(Archipelago.getModID(), "archipelagoConfig", defaultSettings);
@@ -48,6 +51,11 @@ public class APSettings {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    public static boolean isSoundEnabled()
+    {
+        return config.getBool(RECEIVE_ITEM_SOUND);
     }
 
     public static void initialize() {
@@ -76,11 +84,19 @@ public class APSettings {
         settingsPanel.addUIElement(recentLabel);
         configYpos -= configStep;
 
+
         allToggle = new ModToggleButton(configXPos + 225f * Settings.scale, configYpos - 5f * Settings.scale, APSettings.playerFilter == FilterType.ALL, true, settingsPanel, APSettings::toggleAll);
         ModLabel allLabel = new ModLabel("All", configXPos + 275f * Settings.scale, configYpos, settingsPanel, (label) -> {
         });
         settingsPanel.addUIElement(allToggle);
         settingsPanel.addUIElement(allLabel);
+        configYpos -= configStep;
+
+        soundToggle = new ModToggleButton(configXPos + 225f * Settings.scale, configYpos - 5f * Settings.scale, APSettings.config.getBool(RECEIVE_ITEM_SOUND), true, settingsPanel, APSettings::toggleSound);
+        ModLabel soundLabel = new ModLabel("Enable Receive Sound", configXPos + 275f * Settings.scale, configYpos, settingsPanel, (label) -> {
+        });
+        settingsPanel.addUIElement(soundToggle);
+        settingsPanel.addUIElement(soundLabel);
         configYpos -= configStep*2;
 
         ModLabel validLabel = new ModLabel("Valid Characters:", configXPos, configYpos, Settings.CREAM_COLOR, FontHelper.charDescFont, settingsPanel, (label) -> {
@@ -131,6 +147,11 @@ public class APSettings {
         toggle.enabled = true;
         recentToggle.enabled = false;
         teamToggle.enabled = false;
+        APSettings.saveSettings();
+    }
+
+    private static void toggleSound(ModToggleButton toggle) {
+        config.setBool(RECEIVE_ITEM_SOUND, !config.getBool(RECEIVE_ITEM_SOUND));
         APSettings.saveSettings();
     }
 

@@ -41,7 +41,11 @@ public class APCampfireButton  extends AbstractCampfireOption {
         }
         this.img = APTextures.AP_CAMPFIRE;
 
-        if((dev.koifysh.archipelago.flags.NetworkItem.TRAP & scoutedItem.flags) > 0)
+        if(scoutedItem == null)
+        {
+            this.description = "???";
+        }
+        else if((dev.koifysh.archipelago.flags.NetworkItem.TRAP & scoutedItem.flags) > 0)
         {
             this.description = "Seems important?";
         }
