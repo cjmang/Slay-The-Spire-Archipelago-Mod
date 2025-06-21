@@ -44,7 +44,7 @@ public class ConnectionResult {
                 msg = "Server Rejected our connection due to an incompatible communication protocol.";
                 break;
             default:
-                msg = "Unknown Error";
+                msg = "Unknown Error: " + event.getResult().name();
         }
         ConnectionPanel.connectionResultText = msg;
 
