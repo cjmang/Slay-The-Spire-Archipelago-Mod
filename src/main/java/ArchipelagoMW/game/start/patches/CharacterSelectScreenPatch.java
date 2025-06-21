@@ -2,6 +2,7 @@ package ArchipelagoMW.game.start.patches;
 
 import ArchipelagoMW.client.APClient;
 import ArchipelagoMW.client.APContext;
+import ArchipelagoMW.game.victory.patches.VictoryScreenPatch;
 import ArchipelagoMW.mod.Archipelago;
 import ArchipelagoMW.client.config.CharacterConfig;
 import ArchipelagoMW.game.CharacterManager;
@@ -9,6 +10,7 @@ import ArchipelagoMW.game.save.ui.ConfirmPopupPatch;
 import ArchipelagoMW.client.util.DeathLinkHelper;
 import basemod.CustomCharacterSelectScreen;
 import basemod.ReflectionHacks;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.evacipated.cardcrawl.modthespire.Loader;
@@ -21,14 +23,22 @@ import com.megacrit.cardcrawl.helpers.SeedHelper;
 import com.megacrit.cardcrawl.screens.charSelect.CharacterOption;
 import com.megacrit.cardcrawl.screens.charSelect.CharacterSelectScreen;
 import com.megacrit.cardcrawl.screens.options.ConfirmPopup;
+import dev.koifysh.archipelago.events.RetrievedEvent;
 import downfall.downfallMod;
 import downfall.patches.EvilModeCharacterSelect;
+import javassist.CannotCompileException;
+import javassist.expr.ExprEditor;
+import javassist.expr.MethodCall;
 
+import java.lang.reflect.Type;
 import java.util.*;
+import java.util.concurrent.Future;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 public class CharacterSelectScreenPatch {
-
+    private static final Logger logger = Logger.getLogger(CharacterSelectScreen.class.getName());
 
     private static ConfirmPopup resumeSave;
     public static CustomCharacterSelectScreen charSelectScreen;
@@ -36,7 +46,20 @@ public class CharacterSelectScreenPatch {
     private static final Map<String, Texture> originalImage = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
 
     public static void lockChars() {
-        CharacterManager charManager = APContext.getContext().getCharacterManager();
+        APContext ctx = APContext.getContext();
+        APClient client = ctx.getClient();
+        Map<String, Boolean> tmpChars = Collections.emptyMap();
+        try {
+            RetrievedEvent getData = client.dataStorageGetFuture(Collections.singletonList(VictoryScreenPatch.VictoryCheck.createVictoryKey(client))).get();
+            tmpChars = (Map<String, Boolean>) getData.getValueAsObject(VictoryScreenPatch.VictoryCheck.createVictoryKey(client),Map.class);
+        }
+        catch(Exception ex)
+        {
+            logger.log(Level.WARNING, "Error while getting goaled characters", ex);
+        }
+        Map<String, Boolean> goaledCharacters = tmpChars;
+        logger.log(Level.INFO, "Completed characters: {0}", goaledCharacters);
+        CharacterManager charManager = ctx.getCharacterManager();
         charSelectScreen.options = new ArrayList<>(options);
         Map<String, Boolean> unlockedChars = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
         Map<Long, String> unlockItemIds = new HashMap<>();
@@ -46,7 +69,7 @@ public class CharacterSelectScreenPatch {
             unlockItemIds.put(14L + (20L * c.charOffset), c.officialName);
         });
 
-        APContext.getContext().getItemManager().getReceivedItemIDs().forEach(id -> {
+        ctx.getItemManager().getReceivedItemIDs().forEach(id -> {
             String name = unlockItemIds.get(id);
             if(name != null)
             {
@@ -66,6 +89,8 @@ public class CharacterSelectScreenPatch {
             }
             originalImage.putIfAbsent(o.c.chosenClass.name(), originalTexture);
             CharacterConfig config = charManager.getCharacters().get(o.c.chosenClass.name());
+
+            CompletedChar.completed.set(o, goaledCharacters.getOrDefault(o.c.chosenClass.name(), false));
             if (config == null || !charManager.getAvailableAPChars().contains(config.officialName) || !unlockedChars.getOrDefault(config.officialName, false)) {
                 o.locked = true;
                 ReflectionHacks.setPrivate(o, CharacterOption.class, "buttonImg", ImageMaster.CHAR_SELECT_LOCKED);
@@ -203,6 +228,32 @@ public class CharacterSelectScreenPatch {
                 downfallMod.crossoverCharacters = true;
                 downfallMod.crossoverModCharacters = true;
             }
+        }
+    }
+
+    @SpirePatch(clz=CharacterOption.class, method=SpirePatch.CLASS)
+    public static class CompletedChar
+    {
+        public static SpireField<Boolean> completed = new SpireField<>(() -> true);
+    }
+
+    public static final Color GREEN_OUTLINE_COLOR = new Color(0.0f, 1.0f, 0.0f, 0.5f);
+
+    @SpirePatch(clz=CharacterOption.class, method="renderOptionButton")
+    public static class CompletedOutline
+    {
+        @SpireInstrumentPatch
+        public static ExprEditor markCompletedCharacter() {
+            return new ExprEditor() {
+                @Override
+                public void edit(MethodCall method) throws CannotCompileException
+                {
+                    if(method.getClassName().equals("com.badlogic.gdx.graphics.g2d.SpriteBatch") && method.getMethodName().equals("setColor") && method.getLineNumber() == 244)
+                    {
+                        method.replace("{$1 = ((Boolean)ArchipelagoMW.game.start.patches.CharacterSelectScreenPatch.CompletedChar.completed.get(this)).booleanValue() ? ArchipelagoMW.game.start.patches.CharacterSelectScreenPatch.GREEN_OUTLINE_COLOR : BLACK_OUTLINE_COLOR; $proceed($$);}");
+                    }
+                }
+            };
         }
     }
 }

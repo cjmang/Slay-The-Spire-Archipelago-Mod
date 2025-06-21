@@ -87,7 +87,7 @@ public class VictoryScreenPatch {
             this.character = character;
         }
 
-        private String createVictoryKey(APClient client)
+        public static String createVictoryKey(APClient client)
         {
             return "spire_" + "_" + client.getTeam() + "_" + client.getSlot() + "_victory";
         }
