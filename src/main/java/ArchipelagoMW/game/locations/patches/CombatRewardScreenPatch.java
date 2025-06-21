@@ -6,11 +6,14 @@ import ArchipelagoMW.game.items.patches.RewardItemPatch;
 import com.evacipated.cardcrawl.modthespire.lib.*;
 import com.megacrit.cardcrawl.rewards.RewardItem;
 import com.megacrit.cardcrawl.screens.CombatRewardScreen;
+import dev.koifysh.archipelago.LocationManager;
 import dev.koifysh.archipelago.parts.NetworkItem;
 import javassist.CtBehavior;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Set;
 
 public class CombatRewardScreenPatch {
 
@@ -22,6 +25,8 @@ public class CombatRewardScreenPatch {
             Iterator<RewardItem> rewardItemIterator = ___rewards.iterator();
             ArrayList<RewardItem> toAdd = new ArrayList<>();
             LocationTracker locationTracker = APContext.getContext().getLocationTracker();
+            LocationManager locationManager = APContext.getContext().getLocationManager();
+            Set<Long> checkedLocations = new HashSet<>(locationManager.getCheckedLocations());
             while (rewardItemIterator.hasNext()) {
                 RewardItem reward = rewardItemIterator.next();
                 NetworkItem item = null;
@@ -36,11 +41,14 @@ public class CombatRewardScreenPatch {
 
                 if (item != null) {
                     rewardItemIterator.remove();
-                    RewardItem replacementReward = new RewardItem(1);
-                    replacementReward.goldAmt = 0;
-                    replacementReward.text = item.itemName + " NL " + item.playerName;
-                    replacementReward.type = RewardItemPatch.RewardType.ARCHIPELAGO_LOCATION;
-                    toAdd.add(replacementReward);
+                    // Don't show items already picked up
+                    if(!checkedLocations.contains(item.locationID)) {
+                        RewardItem replacementReward = new RewardItem(1);
+                        replacementReward.goldAmt = 0;
+                        replacementReward.text = item.itemName + " NL " + item.playerName;
+                        replacementReward.type = RewardItemPatch.RewardType.ARCHIPELAGO_LOCATION;
+                        toAdd.add(replacementReward);
+                    }
                 }
             }
             ___rewards.addAll(toAdd);
