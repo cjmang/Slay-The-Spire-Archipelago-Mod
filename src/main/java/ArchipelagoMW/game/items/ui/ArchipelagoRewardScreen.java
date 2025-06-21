@@ -238,6 +238,7 @@ public class ArchipelagoRewardScreen  extends CustomScreen {
             addReward(new RewardItem(apGold));
             apGold = 0;
         }
+        condenseGoldRewards();
     }
 
     public void update() {
@@ -413,6 +414,26 @@ public class ArchipelagoRewardScreen  extends CustomScreen {
 
     public void addReward(RewardItem item) {
         rewards.add(item);
+        positionRewards();
+    }
+
+    private void condenseGoldRewards()
+    {
+        Iterator<RewardItem> itr = rewards.iterator();
+        int gold = 0;
+        while(itr.hasNext())
+        {
+            RewardItem item = itr.next();
+            if(item.type == RewardItem.RewardType.GOLD)
+            {
+                itr.remove();
+                gold += item.goldAmt;
+            }
+        }
+        if(gold > 0)
+        {
+            rewards.add(new RewardItem(gold));
+        }
         positionRewards();
     }
 
