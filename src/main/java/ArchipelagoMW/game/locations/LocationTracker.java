@@ -305,6 +305,7 @@ public class LocationTracker {
 
     public void endOfTheRoad() {
         APContext apContext = APContext.getContext();
+        CharacterConfig currentCharacter = apContext.getCharacterManager().getCurrentCharacterConfig();
         SlotData slotData = apContext.getSlotData();
         List<Long> allLocations = new ArrayList<>() ;
         allLocations.addAll(getCardDrawLocations().locations);
@@ -317,11 +318,23 @@ public class LocationTracker {
         if(slotData.shopSanity != 0) {
             allLocations.addAll(shopLocations.locations.keySet());
         }
-        if(slotData.goldSanity != 0)
-        {
+        if(slotData.goldSanity != 0) {
             allLocations.addAll(goldLocations.locations);
             allLocations.addAll(eliteGoldLocations.locations);
             allLocations.addAll(bossGoldLocations.locations);
+        }
+        long maxFloors = 51;
+        if(currentCharacter.finalAct)
+        {
+            maxFloors += 4;
+        }
+        if(currentCharacter.ascension >= 20)
+        {
+            maxFloors += 1;
+        }
+        for(long i = 1; i < maxFloors; i++)
+        {
+            allLocations.add(i + (200L * currentOffset));
         }
         apContext.getLocationManager().checkLocations(allLocations);
         apContext.getSaveManager().saveString(apContext.getCharacterManager().getCurrentCharacter().chosenClass.name(), "");
