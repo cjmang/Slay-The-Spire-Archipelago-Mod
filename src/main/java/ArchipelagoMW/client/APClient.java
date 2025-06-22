@@ -175,7 +175,8 @@ public class APClient extends Client {
                 if(charManager.isItemIDForCurrentCharacter(event.getItemID()))
                 {
                     APContext.getContext().getItemTracker().addSanityItem(event.getItemID());
-                    if(APSettings.isSoundEnabled() && APItemID.fromLong(event.getItemID()).shouldNotify) {
+                    APItemID type = APItemID.fromLong(event.getItemID() % 20L);
+                    if(APSettings.isSoundEnabled() && type != null && type.shouldNotify) {
                         CardCrawlGame.sound.play("VO_CULTIST_1A");
                         // only increase counter, actual items get fetched when you open the reward screen.
                         ArchipelagoRewardScreen.rewardsQueued += 1;
