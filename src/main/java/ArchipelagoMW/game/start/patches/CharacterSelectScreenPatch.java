@@ -30,9 +30,7 @@ import javassist.CannotCompileException;
 import javassist.expr.ExprEditor;
 import javassist.expr.MethodCall;
 
-import java.lang.reflect.Type;
 import java.util.*;
-import java.util.concurrent.Future;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -52,6 +50,10 @@ public class CharacterSelectScreenPatch {
         try {
             RetrievedEvent getData = client.dataStorageGetFuture(Collections.singletonList(VictoryScreenPatch.VictoryCheck.createVictoryKey(client))).get();
             tmpChars = (Map<String, Boolean>) getData.getValueAsObject(VictoryScreenPatch.VictoryCheck.createVictoryKey(client),Map.class);
+            if(tmpChars == null)
+            {
+                tmpChars = Collections.emptyMap();
+            }
         }
         catch(Exception ex)
         {
@@ -234,7 +236,7 @@ public class CharacterSelectScreenPatch {
     @SpirePatch(clz=CharacterOption.class, method=SpirePatch.CLASS)
     public static class CompletedChar
     {
-        public static SpireField<Boolean> completed = new SpireField<>(() -> true);
+        public static SpireField<Boolean> completed = new SpireField<>(() -> false);
     }
 
     public static final Color GREEN_OUTLINE_COLOR = new Color(0.0f, 1.0f, 0.0f, 0.5f);

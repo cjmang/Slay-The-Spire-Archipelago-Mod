@@ -24,7 +24,9 @@ import java.util.ArrayList;
 public class APSaveable implements CustomSavableRaw {
     private static final Logger logger = LogManager.getLogger(APSaveable.class);
 
-    private static final Type REWARD_SAVE_LIST_TYPE = new TypeToken<ArrayList<APRewardSave>>() {}.getType();
+    private static final Type REWARD_SAVE_LIST_TYPE = new TypeToken<ArrayList<APRewardSave>>() {
+    }.getType();
+
     @Override
     public JsonElement onSaveRaw() {
         LocationTracker locationTracker = APContext.getContext().getLocationTracker();
@@ -54,17 +56,20 @@ public class APSaveable implements CustomSavableRaw {
         }
 
         save.add("rewards", gson.toJsonTree(rewards, REWARD_SAVE_LIST_TYPE));
-
-
-        // TODO: this has gotten complicated enough that it's probably time for a full blown proper memento object
         save.add("rewards_remaining", new JsonPrimitive(ArchipelagoRewardScreen.rewardsQueued));
         save.add("received_index", new JsonPrimitive(ArchipelagoRewardScreen.getReceivedItemsIndex()));
-        save.add("card_draw_index", new JsonPrimitive(locationTracker.getCardDrawLocations().getIndex()));
-        save.add("card_draw_toggle", new JsonPrimitive(locationTracker.getCardDrawToggle()));
-        save.add("rare_card_draw_index", new JsonPrimitive(locationTracker.getRareDrawLocations().getIndex()));
-        save.add("relic_index", new JsonPrimitive(locationTracker.getRelicLocations().getIndex()));
-        save.add("boss_relic_index", new JsonPrimitive(locationTracker.getBossRelicLocations().getIndex()));
-        save.add("floor_index", new JsonPrimitive(locationTracker.getFloorIndex()));
+
+        LocationTracker.LocationMemento memento = locationTracker.getMemento();
+
+        save.add("card_draw_index", new JsonPrimitive(memento.getDrawIndex()));
+        save.add("card_draw_toggle", new JsonPrimitive(memento.isCardDraw()));
+        save.add("rare_card_draw_index", new JsonPrimitive(memento.getRareDrawIndex()));
+        save.add("relic_index", new JsonPrimitive(memento.getRelicIndex()));
+        save.add("boss_relic_index", new JsonPrimitive(memento.getBossRelicIndex()));
+        save.add("floor_index", new JsonPrimitive(memento.getFloorIndex()));
+        save.add("combat_gold_index", new JsonPrimitive(memento.getCombatGoldIndex()));
+        save.add("elite_gold_index", new JsonPrimitive(memento.getEliteGoldIndex()));
+        save.add("boss_gold_index", new JsonPrimitive(memento.getBossGoldIndex()));
         save.add("character", new JsonPrimitive(APContext.getContext().getCharacterManager().getCurrentCharacter().chosenClass.name()));
 
         return save;
@@ -112,19 +117,27 @@ public class APSaveable implements CustomSavableRaw {
         ArchipelagoRewardScreen.rewards = rewards;
         ArchipelagoRewardScreen.rewardsQueued = save.get("rewards_remaining").getAsInt();
         ArchipelagoRewardScreen.setReceivedItemsIndex(save.get("received_index").getAsInt());
-//        logger.info("ReceivedItems index from save: {}", ArchipelagoRewardScreen.getReceivedItemsIndex());
+        LocationTracker.LocationMemento memento = new LocationTracker.LocationMemento();
+        if(save.has("combat_gold_index"))
+        {
+            memento.setCombatGoldIndex(save.get("combat_gold_index").getAsInt());
+        }
+        if(save.has("elite_gold_index"))
+        {
+            memento.setEliteGoldIndex(save.get("elite_gold_index").getAsInt());
+        }
+        if(save.has("boss_gold_index"))
+        {
+            memento.setBossGoldIndex(save.get("boss_gold_index").getAsInt());
+        }
         locationTracker.loadFromSave(
-                save.get("card_draw_index").getAsInt(),
-                save.get("rare_card_draw_index").getAsInt(),
-                save.get("relic_index").getAsInt(),
-                save.get("boss_relic_index").getAsInt(),
-                save.get("floor_index").getAsInt(),
-                save.get("card_draw_toggle").getAsBoolean()
+                memento
+                        .setDrawIndex(save.get("card_draw_index").getAsInt())
+                        .setRareDrawIndex(save.get("rare_card_draw_index").getAsInt())
+                        .setRelicIndex(save.get("relic_index").getAsInt())
+                        .setBossRelicIndex(save.get("boss_relic_index").getAsInt())
+                        .setFloorIndex(save.get("floor_index").getAsInt())
+                        .setCardDraw(save.get("card_draw_toggle").getAsBoolean())
         );
-        // I don't think this code is needed, since we load the save after the character is selected now.
-//        if(!APContext.getContext().getCharacterManager().selectCharacter(save.get("character").getAsString()))
-//        {
-//            throw new RuntimeException("Could not select character from save file " + save.get("character").getAsString());
-//        }
     }
 }

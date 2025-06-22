@@ -8,7 +8,9 @@ import ArchipelagoMW.client.APClient;
 import basemod.ReflectionHacks;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.megacrit.cardcrawl.dungeons.AbstractDungeon;
 import com.megacrit.cardcrawl.rewards.RewardItem;
+import com.megacrit.cardcrawl.rooms.*;
 import dev.koifysh.archipelago.parts.NetworkItem;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -25,6 +27,9 @@ public class LocationTracker {
     private final LocationContainer rareDrawLocations = new LocationContainer();
     private final LocationContainer relicLocations = new LocationContainer();
     private final LocationContainer bossRelicLocations = new LocationContainer();
+    private final LocationContainer goldLocations = new LocationContainer();
+    private final LocationContainer eliteGoldLocations = new LocationContainer();
+    private final LocationContainer bossGoldLocations = new LocationContainer();
     private final CampfireLocations campfireLocations = new CampfireLocations();
     private final LocationContainerMap shopLocations = new LocationContainerMap();
     private int floorIndex = 0;
@@ -40,18 +45,39 @@ public class LocationTracker {
         cardDrawLocations.index = 0;
         rareDrawLocations.index = 0;
         relicLocations.index = 0;
+        goldLocations.index = 0;
+        eliteGoldLocations.index = 0;
+        bossGoldLocations.index = 0;
         floorIndex = 0;
         cardDraw = false;
     }
 
-    public void loadFromSave(int cdIndex, int rdIndex, int relicIndex, int bossRelicLocation, int floorIndex, boolean cardDraw)
+//    public void loadFromSave(int cdIndex, int rdIndex, int relicIndex, int bossRelicLocation, int floorIndex, boolean cardDraw)
+    public void loadFromSave(LocationMemento memento)
     {
-        cardDrawLocations.index = cdIndex;
-        rareDrawLocations.index = rdIndex;
-        relicLocations.index = relicIndex;
-        bossRelicLocations.index = bossRelicLocation;
-        this.floorIndex = floorIndex;
-        this.cardDraw = cardDraw;
+        cardDrawLocations.index = memento.getDrawIndex();
+        rareDrawLocations.index = memento.getRareDrawIndex();
+        relicLocations.index = memento.getRelicIndex();
+        bossRelicLocations.index = memento.getBossRelicIndex();
+        this.floorIndex = memento.getFloorIndex();
+        this.cardDraw = memento.isCardDraw();
+        goldLocations.index = memento.getCombatGoldIndex();
+        eliteGoldLocations.index = memento.getEliteGoldIndex();
+        bossGoldLocations.index = memento.getBossGoldIndex();
+    }
+
+    public LocationMemento getMemento()
+    {
+        return new LocationMemento()
+                .setCardDraw(cardDraw)
+                .setFloorIndex(floorIndex)
+                .setDrawIndex(cardDrawLocations.index)
+                .setRareDrawIndex(rareDrawLocations.index)
+                .setRelicIndex(relicLocations.index)
+                .setBossRelicIndex(bossRelicLocations.index)
+                .setCombatGoldIndex(goldLocations.index)
+                .setEliteGoldIndex(eliteGoldLocations.index)
+                .setBossGoldIndex(bossGoldLocations.index);
     }
 
     public void initialize(long charOffset, List<Long> extras)
@@ -68,6 +94,9 @@ public class LocationTracker {
         getRareDrawLocations().initialize(131L, 2L, charOffset);
         getRelicLocations().initialize(141L, 10L, charOffset);
         getBossRelicLocations().initialize(161L, 2L, charOffset);
+        goldLocations.initialize(57L, 18L, charOffset);
+        eliteGoldLocations.initialize(76L, 7L, charOffset);
+        bossGoldLocations.initialize(83L, 2L, charOffset);
     }
 
     public int getFloorIndex()
@@ -87,6 +116,66 @@ public class LocationTracker {
         if(config.locked) {
             APContext.getContext().getClient().checkLocation(163L + (200L * currentOffset));
         }
+    }
+
+    public NetworkItem sendGoldReward()
+    {
+        AbstractRoom currRoom = AbstractDungeon.getCurrRoom();
+        if(currRoom instanceof TreasureRoom)
+        {
+            return null;
+        }
+        long locationId = -1;
+        int index = -1;
+        String fallbackName = "MissingNo";
+        if(currRoom instanceof MonsterRoom) {
+            if(currRoom instanceof MonsterRoomElite)
+            {
+
+                if(eliteGoldLocations.isExhausted())
+                {
+                    return null;
+                }
+                locationId = eliteGoldLocations.getNext();
+                index = eliteGoldLocations.index;
+                fallbackName = "Elite Gold ";
+            }
+            else if (currRoom instanceof MonsterRoomBoss)
+            {
+
+                if(bossGoldLocations.isExhausted())
+                {
+                    return null;
+                }
+                locationId = bossGoldLocations.getNext();
+                index = bossGoldLocations.index;
+                fallbackName = "Boss Gold ";
+            }
+            else
+            {
+                if(goldLocations.isExhausted())
+                {
+                    return null;
+                }
+                locationId = goldLocations.getNext();
+                index = goldLocations.index;
+                fallbackName = "Combat Gold ";
+            }
+        }
+        if(locationId <= 0)
+        {
+            return null;
+        }
+        APContext.getContext().getClient().checkLocations(getLocationIDs(locationId));
+        NetworkItem item = scoutedLocations.get(locationId);
+        logger.info("Sent locationId: {}; got item: {}", locationId, item);
+        if(item == null)
+        {
+            item = new NetworkItem();
+            item.itemName = fallbackName + index;
+            item.playerName = "";
+        }
+        return item;
     }
 
 
@@ -228,6 +317,12 @@ public class LocationTracker {
         if(slotData.shopSanity != 0) {
             allLocations.addAll(shopLocations.locations.keySet());
         }
+        if(slotData.goldSanity != 0)
+        {
+            allLocations.addAll(goldLocations.locations);
+            allLocations.addAll(eliteGoldLocations.locations);
+            allLocations.addAll(bossGoldLocations.locations);
+        }
         apContext.getLocationManager().checkLocations(allLocations);
         apContext.getSaveManager().saveString(apContext.getCharacterManager().getCurrentCharacter().chosenClass.name(), "");
     }
@@ -244,17 +339,19 @@ public class LocationTracker {
         if(data.shopSanity != 0) {
             locations.addAll(shopLocations.locations.keySet());
         }
-        logger.info("Scouting shop locations: {}", shopLocations.locations.keySet());
+        if(data.goldSanity != 0)
+        {
+            locations.addAll(goldLocations.locations);
+            locations.addAll(eliteGoldLocations.locations);
+            locations.addAll(bossGoldLocations.locations);
+        }
+        logger.info("Scouting locations: {}", locations);
         APContext.getContext().getClient().scoutLocations(locations);
     }
 
     public void addToScoutedLocations(ArrayList<NetworkItem> networkItems) {
         for (NetworkItem item : networkItems) {
-            long base_id = item.locationID % 200L;
-            if(base_id >= 164 && base_id <= 180)
-            {
-                logger.info("Got scount for location {} has item {}", item.locationName, item.itemName);
-            }
+            logger.info("Got scount for location {} id {} has item {}", item.locationName, item.locationID, item.itemName);
             scoutedLocations.put(item.locationID, item);
         }
     }
@@ -412,6 +509,100 @@ public class LocationTracker {
                 }
             }
             return ret;
+        }
+    }
+
+    public static class LocationMemento
+    {
+        private int drawIndex;
+        private int rareDrawIndex;
+        private int relicIndex;
+        private int bossRelicIndex;
+        private int floorIndex;
+        private int combatGoldIndex;
+        private int eliteGoldIndex;
+        private int bossGoldIndex;
+        private boolean cardDraw;
+
+        public int getDrawIndex() {
+            return drawIndex;
+        }
+
+        public LocationMemento setDrawIndex(int drawIndex) {
+            this.drawIndex = drawIndex;
+            return this;
+        }
+
+        public int getRareDrawIndex() {
+            return rareDrawIndex;
+        }
+
+        public LocationMemento setRareDrawIndex(int rareDrawIndex) {
+            this.rareDrawIndex = rareDrawIndex;
+            return this;
+        }
+
+        public int getRelicIndex() {
+            return relicIndex;
+        }
+
+        public LocationMemento setRelicIndex(int relicIndex) {
+            this.relicIndex = relicIndex;
+            return this;
+        }
+
+        public int getBossRelicIndex() {
+            return bossRelicIndex;
+        }
+
+        public LocationMemento setBossRelicIndex(int bossRelicIndex) {
+            this.bossRelicIndex = bossRelicIndex;
+            return this;
+        }
+
+        public int getFloorIndex() {
+            return floorIndex;
+        }
+
+        public LocationMemento setFloorIndex(int floorIndex) {
+            this.floorIndex = floorIndex;
+            return this;
+        }
+
+        public int getCombatGoldIndex() {
+            return combatGoldIndex;
+        }
+
+        public LocationMemento setCombatGoldIndex(int combatGoldIndex) {
+            this.combatGoldIndex = combatGoldIndex;
+            return this;
+        }
+
+        public int getEliteGoldIndex() {
+            return eliteGoldIndex;
+        }
+
+        public LocationMemento setEliteGoldIndex(int eliteGoldIndex) {
+            this.eliteGoldIndex = eliteGoldIndex;
+            return this;
+        }
+
+        public int getBossGoldIndex() {
+            return bossGoldIndex;
+        }
+
+        public LocationMemento setBossGoldIndex(int bossGoldIndex) {
+            this.bossGoldIndex = bossGoldIndex;
+            return this;
+        }
+
+        public boolean isCardDraw() {
+            return cardDraw;
+        }
+
+        public LocationMemento setCardDraw(boolean cardDraw) {
+            this.cardDraw = cardDraw;
+            return this;
         }
     }
 

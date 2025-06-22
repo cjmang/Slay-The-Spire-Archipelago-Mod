@@ -27,6 +27,7 @@ public class CombatRewardScreenPatch {
             LocationTracker locationTracker = APContext.getContext().getLocationTracker();
             LocationManager locationManager = APContext.getContext().getLocationManager();
             Set<Long> checkedLocations = new HashSet<>(locationManager.getCheckedLocations());
+            boolean goldSanity = APContext.getContext().getSlotData().goldSanity != 0;
             while (rewardItemIterator.hasNext()) {
                 RewardItem reward = rewardItemIterator.next();
                 NetworkItem item = null;
@@ -36,6 +37,12 @@ public class CombatRewardScreenPatch {
                         break;
                     case RELIC:
                         item = locationTracker.sendRelic();
+                        break;
+                    case GOLD:
+                        if(goldSanity)
+                        {
+                            item = locationTracker.sendGoldReward();
+                        }
                         break;
                 }
 
