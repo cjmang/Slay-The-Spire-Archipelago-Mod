@@ -30,6 +30,7 @@ public class LocationTracker {
     private final LocationContainer goldLocations = new LocationContainer();
     private final LocationContainer eliteGoldLocations = new LocationContainer();
     private final LocationContainer bossGoldLocations = new LocationContainer();
+    private final LocationContainer potionLocations = new LocationContainer();
     private final CampfireLocations campfireLocations = new CampfireLocations();
     private final LocationContainerMap shopLocations = new LocationContainerMap();
     private int floorIndex = 0;
@@ -48,6 +49,7 @@ public class LocationTracker {
         goldLocations.index = 0;
         eliteGoldLocations.index = 0;
         bossGoldLocations.index = 0;
+        potionLocations.index = 0;
         floorIndex = 0;
         cardDraw = false;
     }
@@ -64,6 +66,7 @@ public class LocationTracker {
         goldLocations.index = memento.getCombatGoldIndex();
         eliteGoldLocations.index = memento.getEliteGoldIndex();
         bossGoldLocations.index = memento.getBossGoldIndex();
+        potionLocations.index = memento.getPotionIndex();
     }
 
     public LocationMemento getMemento()
@@ -77,7 +80,8 @@ public class LocationTracker {
                 .setBossRelicIndex(bossRelicLocations.index)
                 .setCombatGoldIndex(goldLocations.index)
                 .setEliteGoldIndex(eliteGoldLocations.index)
-                .setBossGoldIndex(bossGoldLocations.index);
+                .setBossGoldIndex(bossGoldLocations.index)
+                .setPotionIndex(potionLocations.index);
     }
 
     public void initialize(long charOffset, List<Long> extras)
@@ -97,6 +101,7 @@ public class LocationTracker {
         goldLocations.initialize(57L, 18L, charOffset);
         eliteGoldLocations.initialize(76L, 7L, charOffset);
         bossGoldLocations.initialize(83L, 2L, charOffset);
+        potionLocations.initialize(85L, 9L, charOffset);
     }
 
     public int getFloorIndex()
@@ -245,6 +250,26 @@ public class LocationTracker {
         return item;
     }
 
+    public NetworkItem sendPotion()
+    {
+        if(potionLocations.isExhausted())
+        {
+            return null;
+        }
+
+        long locationID = potionLocations.getNext();
+        APContext.getContext().getClient().checkLocations(getLocationIDs(locationID));
+        NetworkItem item = scoutedLocations.get(locationID);
+        if(item == null)
+        {
+            NetworkItem networkItem = new NetworkItem();
+            networkItem.itemName = "Potion Drop " + (9 - potionLocations.locations.size());
+            networkItem.playerName = "";
+            return networkItem;
+        }
+        return item;
+    }
+
     /**
      * sends the next boss relic location to AP
      */
@@ -323,6 +348,10 @@ public class LocationTracker {
             allLocations.addAll(eliteGoldLocations.locations);
             allLocations.addAll(bossGoldLocations.locations);
         }
+        if(slotData.potionSanity != 0)
+        {
+            allLocations.addAll(potionLocations.locations);
+        }
         long maxFloors = 51;
         if(currentCharacter.finalAct)
         {
@@ -357,6 +386,10 @@ public class LocationTracker {
             locations.addAll(goldLocations.locations);
             locations.addAll(eliteGoldLocations.locations);
             locations.addAll(bossGoldLocations.locations);
+        }
+        if(data.potionSanity != 0)
+        {
+            locations.addAll(potionLocations.locations);
         }
         logger.info("Scouting locations: {}", locations);
         APContext.getContext().getClient().scoutLocations(locations);
@@ -535,6 +568,7 @@ public class LocationTracker {
         private int combatGoldIndex;
         private int eliteGoldIndex;
         private int bossGoldIndex;
+        private int potionIndex;
         private boolean cardDraw;
 
         public int getDrawIndex() {
@@ -615,6 +649,15 @@ public class LocationTracker {
 
         public LocationMemento setCardDraw(boolean cardDraw) {
             this.cardDraw = cardDraw;
+            return this;
+        }
+
+        public int getPotionIndex() {
+            return potionIndex;
+        }
+
+        public LocationMemento setPotionIndex(int potionIndex) {
+            this.potionIndex = potionIndex;
             return this;
         }
     }

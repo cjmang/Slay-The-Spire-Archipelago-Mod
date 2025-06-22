@@ -28,6 +28,7 @@ public class CombatRewardScreenPatch {
             LocationManager locationManager = APContext.getContext().getLocationManager();
             Set<Long> checkedLocations = new HashSet<>(locationManager.getCheckedLocations());
             boolean goldSanity = APContext.getContext().getSlotData().goldSanity != 0;
+            boolean potionSanity = APContext.getContext().getSlotData().potionSanity != 0;
             while (rewardItemIterator.hasNext()) {
                 RewardItem reward = rewardItemIterator.next();
                 NetworkItem item = null;
@@ -42,6 +43,12 @@ public class CombatRewardScreenPatch {
                         if(goldSanity)
                         {
                             item = locationTracker.sendGoldReward();
+                        }
+                        break;
+                    case POTION:
+                        if(potionSanity)
+                        {
+                            item = locationTracker.sendPotion();
                         }
                         break;
                 }

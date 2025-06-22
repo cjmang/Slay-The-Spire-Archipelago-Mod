@@ -26,6 +26,7 @@ import com.megacrit.cardcrawl.helpers.ModHelper;
 import com.megacrit.cardcrawl.helpers.controller.CInputActionSet;
 import com.megacrit.cardcrawl.helpers.input.InputHelper;
 import com.megacrit.cardcrawl.localization.UIStrings;
+import com.megacrit.cardcrawl.potions.AbstractPotion;
 import com.megacrit.cardcrawl.random.Random;
 import com.megacrit.cardcrawl.relics.AbstractRelic;
 import com.megacrit.cardcrawl.rewards.RewardItem;
@@ -541,6 +542,12 @@ public class ArchipelagoRewardScreen  extends CustomScreen {
                 break;
             case BOSS_GOLD:
                 apGold += AbstractDungeon.ascensionLevel >= 13 ? 75 : 100;
+                break;
+            case POTION:
+                AbstractPotion potion = AbstractDungeon.returnRandomPotion();
+                reward = new RewardItem(potion);
+                reward.text = player + " NL " + location;
+                addReward(reward);
                 break;
             default:
         }

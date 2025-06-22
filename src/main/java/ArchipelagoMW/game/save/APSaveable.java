@@ -70,6 +70,7 @@ public class APSaveable implements CustomSavableRaw {
         save.add("combat_gold_index", new JsonPrimitive(memento.getCombatGoldIndex()));
         save.add("elite_gold_index", new JsonPrimitive(memento.getEliteGoldIndex()));
         save.add("boss_gold_index", new JsonPrimitive(memento.getBossGoldIndex()));
+        save.add("potion_index", new JsonPrimitive(memento.getPotionIndex()));
         save.add("character", new JsonPrimitive(APContext.getContext().getCharacterManager().getCurrentCharacter().chosenClass.name()));
 
         return save;
@@ -129,6 +130,10 @@ public class APSaveable implements CustomSavableRaw {
         if(save.has("boss_gold_index"))
         {
             memento.setBossGoldIndex(save.get("boss_gold_index").getAsInt());
+        }
+        if(save.has("potion_sanity"))
+        {
+            memento.setPotionIndex(save.get("potion_index").getAsInt());
         }
         locationTracker.loadFromSave(
                 memento

@@ -45,6 +45,9 @@ public class SlotData {
     @SerializedName("gold_sanity")
     public int goldSanity = 0;
 
+    @SerializedName("potion_sanity")
+    public int potionSanity = 0;
+
     @SerializedName("shop_sanity_options")
     public ShopSanityConfig shopSanityConfig = new ShopSanityConfig();
 

@@ -23,6 +23,7 @@ public enum APItemID {
     FIFTEEN_GOLD(15, true),
     THIRTY_GOLD(16, true),
     BOSS_GOLD(17, true),
+    POTION(18, true),
     ;
     public final long value;
     public final boolean isSanity;
