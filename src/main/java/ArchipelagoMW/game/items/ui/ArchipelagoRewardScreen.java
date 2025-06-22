@@ -1,6 +1,7 @@
 package ArchipelagoMW.game.items.ui;
 
 import ArchipelagoMW.client.APContext;
+import ArchipelagoMW.game.items.APItemID;
 import ArchipelagoMW.game.items.MiscItemTracker;
 import ArchipelagoMW.game.locations.LocationTracker;
 import ArchipelagoMW.mod.Archipelago;
@@ -25,6 +26,7 @@ import com.megacrit.cardcrawl.helpers.ModHelper;
 import com.megacrit.cardcrawl.helpers.controller.CInputActionSet;
 import com.megacrit.cardcrawl.helpers.input.InputHelper;
 import com.megacrit.cardcrawl.localization.UIStrings;
+import com.megacrit.cardcrawl.potions.AbstractPotion;
 import com.megacrit.cardcrawl.random.Random;
 import com.megacrit.cardcrawl.relics.AbstractRelic;
 import com.megacrit.cardcrawl.rewards.RewardItem;
@@ -463,10 +465,15 @@ public class ArchipelagoRewardScreen  extends CustomScreen {
         String location = networkItem.locationName;
         String player = networkItem.playerName;
         RewardItem reward;
-        int itemType = (int) (itemID % 20L);
+        APItemID itemType = APItemID.fromLong(itemID % 20L);
+        if(itemType == null)
+        {
+            logger.warn("UNKNOWN ITEM {}", itemID % 20L);
+            return;
+        }
         switch(itemType)
         {
-            case 1: //card draw
+            case CARD_DRAW:
                 apReward = true;
                 float apUpgradeChance = getAPUpgradeChance(itemCount);
                 logger.info("Ap Upgrade Chance {}", apUpgradeChance);
@@ -486,7 +493,7 @@ public class ArchipelagoRewardScreen  extends CustomScreen {
                 reward.text = player + " NL " + location;
                 addReward(reward);
                 break;
-            case 2: //rare card draw
+            case RARE_CARD_DRAW:
                 apRareReward = true;
                 ArrayList<AbstractCard> rareCards = AbstractDungeon.getRewardCards();
                 apRareReward = false;
@@ -505,14 +512,14 @@ public class ArchipelagoRewardScreen  extends CustomScreen {
                 reward.text = player + " NL " + location;
                 addReward(reward);
                 break;
-            case 3: //Relic
+            case RELIC:
                 AbstractRelic relic = AbstractDungeon.returnRandomRelic(getRandomRelicTier());
                 reward = new RewardItem(relic);
                 reward.text = player + " NL " + location;
                 RewardItemPatch.CustomFields.apReward.set(reward, true);
                 addReward(reward);
                 break;
-            case 4: //Boss Relic
+            case BOSS_RELIC:
                 ArrayList<AbstractRelic> bossRelics = new ArrayList<AbstractRelic>() {{
                     add(AbstractDungeon.returnRandomRelic(AbstractRelic.RelicTier.BOSS));
                     add(AbstractDungeon.returnRandomRelic(AbstractRelic.RelicTier.BOSS));
@@ -526,11 +533,26 @@ public class ArchipelagoRewardScreen  extends CustomScreen {
                 reward.text = player + " NL " + location;
                 addReward(reward);
                 break;
-            case 5: //One Gold
+            case ONE_GOLD:
                 apGold += 1;
                 break;
-            case 6://Five Gold
+            case FIVE_GOLD:
                 apGold += 5;
+                break;
+            case FIFTEEN_GOLD:
+                apGold += 15;
+                break;
+            case THIRTY_GOLD:
+                apGold += 30;
+                break;
+            case BOSS_GOLD:
+                apGold += AbstractDungeon.ascensionLevel >= 13 ? 75 : 100;
+                break;
+            case POTION:
+                AbstractPotion potion = AbstractDungeon.returnRandomPotion();
+                reward = new RewardItem(potion);
+                reward.text = player + " NL " + location;
+                addReward(reward);
                 break;
             default:
         }
