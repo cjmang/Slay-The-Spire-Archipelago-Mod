@@ -12,31 +12,37 @@ public enum APItemID {
     BOSS_RELIC(4),
     ONE_GOLD(5),
     FIVE_GOLD(6),
-    PROGRESSIVE_REST(7, true),
-    PROGRESSIVE_SMITH(8, true),
-    CARD_SLOT(9, true),
-    NEUTRAL_CARD_SLOT(10, true),
-    RELIC_SLOT(11, true),
-    POTION_SLOT(12, true),
-    CARD_REMOVE_SLOT(13, true),
-    CHAR_UNLOCK(14),
+    PROGRESSIVE_REST(7, true, false),
+    PROGRESSIVE_SMITH(8, true, false),
+    CARD_SLOT(9, true, false),
+    NEUTRAL_CARD_SLOT(10, true, false),
+    RELIC_SLOT(11, true, false),
+    POTION_SLOT(12, true, false),
+    CARD_REMOVE_SLOT(13, true, false),
+    CHAR_UNLOCK(14, false, false),
     FIFTEEN_GOLD(15, true),
     THIRTY_GOLD(16, true),
     BOSS_GOLD(17, true),
     ;
     public final long value;
     public final boolean isSanity;
+    public final boolean shouldNotify;
     private static final Map<Long, APItemID> inverseMap = Arrays.stream(APItemID.values())
                     .collect(Collectors.toMap(id -> id.value, Function.identity()));
 
     APItemID(long val)
     {
-        this(val, false);
+        this(val, false, true);
     }
     APItemID(long val, boolean isSanity)
     {
+        this(val, isSanity, true);
+    }
+    APItemID(long val, boolean isSanity, boolean shouldNotify)
+    {
         this.value = val;
         this.isSanity = isSanity;
+        this.shouldNotify = shouldNotify;
     }
 
     public static APItemID fromLong(long lookup)

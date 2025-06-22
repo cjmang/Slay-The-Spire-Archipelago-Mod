@@ -5,6 +5,7 @@ import ArchipelagoMW.game.CharacterManager;
 import ArchipelagoMW.client.config.SlotData;
 import ArchipelagoMW.client.apEvents.ConnectionResult;
 import ArchipelagoMW.game.TalkQueue;
+import ArchipelagoMW.game.items.APItemID;
 import ArchipelagoMW.game.teams.PlayerManager;
 import ArchipelagoMW.game.teams.TeamManager;
 import ArchipelagoMW.game.items.ui.ArchipelagoRewardScreen;
@@ -173,12 +174,12 @@ public class APClient extends Client {
 
                 if(charManager.isItemIDForCurrentCharacter(event.getItemID()))
                 {
-                    if(APSettings.isSoundEnabled()) {
-                        CardCrawlGame.sound.play("VO_CULTIST_1A");
-                    }
                     APContext.getContext().getItemTracker().addSanityItem(event.getItemID());
-                    // only increase counter, actual items get fetched when you open the reward screen.
-                    ArchipelagoRewardScreen.rewardsQueued += 1;
+                    if(APSettings.isSoundEnabled() && APItemID.fromLong(event.getItemID()).shouldNotify) {
+                        CardCrawlGame.sound.play("VO_CULTIST_1A");
+                        // only increase counter, actual items get fetched when you open the reward screen.
+                        ArchipelagoRewardScreen.rewardsQueued += 1;
+                    }
                 }
             }
         }
