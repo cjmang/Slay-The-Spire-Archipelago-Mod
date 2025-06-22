@@ -121,7 +121,9 @@ public class VictoryScreenPatch {
                 Map<String, Boolean> eventChars = (Map<String, Boolean>) event.value;
 
                 APClient.logger.info("Won with the following characters: {}", eventChars.keySet());
-                if (eventChars.size() >= characterManager.getCharacters().size()) {
+                int numCharsGoal = apContext.getSlotData().numCharsGoal;
+                if ((numCharsGoal == 0 && eventChars.size() >= characterManager.getCharacters().size()) ||
+                        (eventChars.size() >= Math.min(numCharsGoal, characterManager.getCharacters().size()))) {
                     client.setGameState(ClientStatus.CLIENT_GOAL);
                 }
                 apContext.getLocationTracker().endOfTheRoad();
