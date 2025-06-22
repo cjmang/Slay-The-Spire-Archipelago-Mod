@@ -14,6 +14,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.MathUtils;
+import com.megacrit.cardcrawl.characters.AbstractPlayer;
 import com.megacrit.cardcrawl.core.CardCrawlGame;
 import com.megacrit.cardcrawl.core.Settings;
 import com.megacrit.cardcrawl.dungeons.AbstractDungeon;
@@ -22,6 +23,7 @@ import com.megacrit.cardcrawl.helpers.MathHelper;
 import com.megacrit.cardcrawl.helpers.TipHelper;
 import com.megacrit.cardcrawl.rooms.AbstractRoom;
 import com.megacrit.cardcrawl.ui.panels.TopPanel;
+import com.megacrit.cardcrawl.vfx.SpeechBubble;
 import dev.koifysh.archipelago.parts.NetworkItem;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -138,6 +140,14 @@ public class ArchipelagoIcon extends TopPanelItem {
         // if we are disconnected, and we click the ap button try new connection.
         if (!ctx.getClient().isConnected() && !AbstractDungeon.player.isDead) {
             ctx.getClient().reconnect();
+        } else if(AbstractDungeon.getCurrRoom() != null && AbstractDungeon.getCurrRoom().phase != AbstractRoom.RoomPhase.COMPLETE) {
+            // Don't allow opening the screen except when rooms are over, to avoid dumb bugs
+            AbstractPlayer player = AbstractDungeon.player;
+            if(player != null)
+            {
+                AbstractDungeon.effectList.add(new SpeechBubble(player.dialogX, player.dialogY, 5.0f, "I must complete this room first.",true));
+            }
+            return;
         } else if (AbstractDungeon.screen == ArchipelagoRewardScreen.Enum.ARCHIPELAGO_REWARD_SCREEN) {
             AbstractDungeon.closeCurrentScreen();
         } else {
