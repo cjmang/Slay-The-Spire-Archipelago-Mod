@@ -6,7 +6,7 @@ plugins {
 }
 
 description = "Archipelago Multi-World Integration into Slay the Spire"
-version = "2.1.0"
+version = "2.1.1"
 
 defaultTasks = mutableListOf("deployLocal")
 
