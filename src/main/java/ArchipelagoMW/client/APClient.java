@@ -34,6 +34,7 @@ import java.security.GeneralSecurityException;
 import java.security.KeyStore;
 import java.util.Collection;
 import java.util.concurrent.Future;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Consumer;
 
 public class APClient extends Client {
@@ -161,6 +162,8 @@ public class APClient extends Client {
     public static class RecieveItemHandler
     {
 
+        private final AtomicLong bounce = new AtomicLong();
+
         @ArchipelagoEventListener
         public void onReceiveItem(ReceiveItemEvent event)
         {
@@ -180,8 +183,9 @@ public class APClient extends Client {
                     if(type != null && type.shouldNotify) {
                         // only increase counter, actual items get fetched when you open the reward screen.
                         ArchipelagoRewardScreen.rewardsQueued += 1;
-                        if(APSettings.isSoundEnabled()) {
+                        if(APSettings.isSoundEnabled() && (System.currentTimeMillis() - bounce.get()) > 1_000) {
                             CardCrawlGame.sound.play("VO_CULTIST_1A");
+                            bounce.set(System.currentTimeMillis());
                         }
                     }
                 }
