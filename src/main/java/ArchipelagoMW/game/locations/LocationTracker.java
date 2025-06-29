@@ -361,7 +361,7 @@ public class LocationTracker {
         {
             maxFloors += 1;
         }
-        for(long i = 1; i < maxFloors; i++)
+        for(long i = 1; i <= maxFloors; i++)
         {
             allLocations.add(i + (200L * currentOffset));
         }
