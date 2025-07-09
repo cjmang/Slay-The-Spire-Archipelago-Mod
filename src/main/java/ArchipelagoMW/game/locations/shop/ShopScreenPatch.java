@@ -90,6 +90,7 @@ public class ShopScreenPatch {
                     c.price /= 2;
                 }
             }
+
         }
 
 
@@ -141,6 +142,7 @@ public class ShopScreenPatch {
             {
                 // This call will get circumvented otherwise
                 ReflectionHacks.privateMethod(ShopScreen.class, "setStartingCardPositions").invoke(__instance);
+                ReflectionHacks.setPrivate(__instance, ShopScreen.class, "saleTag", new OnSaleTag(null));
                 return SpireReturn.Return();
             }
             return SpireReturn.Continue();
