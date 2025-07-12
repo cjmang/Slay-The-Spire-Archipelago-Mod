@@ -140,6 +140,8 @@ public class ArchipelagoIcon extends TopPanelItem {
         // if we are disconnected, and we click the ap button try new connection.
         if (!ctx.getClient().isConnected() && !AbstractDungeon.player.isDead) {
             ctx.getClient().reconnect();
+        } else if (AbstractDungeon.screen == ArchipelagoRewardScreen.Enum.ARCHIPELAGO_REWARD_SCREEN) {
+            AbstractDungeon.closeCurrentScreen();
         } else if(AbstractDungeon.getCurrRoom() != null && AbstractDungeon.getCurrRoom().phase != AbstractRoom.RoomPhase.COMPLETE) {
             // Don't allow opening the screen except when rooms are over, to avoid dumb bugs
             AbstractPlayer player = AbstractDungeon.player;
@@ -148,8 +150,6 @@ public class ArchipelagoIcon extends TopPanelItem {
                 AbstractDungeon.effectList.add(new SpeechBubble(player.dialogX, player.dialogY, 5.0f, "I must complete this room first.",true));
             }
             return;
-        } else if (AbstractDungeon.screen == ArchipelagoRewardScreen.Enum.ARCHIPELAGO_REWARD_SCREEN) {
-            AbstractDungeon.closeCurrentScreen();
         } else {
             BaseMod.openCustomScreen(ArchipelagoRewardScreen.Enum.ARCHIPELAGO_REWARD_SCREEN);
         }
