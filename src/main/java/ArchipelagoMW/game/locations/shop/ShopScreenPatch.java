@@ -7,9 +7,12 @@ import basemod.BaseMod;
 import basemod.ReflectionHacks;
 import basemod.interfaces.PostCreateShopPotionSubscriber;
 import basemod.interfaces.PostCreateShopRelicSubscriber;
+import com.badlogic.gdx.Gdx;
 import com.evacipated.cardcrawl.modthespire.lib.*;
+import com.evacipated.cardcrawl.modthespire.patcher.Expectation;
 import com.megacrit.cardcrawl.cards.AbstractCard;
 import com.megacrit.cardcrawl.characters.AbstractPlayer;
+import com.megacrit.cardcrawl.core.Settings;
 import com.megacrit.cardcrawl.potions.AbstractPotion;
 import com.megacrit.cardcrawl.shop.OnSaleTag;
 import com.megacrit.cardcrawl.shop.ShopScreen;
@@ -18,6 +21,7 @@ import com.megacrit.cardcrawl.shop.StoreRelic;
 import com.megacrit.cardcrawl.vfx.FastCardObtainEffect;
 import javassist.CannotCompileException;
 import javassist.CtBehavior;
+import javassist.expr.Expr;
 import javassist.expr.ExprEditor;
 import javassist.expr.MethodCall;
 
@@ -188,6 +192,25 @@ public class ShopScreenPatch {
         }
 
     }
+
+    @SpirePatch(clz = ShopScreen.class, method="updateControllerInput")
+    public static class FixControllerBug
+    {
+        // Vanilla has a game crash here, that probably wouldn't happen in most circumstances.
+        @SpireInsertPatch(rloc=1126-811)
+        public static SpireReturn<Void> fixBug(ShopScreen __instance, ArrayList<AbstractCard> ___colorlessCards)
+        {
+            if(!___colorlessCards.isEmpty())
+            {
+                Gdx.input.setCursorPosition(
+                        (int)(___colorlessCards.get(___colorlessCards.size() - 1)).hb.cX, Settings.HEIGHT -
+                                (int)(___colorlessCards.get(___colorlessCards.size() - 1)).hb.cY);
+            }
+            return SpireReturn.Return();
+        }
+
+    }
+
 //    // TODO: relics should be handled in the AbstractRelic class instantObtain method
 //    @SpirePatch(clz=AbstractPlayer.class, method="obtainPotion", paramtypez = AbstractPotion.class)
 //    public static class ObtainPotionPatch
