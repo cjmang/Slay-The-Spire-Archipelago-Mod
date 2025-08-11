@@ -3,7 +3,7 @@ package ArchipelagoMW.game.locations.shop;
 import ArchipelagoMW.client.APContext;
 import com.megacrit.cardcrawl.core.AbstractCreature;
 import com.megacrit.cardcrawl.potions.AbstractPotion;
-import dev.koifysh.archipelago.parts.NetworkItem;
+import io.github.archipelagomw.parts.NetworkItem;
 
 // TOOD: delete? making a fake potion item is annoying
 public class APFakePotion extends AbstractPotion implements APShopItem {
@@ -11,11 +11,11 @@ public class APFakePotion extends AbstractPotion implements APShopItem {
 
     private static PotionRarity mapRarity(int flags)
     {
-        if((dev.koifysh.archipelago.flags.NetworkItem.ADVANCEMENT & flags) > 0)
+        if((io.github.archipelagomw.flags.NetworkItem.ADVANCEMENT & flags) > 0)
         {
             return PotionRarity.RARE;
         }
-        else if((dev.koifysh.archipelago.flags.NetworkItem.USEFUL & flags) > 0)
+        else if((io.github.archipelagomw.flags.NetworkItem.USEFUL & flags) > 0)
         {
             return PotionRarity.UNCOMMON;
         }

@@ -6,8 +6,8 @@ import ArchipelagoMW.game.ShopManager;
 import ArchipelagoMW.game.items.MiscItemTracker;
 import ArchipelagoMW.game.locations.LocationTracker;
 import ArchipelagoMW.game.save.SaveManager;
-import dev.koifysh.archipelago.ItemManager;
-import dev.koifysh.archipelago.LocationManager;
+import io.github.archipelagomw.ItemManager;
+import io.github.archipelagomw.LocationManager;
 
 public class APContext {
 

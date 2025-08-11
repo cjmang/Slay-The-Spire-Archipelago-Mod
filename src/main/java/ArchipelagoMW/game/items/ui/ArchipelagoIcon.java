@@ -1,6 +1,5 @@
 package ArchipelagoMW.game.items.ui;
 
-import ArchipelagoMW.client.APClient;
 import ArchipelagoMW.client.APContext;
 import ArchipelagoMW.client.config.SlotData;
 import ArchipelagoMW.game.ShopManager;
@@ -24,12 +23,9 @@ import com.megacrit.cardcrawl.helpers.TipHelper;
 import com.megacrit.cardcrawl.rooms.AbstractRoom;
 import com.megacrit.cardcrawl.ui.panels.TopPanel;
 import com.megacrit.cardcrawl.vfx.SpeechBubble;
-import dev.koifysh.archipelago.parts.NetworkItem;
+import io.github.archipelagomw.parts.NetworkItem;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
-import java.util.LinkedList;
-import java.util.List;
 
 public class ArchipelagoIcon extends TopPanelItem {
 

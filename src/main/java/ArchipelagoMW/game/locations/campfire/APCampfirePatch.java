@@ -10,7 +10,7 @@ import com.megacrit.cardcrawl.rooms.CampfireUI;
 import com.megacrit.cardcrawl.ui.campfire.AbstractCampfireOption;
 import com.megacrit.cardcrawl.ui.campfire.RestOption;
 import com.megacrit.cardcrawl.ui.campfire.SmithOption;
-import dev.koifysh.archipelago.network.client.CreateAsHint;
+import io.github.archipelagomw.network.client.CreateAsHint;
 import javassist.CtBehavior;
 
 import java.util.ArrayList;

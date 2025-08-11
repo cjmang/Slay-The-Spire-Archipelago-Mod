@@ -1,10 +1,10 @@
 package ArchipelagoMW.client;
 
-import dev.koifysh.archipelago.events.ArchipelagoEventListener;
-import dev.koifysh.archipelago.events.Event;
-import dev.koifysh.archipelago.events.RetrievedEvent;
-import dev.koifysh.archipelago.events.SetReplyEvent;
-import dev.koifysh.archipelago.network.client.SetPacket;
+import io.github.archipelagomw.events.ArchipelagoEventListener;
+import io.github.archipelagomw.events.Event;
+import io.github.archipelagomw.events.RetrievedEvent;
+import io.github.archipelagomw.events.SetReplyEvent;
+import io.github.archipelagomw.network.client.SetPacket;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 

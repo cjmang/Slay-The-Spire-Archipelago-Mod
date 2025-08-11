@@ -14,10 +14,10 @@ import com.megacrit.cardcrawl.core.CardCrawlGame;
 import com.megacrit.cardcrawl.dungeons.AbstractDungeon;
 import com.megacrit.cardcrawl.dungeons.Exordium;
 import com.megacrit.cardcrawl.saveAndContinue.SaveFile;
-import dev.koifysh.archipelago.events.ArchipelagoEventListener;
-import dev.koifysh.archipelago.events.RetrievedEvent;
-import dev.koifysh.archipelago.events.SetReplyEvent;
-import dev.koifysh.archipelago.network.client.SetPacket;
+import io.github.archipelagomw.events.ArchipelagoEventListener;
+import io.github.archipelagomw.events.RetrievedEvent;
+import io.github.archipelagomw.events.SetReplyEvent;
+import io.github.archipelagomw.network.client.SetPacket;
 import javassist.CtBehavior;
 
 import java.lang.reflect.Type;

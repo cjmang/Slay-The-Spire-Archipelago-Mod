@@ -1,6 +1,6 @@
 package ArchipelagoMW.game.locations.shop;
 
-import dev.koifysh.archipelago.parts.NetworkItem;
+import io.github.archipelagomw.parts.NetworkItem;
 
 public interface APShopItem {
 

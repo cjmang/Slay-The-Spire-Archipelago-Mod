@@ -10,10 +10,10 @@ import com.megacrit.cardcrawl.dungeons.AbstractDungeon;
 import com.megacrit.cardcrawl.ui.DialogWord;
 import com.megacrit.cardcrawl.ui.SpeechWord;
 import com.megacrit.cardcrawl.vfx.SpeechBubble;
-import dev.koifysh.archipelago.Print.APPrintColor;
-import dev.koifysh.archipelago.Print.APPrintPart;
-import dev.koifysh.archipelago.events.PrintJSONEvent;
-import dev.koifysh.archipelago.flags.NetworkItem;
+import io.github.archipelagomw.Print.APPrintColor;
+import io.github.archipelagomw.Print.APPrintPart;
+import io.github.archipelagomw.events.PrintJSONEvent;
+import io.github.archipelagomw.flags.NetworkItem;
 
 import java.util.ArrayList;
 import java.util.LinkedList;

@@ -6,8 +6,8 @@ import ArchipelagoMW.game.items.patches.RewardItemPatch;
 import com.evacipated.cardcrawl.modthespire.lib.*;
 import com.megacrit.cardcrawl.rewards.RewardItem;
 import com.megacrit.cardcrawl.screens.CombatRewardScreen;
-import dev.koifysh.archipelago.LocationManager;
-import dev.koifysh.archipelago.parts.NetworkItem;
+import io.github.archipelagomw.LocationManager;
+import io.github.archipelagomw.parts.NetworkItem;
 import javassist.CtBehavior;
 
 import java.util.ArrayList;

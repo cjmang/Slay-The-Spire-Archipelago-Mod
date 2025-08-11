@@ -17,8 +17,8 @@ import com.megacrit.cardcrawl.dungeons.AbstractDungeon;
 import com.megacrit.cardcrawl.helpers.SeedHelper;
 import com.megacrit.cardcrawl.screens.mainMenu.MainMenuScreen;
 import downfall.patches.EvilModeCharacterSelect;
-import dev.koifysh.archipelago.events.ArchipelagoEventListener;
-import dev.koifysh.archipelago.events.ConnectionResultEvent;
+import io.github.archipelagomw.events.ArchipelagoEventListener;
+import io.github.archipelagomw.events.ConnectionResultEvent;
 
 public class ConnectionResult {
 
@@ -47,7 +47,7 @@ public class ConnectionResult {
         }
         ConnectionPanel.connectionResultText = msg;
 
-        if (event.getResult() != dev.koifysh.archipelago.network.ConnectionResult.Success)
+        if (event.getResult() != io.github.archipelagomw.network.ConnectionResult.Success)
             return;
 
         if (CardCrawlGame.mode != CardCrawlGame.GameMode.CHAR_SELECT)

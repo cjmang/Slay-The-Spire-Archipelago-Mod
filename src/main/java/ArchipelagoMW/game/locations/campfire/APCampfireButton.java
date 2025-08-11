@@ -1,13 +1,10 @@
 package ArchipelagoMW.game.locations.campfire;
 
 import ArchipelagoMW.client.APContext;
-import ArchipelagoMW.game.locations.LocationTracker;
 import ArchipelagoMW.game.ui.APTextures;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.megacrit.cardcrawl.dungeons.AbstractDungeon;
 import com.megacrit.cardcrawl.ui.campfire.AbstractCampfireOption;
-import com.megacrit.cardcrawl.vfx.campfire.CampfireRecallEffect;
-import dev.koifysh.archipelago.parts.NetworkItem;
+import io.github.archipelagomw.parts.NetworkItem;
 
 public class APCampfireButton  extends AbstractCampfireOption {
 
@@ -45,15 +42,15 @@ public class APCampfireButton  extends AbstractCampfireOption {
         {
             this.description = "???";
         }
-        else if((dev.koifysh.archipelago.flags.NetworkItem.TRAP & scoutedItem.flags) > 0)
+        else if((io.github.archipelagomw.flags.NetworkItem.TRAP & scoutedItem.flags) > 0)
         {
             this.description = "Seems important?";
         }
-        else if((dev.koifysh.archipelago.flags.NetworkItem.ADVANCEMENT & scoutedItem.flags) > 0)
+        else if((io.github.archipelagomw.flags.NetworkItem.ADVANCEMENT & scoutedItem.flags) > 0)
         {
             this.description = "Seems important!";
         }
-        else if((dev.koifysh.archipelago.flags.NetworkItem.USEFUL & scoutedItem.flags) > 0)
+        else if((io.github.archipelagomw.flags.NetworkItem.USEFUL & scoutedItem.flags) > 0)
         {
             this.description = "Might be helpful.";
         }

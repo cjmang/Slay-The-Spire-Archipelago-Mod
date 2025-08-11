@@ -7,9 +7,7 @@ import ArchipelagoMW.client.util.Utils;
 import ArchipelagoMW.game.items.MiscItemTracker;
 import ArchipelagoMW.game.locations.LocationTracker;
 import ArchipelagoMW.game.locations.shop.APFakeCard;
-import ArchipelagoMW.game.locations.shop.APFakePotion;
 import ArchipelagoMW.game.locations.shop.APShopItem;
-import ArchipelagoMW.mod.Archipelago;
 import com.megacrit.cardcrawl.cards.AbstractCard;
 import com.megacrit.cardcrawl.dungeons.AbstractDungeon;
 import com.megacrit.cardcrawl.potions.AbstractPotion;
@@ -17,15 +15,13 @@ import com.megacrit.cardcrawl.relics.AbstractRelic;
 import com.megacrit.cardcrawl.shop.ShopScreen;
 import com.megacrit.cardcrawl.shop.StorePotion;
 import com.megacrit.cardcrawl.shop.StoreRelic;
-import dev.koifysh.archipelago.LocationManager;
-import dev.koifysh.archipelago.network.client.CreateAsHint;
-import dev.koifysh.archipelago.parts.NetworkItem;
+import io.github.archipelagomw.LocationManager;
+import io.github.archipelagomw.network.client.CreateAsHint;
+import io.github.archipelagomw.parts.NetworkItem;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.util.*;
-import java.util.function.BiFunction;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class ShopManager {

@@ -5,7 +5,7 @@ import basemod.abstracts.CustomCard;
 import com.megacrit.cardcrawl.cards.AbstractCard;
 import com.megacrit.cardcrawl.characters.AbstractPlayer;
 import com.megacrit.cardcrawl.monsters.AbstractMonster;
-import dev.koifysh.archipelago.parts.NetworkItem;
+import io.github.archipelagomw.parts.NetworkItem;
 
 public class APFakeCard extends CustomCard implements APShopItem {
 
@@ -46,11 +46,11 @@ public class APFakeCard extends CustomCard implements APShopItem {
 
     private static CardRarity mapRarity(int flags)
     {
-        if((flags & dev.koifysh.archipelago.flags.NetworkItem.ADVANCEMENT)  > 0)
+        if((flags & io.github.archipelagomw.flags.NetworkItem.ADVANCEMENT)  > 0)
         {
             return CardRarity.RARE;
         }
-        if((flags & dev.koifysh.archipelago.flags.NetworkItem.USEFUL)  > 0)
+        if((flags & io.github.archipelagomw.flags.NetworkItem.USEFUL)  > 0)
         {
             return CardRarity.UNCOMMON;
         }

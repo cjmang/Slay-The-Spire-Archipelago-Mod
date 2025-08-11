@@ -23,7 +23,7 @@ import com.megacrit.cardcrawl.helpers.SeedHelper;
 import com.megacrit.cardcrawl.screens.charSelect.CharacterOption;
 import com.megacrit.cardcrawl.screens.charSelect.CharacterSelectScreen;
 import com.megacrit.cardcrawl.screens.options.ConfirmPopup;
-import dev.koifysh.archipelago.events.RetrievedEvent;
+import io.github.archipelagomw.events.RetrievedEvent;
 import downfall.downfallMod;
 import downfall.patches.EvilModeCharacterSelect;
 import javassist.CannotCompileException;

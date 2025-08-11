@@ -3,7 +3,7 @@ package ArchipelagoMW.game.save;
 import ArchipelagoMW.client.APClient;
 import ArchipelagoMW.client.APContext;
 import com.megacrit.cardcrawl.saveAndContinue.SaveFileObfuscator;
-import dev.koifysh.archipelago.network.client.SetPacket;
+import io.github.archipelagomw.network.client.SetPacket;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 

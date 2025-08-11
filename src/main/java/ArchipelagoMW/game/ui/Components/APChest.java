@@ -2,7 +2,6 @@ package ArchipelagoMW.game.ui.Components;
 
 import ArchipelagoMW.client.APContext;
 import ArchipelagoMW.game.ui.APTextures;
-import ArchipelagoMW.game.locations.LocationTracker;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.megacrit.cardcrawl.core.CardCrawlGame;
 import com.megacrit.cardcrawl.core.Settings;
@@ -10,7 +9,7 @@ import com.megacrit.cardcrawl.dungeons.AbstractDungeon;
 import com.megacrit.cardcrawl.helpers.Hitbox;
 import com.megacrit.cardcrawl.helpers.TipHelper;
 import com.megacrit.cardcrawl.rewards.chests.AbstractChest;
-import dev.koifysh.archipelago.parts.NetworkItem;
+import io.github.archipelagomw.parts.NetworkItem;
 
 public class APChest extends AbstractChest {
 
