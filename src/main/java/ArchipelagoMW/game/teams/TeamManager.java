@@ -13,6 +13,7 @@ import com.google.gson.reflect.TypeToken;
 import com.megacrit.cardcrawl.core.CardCrawlGame;
 import com.megacrit.cardcrawl.dungeons.AbstractDungeon;
 import com.megacrit.cardcrawl.screens.DeathScreen;
+import io.github.archipelagomw.APResult;
 import io.github.archipelagomw.events.ArchipelagoEventListener;
 import io.github.archipelagomw.events.BouncedEvent;
 import io.github.archipelagomw.events.RetrievedEvent;
@@ -71,8 +72,11 @@ public class TeamManager {
         SetPacket initTeams = new SetPacket("spire_teams", new ArrayList<>());
         initTeams.addDataStorageOperation(SetPacket.Operation.DEFAULT, "i'm needed!");
         initTeams.want_reply = true;
-        teamListRequest = APContext.getContext().getClient().dataStorageSet(initTeams);
-        APContext.getContext().getClient().dataStorageSetNotify(Collections.singleton("spire_teams"));
+        APResult<Integer> result = APContext.getContext().getClient().dataStorageSet(initTeams);
+        if(result.getCode() == APResult.ResultCode.SUCCESS) {
+            teamListRequest = result.getValue();
+            APContext.getContext().getClient().dataStorageSetNotify(Collections.singleton("spire_teams"));
+        }
     }
 
     private static final Type arrayListString = new TypeToken<ArrayList<String>>() {

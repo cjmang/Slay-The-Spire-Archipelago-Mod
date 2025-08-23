@@ -14,6 +14,7 @@ import com.megacrit.cardcrawl.core.CardCrawlGame;
 import com.megacrit.cardcrawl.dungeons.AbstractDungeon;
 import com.megacrit.cardcrawl.dungeons.Exordium;
 import com.megacrit.cardcrawl.saveAndContinue.SaveFile;
+import io.github.archipelagomw.APResult;
 import io.github.archipelagomw.events.ArchipelagoEventListener;
 import io.github.archipelagomw.events.RetrievedEvent;
 import io.github.archipelagomw.events.SetReplyEvent;
@@ -213,10 +214,11 @@ public class PlayerManager {
         SetPacket initPlayers = new SetPacket("spire_players", Collections.singleton(CardCrawlGame.playerName));
         initPlayers.addDataStorageOperation(SetPacket.Operation.DEFAULT, "i'm needed!");
         initPlayers.want_reply = true;
-        playerListRequest = client.dataStorageSet(initPlayers);
-
+        APResult<Integer> result = client.dataStorageSet(initPlayers);
+        if(result.getCode() == APResult.ResultCode.SUCCESS) {
+            playerListRequest = result.getValue();
+        }
         client.dataStorageSetNotify(Collections.singleton("spire_players"));
-
     }
 
     private static final Type arrayListString = new TypeToken<ArrayList<String>>() {

@@ -1,5 +1,6 @@
 package ArchipelagoMW.client;
 
+import io.github.archipelagomw.APResult;
 import io.github.archipelagomw.events.ArchipelagoEventListener;
 import io.github.archipelagomw.events.Event;
 import io.github.archipelagomw.events.RetrievedEvent;
@@ -42,29 +43,37 @@ public class DataStorageWrapper implements Closeable {
         },15, 5, TimeUnit.SECONDS);
     }
 
-    private <T extends Event> Future<T> setupFuture(int requestId)
+    private <T extends Event> Future<T> setupFuture(APResult<Integer> result)
     {
         CompletableFuture<T> future = new CompletableFuture<>();
-        messageMap.put(requestId, new ResponseWrapper<>(future));
+        if(result.getCode() != APResult.ResultCode.SUCCESS)
+        {
+            future.complete(null);
+        }
+        else {
+            messageMap.put(result.getValue(), new ResponseWrapper<>(future));
+        }
         return future;
     }
 
-    private <T extends Event> void setupConsumer(int requestId, Consumer<T> consumer)
+    private <T extends Event> void setupConsumer(APResult<Integer> result, Consumer<T> consumer)
     {
-        messageMap.put(requestId, new ResponseWrapper<>(consumer));
+        if(result.getCode() == APResult.ResultCode.SUCCESS) {
+            messageMap.put(result.getValue(), new ResponseWrapper<>(consumer));
+        }
     }
 
     public synchronized Future<RetrievedEvent> dataStorageGet(Collection<String> keys)
     {
-        int requestId = client.dataStorageGet(keys);
-        return setupFuture(requestId);
+        APResult<Integer> result = client.dataStorageGet(keys);
+        return setupFuture(result);
     }
 
     public synchronized Future<SetReplyEvent> dataStorageSet(SetPacket packet)
     {
         packet.want_reply = true;
-        int requestId = client.dataStorageSet(packet);
-        return setupFuture(requestId);
+        APResult<Integer> result = client.dataStorageSet(packet);
+        return setupFuture(result);
     }
 
     public void setNoReply(SetPacket packet)
@@ -76,14 +85,14 @@ public class DataStorageWrapper implements Closeable {
     public synchronized void asyncDSSet(SetPacket packet, Consumer<SetReplyEvent> lambda)
     {
         packet.want_reply = true;
-        int requestId = client.dataStorageSet(packet);
-        setupConsumer(requestId, lambda);
+        APResult<Integer> result = client.dataStorageSet(packet);
+        setupConsumer(result, lambda);
     }
 
     public synchronized void asyncDSGet(Collection<String> keys, Consumer<RetrievedEvent> lambda)
     {
-        int requestId = client.dataStorageGet(keys);
-        setupConsumer(requestId, lambda);
+        APResult<Integer> result = client.dataStorageGet(keys);
+        setupConsumer(result, lambda);
     }
 
     @ArchipelagoEventListener

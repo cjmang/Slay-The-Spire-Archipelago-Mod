@@ -118,8 +118,15 @@ public class ShopManager {
             for(int i = 0; i < max && shopContext.hasMore(); i++) {
                 slots.remove(0);
                 Long locationId = shopContext.getNextLocation();
+                if(locationId == null)
+                {
+                    continue;
+                }
                 NetworkItem item = locationTracker.getScoutedItemOrDefault(locationId);
-                scoutMe.add(locationId);
+                if((item.flags & io.github.archipelagomw.flags.NetworkItem.ADVANCEMENT) > 0)
+                {
+                    scoutMe.add(locationId);
+                }
                 slots.add(createFunc.apply(locationId, item, i));
             }
         }
@@ -135,12 +142,15 @@ public class ShopManager {
                 {
                     continue;
                 }
-                scoutMe.add(locationId);
                 NetworkItem item = locationTracker.getScoutedItemOrDefault(locationId);
+                if((item.flags & io.github.archipelagomw.flags.NetworkItem.ADVANCEMENT) > 0)
+                {
+                    scoutMe.add(locationId);
+                }
                 slots.add(createFunc.apply(locationId, item, currentSize + i));
             }
         }
-        ctx.getClient().scoutLocations(scoutMe, CreateAsHint.BROADCAST_NEW);
+        ctx.getClient().createHints(scoutMe);
     }
 
     public void purchaseItem(APShopItem item)
@@ -225,30 +235,27 @@ public class ShopManager {
         float price = 0;
         if(config.costs == 0)
         {
-            card.price = 15;
-            return;
+            price = 15;
         }
-        switch(card.rarity)
-        {
-            default:
-            case COMMON:
-                price = 50;
-                break;
-            case UNCOMMON:
-                price = 75;
-                break;
-            case RARE:
-                price = 150;
-                break;
-        }
-        price *= mult;
-        if(config.costs == 1)
-        {
-            price /= 5;
-        }
-        else if(config.costs == 2)
-        {
-            price /= 2;
+        else {
+            switch (card.rarity) {
+                default:
+                case COMMON:
+                    price = 50;
+                    break;
+                case UNCOMMON:
+                    price = 75;
+                    break;
+                case RARE:
+                    price = 150;
+                    break;
+            }
+            price *= mult;
+            if (config.costs == 1) {
+                price /= 5;
+            } else if (config.costs == 2) {
+                price /= 2;
+            }
         }
         card.price = (int) price;
         for(AbstractRelic r : AbstractDungeon.player.relics)
