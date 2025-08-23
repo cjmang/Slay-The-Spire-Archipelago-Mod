@@ -13,6 +13,7 @@ import com.google.gson.reflect.TypeToken;
 import com.megacrit.cardcrawl.helpers.CardLibrary;
 import com.megacrit.cardcrawl.helpers.PotionHelper;
 import com.megacrit.cardcrawl.helpers.RelicLibrary;
+import com.megacrit.cardcrawl.relics.AbstractRelic;
 import com.megacrit.cardcrawl.rewards.RewardItem;
 import com.megacrit.cardcrawl.rewards.RewardSave;
 import org.apache.logging.log4j.LogManager;
@@ -35,6 +36,11 @@ public class APSaveable implements CustomSavableRaw {
 
         ArrayList<RewardSave> rewards = new ArrayList<>();
         for (RewardItem rewardItem : ArchipelagoRewardScreen.rewards) {
+            if(rewardItem.type == RewardItemPatch.RewardType.BOSS_RELIC)
+            {
+                rewards.add(new APRewardSave(RewardItemPatch.CustomFields.bossRelics.get(rewardItem), rewardItem.type.toString()));
+                continue;
+            }
             switch (rewardItem.type) {
                 case SAPPHIRE_KEY:
                 case EMERALD_KEY:
@@ -52,6 +58,7 @@ public class APSaveable implements CustomSavableRaw {
                     break;
                 case STOLEN_GOLD:
                     rewards.add(new RewardSave(rewardItem.type.toString(), null, rewardItem.goldAmt, 0));
+                    break;
             }
         }
 
@@ -102,6 +109,7 @@ public class APSaveable implements CustomSavableRaw {
                     rewards.add(new RewardItem(PotionHelper.getPotion(reward.id)));
                     break;
                 case "CARD":
+                {
                     RewardItem item = new RewardItem(0, true);
                     item.type = RewardItem.RewardType.CARD;
                     item.text = RewardItem.TEXT[2];
@@ -112,6 +120,19 @@ public class APSaveable implements CustomSavableRaw {
                     }
                     rewards.add(item);
                     break;
+                }
+                case "BOSS_RELIC":
+                {
+                    RewardItem item = new RewardItem(1);
+                    item.goldAmt = 0;
+                    item.type = RewardItemPatch.RewardType.BOSS_RELIC;
+                    ArrayList<AbstractRelic> bossRelics = new ArrayList<>();
+                    reward.relicIds.stream().map(r -> RelicLibrary.getRelic(r).makeCopy()).forEach(bossRelics::add);
+                    RewardItemPatch.CustomFields.bossRelics.set(reward, bossRelics);
+                    RewardItemPatch.CustomFields.apReward.set(item, true);
+                    rewards.add(item);
+                    break;
+                }
             }
         }
 

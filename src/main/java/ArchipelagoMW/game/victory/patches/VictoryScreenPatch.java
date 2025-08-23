@@ -28,11 +28,14 @@ public class VictoryScreenPatch {
 
         @SpirePostfixPatch
         public static void Postfix() {
+            APClient.logger.info("In death screen; checking if dead or...");
             // check if this is a post-act3 death which the "isVictory" flag tracks
             // if we should be finishing final act, this is not a victory regardless of act3 boss's death
-            if (!GameOverScreen.isVictory || APContext.getContext().getCharacterManager().getCurrentCharacterConfig().finalAct)
+            if (!GameOverScreen.isVictory || APContext.getContext().getCharacterManager().getCurrentCharacterConfig().finalAct) {
+                APClient.logger.info("Died");
                 return;
-
+            }
+            APClient.logger.info("Victory in death screen");
             victoryForCurrentCharacter();
         }
     }
@@ -42,10 +45,13 @@ public class VictoryScreenPatch {
 
         @SpirePostfixPatch
         public static void Postfix() {
+            APClient.logger.info("In victory screen; checking if dead or...");
             // victory screen called when this is a final act victory.
-            if (!GameOverScreen.isVictory)
+            if (!GameOverScreen.isVictory) {
+                APClient.logger.info("Died");
                 return;
-
+            }
+            APClient.logger.info("Victory in victory screen");
             victoryForCurrentCharacter();
         }
     }
