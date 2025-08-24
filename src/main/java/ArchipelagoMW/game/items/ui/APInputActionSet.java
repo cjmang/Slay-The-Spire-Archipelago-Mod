@@ -2,6 +2,9 @@ package ArchipelagoMW.game.items.ui;
 
 import com.badlogic.gdx.Input;
 import com.evacipated.cardcrawl.modthespire.lib.*;
+import com.megacrit.cardcrawl.helpers.controller.CInputAction;
+import com.megacrit.cardcrawl.helpers.controller.CInputActionSet;
+import com.megacrit.cardcrawl.helpers.controller.CInputHelper;
 import com.megacrit.cardcrawl.helpers.input.InputAction;
 import com.megacrit.cardcrawl.helpers.input.InputActionSet;
 import com.megacrit.cardcrawl.screens.options.InputSettingsScreen;
@@ -32,7 +35,7 @@ public class APInputActionSet {
     public static class refreshData {
         @SpireInsertPatch(locator = Locator.class)
         public static void Insert(InputSettingsScreen __instance, ArrayList<RemapInputElement> ___elements) {
-            ___elements.add(new RemapInputElement(__instance, "AP rewards", APInputActionSet.apmenu));
+            ___elements.add(new RemapInputElement(__instance, "AP rewards", APInputActionSet.apmenu, APInputActionSet.cAPMenu));
         }
 
         private static class Locator extends SpireInsertLocator {
@@ -44,8 +47,10 @@ public class APInputActionSet {
         }
     }
 
+    public static CInputAction cAPMenu;
     public static InputAction apmenu;
     private static final String APMENU_KEY = "AP_MENU";
+    private static final String C_APMENU_KEY = "C_AP_MENU";
 
     public static void load() {
         apmenu  = new InputAction(prefs.getInteger(APMENU_KEY, Input.Keys.Q));
@@ -53,5 +58,22 @@ public class APInputActionSet {
 
     public static void save() {
         prefs.putInteger(APMENU_KEY, apmenu.getKey());
+    }
+
+    @SpirePatch(clz=CInputActionSet.class, method="load")
+    public static class APCLoad
+    {
+        public static void Postfix() {
+            cAPMenu = new CInputAction(prefs.getInteger(C_APMENU_KEY, 9)); // 9 is R3, I think
+            CInputHelper.actions.add(cAPMenu);
+        }
+    }
+
+    @SpirePatch(clz=CInputActionSet.class, method="save")
+    public static class APCSave
+    {
+        public static void Prefix() {
+            prefs.putInteger(C_APMENU_KEY, cAPMenu.getKey());
+        }
     }
 }

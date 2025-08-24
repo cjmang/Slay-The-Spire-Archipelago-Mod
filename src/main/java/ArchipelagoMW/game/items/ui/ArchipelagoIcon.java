@@ -20,6 +20,7 @@ import com.megacrit.cardcrawl.dungeons.AbstractDungeon;
 import com.megacrit.cardcrawl.helpers.FontHelper;
 import com.megacrit.cardcrawl.helpers.MathHelper;
 import com.megacrit.cardcrawl.helpers.TipHelper;
+import com.megacrit.cardcrawl.helpers.controller.CInputHelper;
 import com.megacrit.cardcrawl.rooms.AbstractRoom;
 import com.megacrit.cardcrawl.ui.panels.TopPanel;
 import com.megacrit.cardcrawl.vfx.SpeechBubble;
@@ -61,6 +62,10 @@ public class ArchipelagoIcon extends TopPanelItem {
         );
 
         if (APInputActionSet.apmenu.isJustPressed() && isClickable()) {
+            onClick();
+        }
+        if(APInputActionSet.cAPMenu.isJustPressed() && isClickable())
+        {
             onClick();
         }
 

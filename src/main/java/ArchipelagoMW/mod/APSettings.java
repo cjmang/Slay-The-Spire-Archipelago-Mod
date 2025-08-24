@@ -1,10 +1,7 @@
 package ArchipelagoMW.mod;
 
 import ArchipelagoMW.game.ui.APTextures;
-import basemod.BaseMod;
-import basemod.ModLabel;
-import basemod.ModPanel;
-import basemod.ModToggleButton;
+import basemod.*;
 import com.evacipated.cardcrawl.modthespire.lib.SpireConfig;
 import com.megacrit.cardcrawl.core.Settings;
 import com.megacrit.cardcrawl.helpers.FontHelper;
@@ -23,6 +20,7 @@ public class APSettings {
     private static final String CONNECT_SCREEN_ADDRESS_KEY = "ConnectAddress";
     private static final String CONNECT_SCREEN_SLOT_KEY = "ConnectSlot";
     private static final String RECEIVE_ITEM_SOUND = "makeReceiveNoise";
+    private static final String CONTROLLER_AP_OPEN = "controllerAPOpen";
 
 
     public enum FilterType {
@@ -62,42 +60,43 @@ public class APSettings {
         // Create the Mod Menu
         ModPanel settingsPanel = new ModPanel();
 
-        float configYpos = 900 * Settings.scale;
-        float configXPos = 450 * Settings.scale;
-        float configStep = 40 * Settings.scale;
+        float configYpos = 700f;
+        float configXPos = 450f;
+        float configStep = 40f;
 
         ModLabel sideBarFilterLabel = new ModLabel("Side Bar Filter:", configXPos, configYpos, Settings.CREAM_COLOR, FontHelper.charDescFont, settingsPanel, (label) -> {
         });
         settingsPanel.addUIElement(sideBarFilterLabel);
 
-        teamToggle = new ModToggleButton(configXPos + 225f * Settings.scale, configYpos - 5f * Settings.scale, APSettings.playerFilter == FilterType.TEAM, true, settingsPanel, APSettings::toggleTeam);
-        ModLabel teamLabel = new ModLabel("Team", configXPos + 275f * Settings.scale, configYpos, settingsPanel, (label) -> {
+        teamToggle = new ModToggleButton(configXPos + 225f, configYpos - 5f, APSettings.playerFilter == FilterType.TEAM, true, settingsPanel, APSettings::toggleTeam);
+        ModLabel teamLabel = new ModLabel("Team", configXPos + 275f, configYpos, settingsPanel, (label) -> {
         });
         settingsPanel.addUIElement(teamToggle);
         settingsPanel.addUIElement(teamLabel);
         configYpos -= configStep;
 
-        recentToggle = new ModToggleButton(configXPos + 225f * Settings.scale, configYpos - 5f * Settings.scale, APSettings.playerFilter == FilterType.RECENT, true, settingsPanel, APSettings::toggleRecent);
-        ModLabel recentLabel = new ModLabel("Recent", configXPos + 275f * Settings.scale, configYpos, settingsPanel, (label) -> {
+        recentToggle = new ModToggleButton(configXPos + 225f, configYpos - 5f, APSettings.playerFilter == FilterType.RECENT, true, settingsPanel, APSettings::toggleRecent);
+        ModLabel recentLabel = new ModLabel("Recent", configXPos + 275f, configYpos, settingsPanel, (label) -> {
         });
         settingsPanel.addUIElement(recentToggle);
         settingsPanel.addUIElement(recentLabel);
         configYpos -= configStep;
 
 
-        allToggle = new ModToggleButton(configXPos + 225f * Settings.scale, configYpos - 5f * Settings.scale, APSettings.playerFilter == FilterType.ALL, true, settingsPanel, APSettings::toggleAll);
-        ModLabel allLabel = new ModLabel("All", configXPos + 275f * Settings.scale, configYpos, settingsPanel, (label) -> {
+        allToggle = new ModToggleButton(configXPos + 225f, configYpos - 5f, APSettings.playerFilter == FilterType.ALL, true, settingsPanel, APSettings::toggleAll);
+        ModLabel allLabel = new ModLabel("All", configXPos + 275f, configYpos, settingsPanel, (label) -> {
         });
         settingsPanel.addUIElement(allToggle);
         settingsPanel.addUIElement(allLabel);
         configYpos -= configStep;
 
-        soundToggle = new ModToggleButton(configXPos + 225f * Settings.scale, configYpos - 5f * Settings.scale, APSettings.config.getBool(RECEIVE_ITEM_SOUND), true, settingsPanel, APSettings::toggleSound);
-        ModLabel soundLabel = new ModLabel("Enable Receive Sound", configXPos + 275f * Settings.scale, configYpos, settingsPanel, (label) -> {
+        soundToggle = new ModToggleButton(configXPos, configYpos - 5f, APSettings.config.getBool(RECEIVE_ITEM_SOUND), true, settingsPanel, APSettings::toggleSound);
+        ModLabel soundLabel = new ModLabel("Enable Receive Sound", configXPos + 50f, configYpos, settingsPanel, (label) -> {
         });
         settingsPanel.addUIElement(soundToggle);
         settingsPanel.addUIElement(soundLabel);
         configYpos -= configStep*2;
+
 
         ModLabel validLabel = new ModLabel("Valid Characters:", configXPos, configYpos, Settings.CREAM_COLOR, FontHelper.charDescFont, settingsPanel, (label) -> {
         });
