@@ -1,5 +1,6 @@
 package ArchipelagoMW.game.items.ui;
 
+import ArchipelagoMW.client.APClient;
 import ArchipelagoMW.client.APContext;
 import ArchipelagoMW.game.items.APItemID;
 import ArchipelagoMW.game.items.MiscItemTracker;
@@ -150,18 +151,21 @@ public class ArchipelagoRewardScreen  extends CustomScreen {
         return Enum.ARCHIPELAGO_REWARD_SCREEN;
     }
 
+    @Override
     public void reopen() {
+        APClient.logger.info("Reward Screen reopen called: Previous Screen: {}, Internal Previous: {}, CurrentScreen: {}", AbstractDungeon.previousScreen, previousScreen, AbstractDungeon.screen);
         rewardsQueued = 0;
         AbstractDungeon.isScreenUp = true;
         AbstractDungeon.dynamicBanner.appear(TEXT[1]);
         AbstractDungeon.overlayMenu.hideCombatPanels();
         AbstractDungeon.overlayMenu.showBlackScreen();
-
+        APClient.logger.info("Reward Screen reopen ended: Previous Screen: {}, Internal Previous: {}, CurrentScreen: {}", AbstractDungeon.previousScreen, previousScreen, AbstractDungeon.screen);
     }
 
     @Override
     public void close() {
         APScreen = false;
+        APClient.logger.info("Reward Screen close called: Previous Screen: {}, Internal Previous: {}, CurrentScreen: {}", AbstractDungeon.previousScreen, previousScreen, AbstractDungeon.screen);
         AbstractDungeon.dynamicBanner.hide();
         AbstractDungeon.isScreenUp = false;
         AbstractDungeon.overlayMenu.hideBlackScreen();
@@ -197,11 +201,18 @@ public class ArchipelagoRewardScreen  extends CustomScreen {
         } else {
             AbstractDungeon.previousScreen = null;
         }
+        APClient.logger.info("Reward Screen close ended: Previous Screen: {}, Internal Previous: {}, CurrentScreen: {}", AbstractDungeon.previousScreen, previousScreen, AbstractDungeon.screen);
     }
 
 
     @SuppressWarnings("unused")
     public void open() {
+//        if(APScreen && AbstractDungeon.previousScreen == Enum.ARCHIPELAGO_REWARD_SCREEN)
+//        {
+//            AbstractDungeon.closeCurrentScreen();
+//            return;
+//        }
+        APClient.logger.info("Reward Screen open called: Previous Screen: {}, Internal Previous: {}, CurrentScreen: {}", AbstractDungeon.previousScreen, previousScreen, AbstractDungeon.screen);
         APScreen = true;
         rewardsQueued = 0;
         AbstractDungeon.player.releaseCard();
@@ -220,6 +231,10 @@ public class ArchipelagoRewardScreen  extends CustomScreen {
         AbstractDungeon.overlayMenu.hideCombatPanels();
 
         previousScreen = AbstractDungeon.screen;
+        if(previousScreen == Enum.ARCHIPELAGO_REWARD_SCREEN)
+        {
+            previousScreen = null;
+        }
         AbstractDungeon.screen = Enum.ARCHIPELAGO_REWARD_SCREEN;
         tip = CardCrawlGame.tips.getTip();
 
@@ -241,6 +256,7 @@ public class ArchipelagoRewardScreen  extends CustomScreen {
             apGold = 0;
         }
         condenseGoldRewards();
+        APClient.logger.info("Reward Screen open ended: Previous Screen: {}, InternalPrevious: {}, CurrentScreen: {}", AbstractDungeon.previousScreen, previousScreen, AbstractDungeon.screen);
     }
 
     public void update() {
@@ -655,10 +671,12 @@ public class ArchipelagoRewardScreen  extends CustomScreen {
         AbstractDungeon.previousScreen = curScreen();
     }
 
+    @Override
     public boolean allowOpenDeck() {
         return true;
     }
 
+    @Override
     public boolean allowOpenMap() {
         return true;
     }

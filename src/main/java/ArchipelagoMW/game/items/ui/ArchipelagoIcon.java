@@ -1,5 +1,6 @@
 package ArchipelagoMW.game.items.ui;
 
+import ArchipelagoMW.client.APClient;
 import ArchipelagoMW.client.APContext;
 import ArchipelagoMW.client.config.SlotData;
 import ArchipelagoMW.game.ShopManager;
@@ -49,6 +50,8 @@ public class ArchipelagoIcon extends TopPanelItem {
         setClickable(((AbstractDungeon.screen != AbstractDungeon.CurrentScreen.COMBAT_REWARD
                 && AbstractDungeon.previousScreen != AbstractDungeon.CurrentScreen.COMBAT_REWARD)
                 || AbstractDungeon.getCurrRoom().phase.equals(AbstractRoom.RoomPhase.COMPLETE))
+                && AbstractDungeon.screen != AbstractDungeon.CurrentScreen.BOSS_REWARD
+                && AbstractDungeon.previousScreen != AbstractDungeon.CurrentScreen.BOSS_REWARD
                 && AbstractDungeon.screen != AbstractDungeon.CurrentScreen.CARD_REWARD
                 && AbstractDungeon.previousScreen != AbstractDungeon.CurrentScreen.CARD_REWARD
                 && AbstractDungeon.screen != AbstractDungeon.CurrentScreen.CHOOSE_ONE
@@ -137,21 +140,21 @@ public class ArchipelagoIcon extends TopPanelItem {
         //disable button if we are dead, we should not be able to reconnect.
         if(AbstractDungeon.player.isDead)
             return;
-
         // if we are disconnected, and we click the ap button try new connection.
         if (!ctx.getClient().isConnected() && !AbstractDungeon.player.isDead) {
             ctx.getClient().reconnect();
         } else if (AbstractDungeon.screen == ArchipelagoRewardScreen.Enum.ARCHIPELAGO_REWARD_SCREEN) {
             AbstractDungeon.closeCurrentScreen();
-        } else if(AbstractDungeon.getCurrRoom() != null && AbstractDungeon.getCurrRoom().phase != AbstractRoom.RoomPhase.COMPLETE) {
-            // Don't allow opening the screen except when rooms are over, to avoid dumb bugs
-            AbstractPlayer player = AbstractDungeon.player;
-            if(player != null)
-            {
-                AbstractDungeon.effectList.add(new SpeechBubble(player.dialogX, player.dialogY, 5.0f, "I must complete this room first.",true));
-            }
-            return;
+//        } else if(AbstractDungeon.getCurrRoom() != null && AbstractDungeon.getCurrRoom().phase != AbstractRoom.RoomPhase.COMPLETE) {
+//            // Don't allow opening the screen except when rooms are over, to avoid dumb bugs
+//            AbstractPlayer player = AbstractDungeon.player;
+//            if(player != null)
+//            {
+//                AbstractDungeon.effectList.add(new SpeechBubble(player.dialogX, player.dialogY, 5.0f, "I must complete this room first.",true));
+//            }
+//            return;
         } else {
+            APClient.logger.info("APIcon Clicked: Previous Screen: {}, CurrentScreen: {}", AbstractDungeon.previousScreen, AbstractDungeon.screen);
             BaseMod.openCustomScreen(ArchipelagoRewardScreen.Enum.ARCHIPELAGO_REWARD_SCREEN);
         }
     }
