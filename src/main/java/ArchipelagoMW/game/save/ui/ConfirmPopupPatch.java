@@ -62,8 +62,6 @@ public class ConfirmPopupPatch {
                     client.setDeathLinkEnabled(true);
                 }
 
-                DeathLinkHelper.update.sendDeath = false;
-
                 Settings.isFinalActAvailable = config.finalAct;
                 SeedHelper.setSeed(config.seed);
                 if(Settings.seed == null)

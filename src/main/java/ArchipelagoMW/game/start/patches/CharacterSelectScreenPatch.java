@@ -209,7 +209,6 @@ public class CharacterSelectScreenPatch {
                 APContext.getContext().getClient().setDeathLinkEnabled(true);
             }
 
-            DeathLinkHelper.update.sendDeath = false;
             APContext.getContext().getLocationTracker().sendPressStart(config);
 
         }

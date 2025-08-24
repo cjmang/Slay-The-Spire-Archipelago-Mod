@@ -1,6 +1,7 @@
 package ArchipelagoMW.client;
 
 import ArchipelagoMW.client.config.SlotData;
+import ArchipelagoMW.client.util.DeathLinkHelper;
 import ArchipelagoMW.game.CharacterManager;
 import ArchipelagoMW.game.ShopManager;
 import ArchipelagoMW.game.items.MiscItemTracker;
@@ -24,6 +25,7 @@ public class APContext {
     private LocationTracker locationTracker;
     private ShopManager shopManager;
     private SaveManager saveManager;
+    private DeathLinkHelper deathLink;
 
     public SaveManager getSaveManager() {
         return saveManager;
@@ -44,6 +46,7 @@ public class APContext {
         itemTracker = new MiscItemTracker(characterManager);
         shopManager = new ShopManager(this);
         saveManager = new SaveManager(getContext());
+        deathLink = new DeathLinkHelper(0);
     }
 
     public ItemManager getItemManager()
@@ -70,6 +73,17 @@ public class APContext {
     public LocationManager getLocationManager()
     {
         return client.getLocationManager();
+    }
+
+    public DeathLinkHelper getDeathLinkHelper()
+    {
+        return deathLink;
+    }
+
+    public void setDeathLinkHelper(DeathLinkHelper deathLink)
+    {
+        client.getEventManager().unRegisterListener(this.deathLink);
+        client.getEventManager().registerListener(this.deathLink = deathLink);
     }
 
     public int getTeam()

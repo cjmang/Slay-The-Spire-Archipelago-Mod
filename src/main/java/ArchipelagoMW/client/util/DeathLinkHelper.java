@@ -2,10 +2,14 @@ package ArchipelagoMW.client.util;
 
 import ArchipelagoMW.client.APClient;
 import ArchipelagoMW.client.APContext;
+import ArchipelagoMW.game.TalkQueue;
 import ArchipelagoMW.game.teams.TeamManager;
 import basemod.ReflectionHacks;
 import com.evacipated.cardcrawl.modthespire.Loader;
 import com.evacipated.cardcrawl.modthespire.lib.*;
+import com.megacrit.cardcrawl.actions.AbstractGameAction;
+import com.megacrit.cardcrawl.characters.AbstractPlayer;
+import com.megacrit.cardcrawl.core.CardCrawlGame;
 import com.megacrit.cardcrawl.dungeons.AbstractDungeon;
 import com.megacrit.cardcrawl.monsters.AbstractMonster;
 import com.megacrit.cardcrawl.monsters.MonsterGroup;
@@ -13,6 +17,8 @@ import com.megacrit.cardcrawl.rooms.AbstractRoom;
 import com.megacrit.cardcrawl.screens.DeathScreen;
 import com.megacrit.cardcrawl.screens.GameOverScreen;
 import com.megacrit.cardcrawl.screens.options.ConfirmPopup;
+import com.megacrit.cardcrawl.vfx.SpeechBubble;
+import com.megacrit.cardcrawl.vfx.combat.FlashAtkImgEffect;
 import io.github.archipelagomw.events.ArchipelagoEventListener;
 import io.github.archipelagomw.events.DeathLinkEvent;
 import gremlin.actions.GremlinSwapAction;
@@ -23,45 +29,72 @@ import javassist.CtBehavior;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 
 public class DeathLinkHelper {
 
-    public static float damagePercent = 0;
+    public float damagePercent = 0f;
+    public AtomicBoolean sendDeath = new AtomicBoolean(true);
 
     public DeathLinkHelper(int deathLink) {
         damagePercent = deathLink / 100f;
+        if(damagePercent <= 0 )
+        {
+            sendDeath.set(false);
+        }
     }
 
     @ArchipelagoEventListener
     public void onDeathLink(DeathLinkEvent event) {
+        APClient.logger.info("Deathlink received: sauce: {}, time: {}", event.source, event.time);
         //ohh hey! look its a death link event.. *hopefully*
         int damage = (int) (AbstractDungeon.player.maxHealth * damagePercent);
-        update.pendingDamage += damage;
-        update.cause = event.cause;
+        update.cause.set(event.cause);
+        update.source.set(event.source);
+        update.pendingDamage.addAndGet(damage);
     }
 
     @SpirePatch(clz = AbstractDungeon.class, method = "update")
     public static class update {
-        public static int pendingDamage = 0;
-        public static String cause;
-        public static boolean sendDeath = true;
+        public static final AtomicInteger pendingDamage = new AtomicInteger(0);
+        public static final AtomicReference<String> cause = new AtomicReference<>();
+        public static final AtomicReference<String> source = new AtomicReference<>();
 
         public static void Prefix() {
-            if (pendingDamage <= 0)
+            int incomingDmg = pendingDamage.getAndSet(0);
+            if (incomingDmg <= 0)
                 return;
+            DeathLinkHelper deathLink = APContext.getContext().getDeathLinkHelper();
+            APClient.logger.info("Incoming damage: {}", incomingDmg);
+            AbstractPlayer player = AbstractDungeon.player;
+            String causeStr = cause.get();
+            String sourceStr = source.get();
+            StringBuilder sb = new StringBuilder("#p");
+            sb.append(sourceStr).append(" Died!");
+            if(causeStr != null && !causeStr.isEmpty())
+            {
+                sb.append(" NL ");
+                TalkQueue.AbstractDungeonPatch.perWord(sb, causeStr, "#r", "@");
+            }
+            SpeechBubble bubble = new SpeechBubble(player.dialogX - 500F, player.dialogY, 5.0f, sb.toString(), true);
+            ReflectionHacks.setPrivate(bubble, SpeechBubble.class, "facingRight", true);
+            AbstractDungeon.effectList.add(bubble);
+            AbstractDungeon.effectList.add(new FlashAtkImgEffect(player.hb.cX, player.hb.cY, AbstractGameAction.AttackEffect.BLUNT_HEAVY, false));
 
             if (Loader.isModLoaded("downfall") && AbstractDungeon.player instanceof GremlinCharacter) {
                 GremlinCharacter p = (GremlinCharacter) AbstractDungeon.player;
 
-                p.currentHealth -= pendingDamage;
+                p.currentHealth -= incomingDmg;
                 p.healthBarUpdatedEvent();
-                p.damageGremlins(pendingDamage);
+                p.damageGremlins(incomingDmg);
 
                 if (AbstractDungeon.getCurrRoom().phase == AbstractRoom.RoomPhase.COMBAT) {
                     for (int i = 0; i < p.maxOrbs; ++i) {
                         if (p.orbs.get(i) instanceof GremlinStandby) {
                             GremlinStandby gs = (GremlinStandby) p.orbs.get(i);
-                            gs.hp -= pendingDamage;
+                            gs.hp -= incomingDmg;
                         }
                     }
 
@@ -78,7 +111,6 @@ public class DeathLinkHelper {
                         }
                         if (anotherGrem) {
                             (new GremlinSwapAction()).update();
-                            pendingDamage = 0;
                             return;
                         }
                     }
@@ -97,26 +129,25 @@ public class DeathLinkHelper {
                     if (newGremlin != null) {
                         p.currentHealth = p.mobState.gremlinHP.get(newIndex);
                         p.currentGremlin = newGremlin;
-                        pendingDamage = 0;
                         return;
                     }
                 }
             } else {
-                AbstractDungeon.player.currentHealth -= pendingDamage;
+                AbstractDungeon.player.currentHealth -= incomingDmg;
                 AbstractDungeon.player.healthBarUpdatedEvent();
             }
 
             if (AbstractDungeon.player.currentHealth <= 0 && !AbstractDungeon.player.isDead) {
+                APClient.logger.info("Player died from deathlink.");
                 AbstractDungeon.player.currentHealth = 0;
                 AbstractDungeon.player.isDead = true;
-                sendDeath = false;
+                deathLink.sendDeath.set(false);
                 AbstractDungeon.deathScreen = new DeathScreen(null);
-                ReflectionHacks.setPrivate(AbstractDungeon.deathScreen, DeathScreen.class, "deathText", cause);
+                ReflectionHacks.setPrivate(AbstractDungeon.deathScreen, DeathScreen.class, "deathText", causeStr);
                 AbstractDungeon.screen = AbstractDungeon.CurrentScreen.DEATH;
             } else {
-                sendDeath = true;
+                deathLink.sendDeath.set(true);
             }
-            pendingDamage = 0;
         }
     }
 
@@ -124,7 +155,7 @@ public class DeathLinkHelper {
     public static class abandon {
         @SpireInsertPatch(locator = Locator.class)
         public static void Insert() {
-            update.sendDeath = false;
+            APContext.getContext().getDeathLinkHelper().sendDeath.set(false);
         }
 
         private static class Locator extends SpireInsertLocator {
@@ -141,14 +172,17 @@ public class DeathLinkHelper {
     public static class death {
         public static void Postfix(DeathScreen __instance) {
             TeamManager.leaveTeam();
-            if (GameOverScreen.isVictory || !update.sendDeath || damagePercent <= 0) {
+            DeathLinkHelper deathLinkHelper = APContext.getContext().getDeathLinkHelper();;
+            if (GameOverScreen.isVictory || !deathLinkHelper.sendDeath.get() || deathLinkHelper.damagePercent <= 0) {
                 //APClient.apClient.disconnect();
                 return;
             }
+            APClient.logger.info("Player is on deathscreen");
             APClient client = APContext.getContext().getClient();
 
             MonsterGroup monsters = ReflectionHacks.getPrivate(__instance, DeathScreen.class, "monsters");
             if (monsters == null) {
+                APClient.logger.info("Sending deathlink");
                 client.sendDeathlink(client.getAlias(), null);
                 //APClient.apClient.disconnect();
                 return;
@@ -176,10 +210,12 @@ public class DeathLinkHelper {
                         sb.append(" ");
                     }
                 }
+                APClient.logger.info("Sending deathlink");
                 client.sendDeathlink(client.getAlias(), sb.toString());
                 //APClient.apClient.disconnect();
                 return;
             }
+            APClient.logger.info("Sending deathlink");
             client.sendDeathlink(client.getAlias(), null);
             //APClient.apClient.disconnect();
         }

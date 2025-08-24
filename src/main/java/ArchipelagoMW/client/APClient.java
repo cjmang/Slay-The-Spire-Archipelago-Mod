@@ -1,6 +1,7 @@
 package ArchipelagoMW.client;
 
 import ArchipelagoMW.client.config.CharacterConfig;
+import ArchipelagoMW.client.util.DeathLinkHelper;
 import ArchipelagoMW.game.CharacterManager;
 import ArchipelagoMW.client.config.SlotData;
 import ArchipelagoMW.client.apEvents.ConnectionResult;

@@ -54,6 +54,7 @@ public class ConnectionResult {
             return;
 
         SlotData slotData = event.getSlotData(SlotData.class);
+        APClient.logger.info("deathlink: {}", slotData.deathLink);
         if(slotData.modVersion != SlotData.EXPECTED_MOD_VERSION)
         {
             ConnectionPanel.connectionResultText = "Mod is not compatible with generated world; generated world version: " +
@@ -64,6 +65,7 @@ public class ConnectionResult {
         ctx.getClient().setSlotData(slotData);
         Archipelago.logger.info(slotData.characters.toString());
         ctx.getCharacterManager().initialize(slotData.characters);
+        ctx.setDeathLinkHelper(new DeathLinkHelper(slotData.deathLink));
         Archipelago.logger.info("slot data parsed");
         ctx.getSaveManager().loadSaves();
         if(slotData.chattyMC != 0)
@@ -97,8 +99,6 @@ public class ConnectionResult {
             if (client.getSlotData().deathLink > 0) {
                 client.setDeathLinkEnabled(true);
             }
-
-            DeathLinkHelper.update.sendDeath = false;
 
             Settings.isFinalActAvailable = config.finalAct;
             SeedHelper.setSeed(config.seed);

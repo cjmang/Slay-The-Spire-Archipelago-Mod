@@ -132,7 +132,7 @@ public class TalkQueue {
             }
         }
 
-        private static void perWord(StringBuilder sb, String text, String prefix, String wrapper)
+        public static void perWord(StringBuilder sb, String text, String prefix, String wrapper)
         {
             for(String word : text.split("\\s+"))
             {
