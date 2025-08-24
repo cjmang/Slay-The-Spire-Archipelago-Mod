@@ -123,12 +123,13 @@ public class APSaveable implements CustomSavableRaw {
                 }
                 case "BOSS_RELIC":
                 {
-                    RewardItem item = new RewardItem(1);
+                    RewardItem item = new RewardItem(0, true);
                     item.goldAmt = 0;
                     item.type = RewardItemPatch.RewardType.BOSS_RELIC;
+                    item.text = "Boss Relic";
                     ArrayList<AbstractRelic> bossRelics = new ArrayList<>();
                     reward.relicIds.stream().map(r -> RelicLibrary.getRelic(r).makeCopy()).forEach(bossRelics::add);
-                    RewardItemPatch.CustomFields.bossRelics.set(reward, bossRelics);
+                    RewardItemPatch.CustomFields.bossRelics.set(item, bossRelics);
                     RewardItemPatch.CustomFields.apReward.set(item, true);
                     rewards.add(item);
                     break;
