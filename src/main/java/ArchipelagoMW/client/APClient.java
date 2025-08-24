@@ -12,6 +12,7 @@ import ArchipelagoMW.game.teams.TeamManager;
 import ArchipelagoMW.game.items.ui.ArchipelagoRewardScreen;
 import ArchipelagoMW.game.connect.ui.connection.ConnectionPanel;
 import ArchipelagoMW.mod.APSettings;
+import ArchipelagoMW.mod.HintCommand;
 import com.megacrit.cardcrawl.core.CardCrawlGame;
 import io.github.archipelagomw.Client;
 import io.github.archipelagomw.events.*;
@@ -64,6 +65,7 @@ public class APClient extends Client {
         apClient.getEventManager().registerListener(new PlayerManager());
         apClient.getEventManager().registerListener(new TeamManager());
         apClient.getEventManager().registerListener(apClient.recieveItemHandler);
+        apClient.getEventManager().registerListener(HintCommand.class);
 //        apClient.getEventManager().registerListener(new OnJSONMessage());
         //apClient.getEventManager().registerListener(new TestButton());
 

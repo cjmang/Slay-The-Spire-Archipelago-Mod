@@ -9,6 +9,7 @@ import ArchipelagoMW.game.teams.ui.hud.SideBar;
 import ArchipelagoMW.game.items.ui.ArchipelagoIcon;
 import ArchipelagoMW.game.save.APRewardSave;
 import basemod.BaseMod;
+import basemod.devcommands.ConsoleCommand;
 import basemod.interfaces.EditStringsSubscriber;
 import basemod.interfaces.PostInitializeSubscriber;
 import com.evacipated.cardcrawl.modthespire.lib.SpireInitializer;
@@ -89,6 +90,7 @@ public class Archipelago implements
         BaseMod.addSaveField("ap_rewards", new APSaveable());
         sideBar = new SideBar();
         BaseMod.removeRelic(RelicLibrary.getRelic("Calling Bell"));
+        ConsoleCommand.addCommand("apcmd", HintCommand.class);
         logger.info("Done loading badge Image and mod options");
     }
 
