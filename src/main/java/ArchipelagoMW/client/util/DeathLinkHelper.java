@@ -78,10 +78,8 @@ public class DeathLinkHelper {
                 sb.append(" NL ");
                 TalkQueue.AbstractDungeonPatch.perWord(sb, causeStr, "#r", "@");
             }
-            SpeechBubble bubble = new SpeechBubble(player.dialogX - 500F, player.dialogY, 5.0f, sb.toString(), true);
-            ReflectionHacks.setPrivate(bubble, SpeechBubble.class, "facingRight", true);
-            AbstractDungeon.effectList.add(bubble);
-            AbstractDungeon.effectList.add(new FlashAtkImgEffect(player.hb.cX, player.hb.cY, AbstractGameAction.AttackEffect.BLUNT_HEAVY, false));
+            AbstractDungeon.topLevelEffectsQueue.add(new FlashAtkImgEffect(player.hb.cX, player.hb.cY, AbstractGameAction.AttackEffect.BLUNT_HEAVY, false));
+            TalkQueue.topLevelTalk(player.dialogX - 500F, player.dialogY, 5.0f, sb.toString(), true, true);
 
             if (Loader.isModLoaded("downfall") && AbstractDungeon.player instanceof GremlinCharacter) {
                 GremlinCharacter p = (GremlinCharacter) AbstractDungeon.player;

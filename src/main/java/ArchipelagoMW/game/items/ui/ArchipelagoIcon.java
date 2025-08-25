@@ -4,6 +4,7 @@ import ArchipelagoMW.client.APClient;
 import ArchipelagoMW.client.APContext;
 import ArchipelagoMW.client.config.SlotData;
 import ArchipelagoMW.game.ShopManager;
+import ArchipelagoMW.game.TalkQueue;
 import ArchipelagoMW.game.ui.APTextures;
 import ArchipelagoMW.mod.Archipelago;
 import ArchipelagoMW.game.locations.LocationTracker;
@@ -142,6 +143,8 @@ public class ArchipelagoIcon extends TopPanelItem {
             return;
         // if we are disconnected, and we click the ap button try new connection.
         if (!ctx.getClient().isConnected() && !AbstractDungeon.player.isDead) {
+            AbstractPlayer player = AbstractDungeon.player;
+            TalkQueue.topLevelTalk(player.hb.cX, player.hb.cY, 5.0f, "Attempting to reconnect...", true, false);
             ctx.getClient().reconnect();
         } else if (AbstractDungeon.screen == ArchipelagoRewardScreen.Enum.ARCHIPELAGO_REWARD_SCREEN) {
             AbstractDungeon.closeCurrentScreen();

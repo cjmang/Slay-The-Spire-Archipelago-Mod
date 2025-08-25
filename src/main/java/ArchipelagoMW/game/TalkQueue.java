@@ -1,6 +1,7 @@
 package ArchipelagoMW.game;
 
 import ArchipelagoMW.client.APClient;
+import ArchipelagoMW.game.ui.SpeechBubblePatch;
 import basemod.ReflectionHacks;
 import com.badlogic.gdx.graphics.Color;
 import com.evacipated.cardcrawl.modthespire.lib.*;
@@ -10,6 +11,7 @@ import com.megacrit.cardcrawl.dungeons.AbstractDungeon;
 import com.megacrit.cardcrawl.ui.DialogWord;
 import com.megacrit.cardcrawl.ui.SpeechWord;
 import com.megacrit.cardcrawl.vfx.SpeechBubble;
+import com.megacrit.cardcrawl.vfx.SpeechTextEffect;
 import io.github.archipelagomw.Print.APPrintColor;
 import io.github.archipelagomw.Print.APPrintPart;
 import io.github.archipelagomw.events.PrintJSONEvent;
@@ -21,7 +23,18 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 public class TalkQueue {
-    private static final float SPEECH_DURATION = 5.0f;
+    private static final float SPEECH_DURATION = 7.0f;
+
+    public static void topLevelTalk(float x, float y, float duration, String msg, boolean isPlayer, boolean faceRight)
+    {
+        SpeechBubblePatch.skipLowLevelText = true;
+        SpeechBubble bubble = new SpeechBubble(x, y, duration, msg, isPlayer);
+        if(faceRight) {
+            ReflectionHacks.setPrivate(bubble, SpeechBubble.class, "facingRight", true);
+        }
+        AbstractDungeon.topLevelEffects.add(bubble);
+        SpeechBubblePatch.skipLowLevelText = false;
+    }
 
     @SpirePatch(clz= SpeechWord.class, method="getColor")
     public static class AddPurplePatch
@@ -190,12 +203,11 @@ public class TalkQueue {
 
             void send(AbstractPlayer player, PrintJSONEvent event)
             {
-                SpeechBubble bubble = new SpeechBubble(player.dialogX - 300F, player.dialogY + yOffset, SPEECH_DURATION, transformMessage(event), true);
-                ReflectionHacks.setPrivate(bubble, SpeechBubble.class, "facingRight", true);
-                AbstractDungeon.effectList.add(bubble);
+                topLevelTalk(player.dialogX - 300F, player.dialogY + yOffset, SPEECH_DURATION, transformMessage(event), true, true);
                 lastSent = System.nanoTime();
             }
         }
+
 
         public static String transformColor(APPrintColor color)
         {
