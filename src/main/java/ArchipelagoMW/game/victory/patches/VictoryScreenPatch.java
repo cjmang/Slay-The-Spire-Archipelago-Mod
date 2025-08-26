@@ -4,6 +4,7 @@ import ArchipelagoMW.client.APClient;
 import ArchipelagoMW.client.APContext;
 import ArchipelagoMW.client.config.CharacterConfig;
 import ArchipelagoMW.game.CharacterManager;
+import basemod.ReflectionHacks;
 import com.evacipated.cardcrawl.modthespire.lib.*;
 import com.megacrit.cardcrawl.characters.AbstractPlayer;
 import com.megacrit.cardcrawl.helpers.controller.CInputActionSet;
@@ -52,6 +53,32 @@ public class VictoryScreenPatch {
                 return;
             }
             APClient.logger.info("Victory in victory screen");
+            victoryForCurrentCharacter();
+        }
+    }
+
+    @SpirePatch(cls="duelistmod.ui.gameOver.DuelistVictoryScreen", method=SpirePatch.CONSTRUCTOR, requiredModId="duelistmod" )
+    public static class ICantBelieveImDoingThis {
+        public static void Postfix() {
+            APClient.logger.info("In a stupid victory screen; checking if dead or...");
+            if (!GameOverScreen.isVictory) {
+                APClient.logger.info("Died");
+                return;
+            }
+            APClient.logger.info("Victory in a stupid victory screen");
+            victoryForCurrentCharacter();
+        }
+    }
+
+    @SpirePatch(cls="duelistmod.ui.gameOver.DuelistDeathScreen", method=SpirePatch.CONSTRUCTOR, requiredModId="duelistmod" )
+    public static class ICantBelieveImDoingThisAgain {
+        public static void Postfix() {
+            APClient.logger.info("In a stupid death screen; checking if dead or...");
+            if (!GameOverScreen.isVictory || APContext.getContext().getCharacterManager().getCurrentCharacterConfig().finalAct) {
+                APClient.logger.info("Died");
+                return;
+            }
+            APClient.logger.info("Victory in a stupid death screen");
             victoryForCurrentCharacter();
         }
     }
