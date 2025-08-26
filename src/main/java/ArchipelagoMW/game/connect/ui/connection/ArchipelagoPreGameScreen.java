@@ -2,6 +2,7 @@ package ArchipelagoMW.game.connect.ui.connection;
 
 import ArchipelagoMW.client.APClient;
 import ArchipelagoMW.client.APContext;
+import ArchipelagoMW.game.items.ui.ArchipelagoRewardScreen;
 import ArchipelagoMW.mod.APSettings;
 import ArchipelagoMW.mod.Archipelago;
 import ArchipelagoMW.game.start.patches.CharacterSelectScreenPatch;
@@ -106,6 +107,7 @@ public class ArchipelagoPreGameScreen {
                         APSettings.saveSettings();
                         APClient client = APContext.getContext().getClient();
                         if(!Archipelago.setConnectionInfo(address, slot, password) && client != null && client.isConnected()) {
+                            ArchipelagoRewardScreen.rewardsQueued = 0;
                             APContext.getContext().getSaveManager().loadSaves();
                             screen = APScreen.charSelect;
                         }

@@ -1,5 +1,9 @@
 package ArchipelagoMW.mod;
 
+import ArchipelagoMW.client.APContext;
+import ArchipelagoMW.game.CharacterManager;
+import ArchipelagoMW.game.items.APItemID;
+import ArchipelagoMW.game.items.MiscItemTracker;
 import ArchipelagoMW.game.save.APSaveable;
 import ArchipelagoMW.game.teams.TeamManager;
 import ArchipelagoMW.game.ui.APTextures;
@@ -12,15 +16,18 @@ import basemod.BaseMod;
 import basemod.devcommands.ConsoleCommand;
 import basemod.interfaces.EditStringsSubscriber;
 import basemod.interfaces.PostInitializeSubscriber;
+import basemod.interfaces.StartGameSubscriber;
 import com.evacipated.cardcrawl.modthespire.lib.SpireInitializer;
 import com.google.gson.reflect.TypeToken;
 import com.megacrit.cardcrawl.helpers.RelicLibrary;
 import com.megacrit.cardcrawl.localization.UIStrings;
+import io.github.archipelagomw.parts.NetworkItem;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 
@@ -97,6 +104,28 @@ public class Archipelago implements
         sideBar = new SideBar();
         BaseMod.removeRelic(RelicLibrary.getRelic("Calling Bell"));
         ConsoleCommand.addCommand("apcmd", HintCommand.class);
+        BaseMod.subscribe(new StartGameSubscriber() {
+            @Override
+            public void receiveStartGame() {
+                APContext ctx = APContext.getContext();
+                CharacterManager charManager = ctx.getCharacterManager();
+                int receivedItemsIndex = ArchipelagoRewardScreen.getReceivedItemsIndex();
+                List<Long> items = ctx.getItemManager().getReceivedItemIDs();
+                int count = 0;
+                for(int i = receivedItemsIndex; i < items.size(); i++)
+                {
+                    long id = items.get(i);
+                    if(charManager.isItemIDForCurrentCharacter(id))
+                    {
+                        APItemID type = APItemID.fromLong(id % 20L);
+                        if(null != type && type.shouldNotify) {
+                            count++;
+                        }
+                    }
+                }
+                ArchipelagoRewardScreen.rewardsQueued = count;
+            }
+        });
         logger.info("Done loading badge Image and mod options");
     }
 
