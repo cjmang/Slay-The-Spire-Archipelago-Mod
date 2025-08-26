@@ -36,6 +36,9 @@ public class SlotData {
     @SerializedName("campfire_sanity")
     public int campfireSanity = 0;
 
+    @SerializedName("free_campfire")
+    public int freeCampfire = 0;
+
     @SerializedName("shop_sanity")
     public int shopSanity = 0;
 

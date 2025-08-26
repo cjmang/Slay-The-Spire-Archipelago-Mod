@@ -56,24 +56,24 @@ public class VictoryScreenPatch {
         }
     }
 
-    @SpirePatch(clz = DeathScreen.class, method = "update")
-    public static class ReturnClicked {
-
-        @SpireInsertPatch(locator = locator.class)
-        public static void Clicked(DeathScreen __instance, ReturnToMenuButton ___returnButton) {
-            if (___returnButton.hb.clicked || ___returnButton.show && CInputActionSet.select.isJustPressed()) {
-                APContext.getContext().getClient().disconnect();
-            }
-        }
-
-        private static class locator extends SpireInsertLocator {
-            @Override
-            public int[] Locate(CtBehavior ctBehavior) throws Exception {
-                Matcher match = new Matcher.MethodCallMatcher(ReturnToMenuButton.class, "update");
-                return new int[] {LineFinder.findInOrder(ctBehavior, match)[0]+1};
-            }
-        }
-    }
+//    @SpirePatch(clz = DeathScreen.class, method = "update")
+//    public static class ReturnClicked {
+//
+//        @SpireInsertPatch(locator = locator.class)
+//        public static void Clicked(DeathScreen __instance, ReturnToMenuButton ___returnButton) {
+//            if (___returnButton.hb.clicked || ___returnButton.show && CInputActionSet.select.isJustPressed()) {
+//                APContext.getContext().getClient().disconnect();
+//            }
+//        }
+//
+//        private static class locator extends SpireInsertLocator {
+//            @Override
+//            public int[] Locate(CtBehavior ctBehavior) throws Exception {
+//                Matcher match = new Matcher.MethodCallMatcher(ReturnToMenuButton.class, "update");
+//                return new int[] {LineFinder.findInOrder(ctBehavior, match)[0]+1};
+//            }
+//        }
+//    }
 
     public static void victoryForCurrentCharacter() {
         CharacterManager characterManager = APContext.getContext().getCharacterManager();

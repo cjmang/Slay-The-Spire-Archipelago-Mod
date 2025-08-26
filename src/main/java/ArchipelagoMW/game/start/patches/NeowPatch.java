@@ -20,6 +20,16 @@ public class NeowPatch {
         }
     }
 
+    @SpirePatch(cls="downfall.events.HeartEvent", method="buttonEffect", requiredModId = "downfall")
+    public static class AlwaysFourEvil
+    {
+        @SpirePrefixPatch
+        public static void buttonEffect(Object __instance, int buttonPressed, @ByRef int[] ___bossCount)
+        {
+            ___bossCount[0] = 1;
+        }
+    }
+
     @SpirePatch(clz= NeowRoom.class, method="update")
     public static class NoUpdateOnBossRelic {
         @SpirePrefixPatch

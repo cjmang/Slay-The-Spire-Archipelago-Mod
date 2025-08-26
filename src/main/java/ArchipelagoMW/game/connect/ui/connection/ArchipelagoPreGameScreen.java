@@ -100,12 +100,19 @@ public class ArchipelagoPreGameScreen {
                 switch (screen) {
                     case connection:
                         ConnectionPanel.connectionResultText = TEXT[5];
-                        APSettings.address = connectionPanel.addressTextBox.getText();
-                        APSettings.slot = connectionPanel.slotNameTextBox.getText();
-                        APSettings.password = connectionPanel.passwordTextBox.getText();
+                        String address = APSettings.address = connectionPanel.addressTextBox.getText();
+                        String slot = APSettings.slot = connectionPanel.slotNameTextBox.getText();
+                        String password = APSettings.password = connectionPanel.passwordTextBox.getText();
                         APSettings.saveSettings();
-                        Archipelago.setConnectionInfo(ArchipelagoMainMenuButton.archipelagoPreGameScreen.connectionPanel.addressTextBox.getText(), ArchipelagoMainMenuButton.archipelagoPreGameScreen.connectionPanel.slotNameTextBox.getText(), ArchipelagoMainMenuButton.archipelagoPreGameScreen.connectionPanel.passwordTextBox.getText());
-                        APClient.newConnection(APContext.getContext(), Archipelago.address, Archipelago.slotName, Archipelago.password.isEmpty() ? null : Archipelago.password);
+                        APClient client = APContext.getContext().getClient();
+                        if(!Archipelago.setConnectionInfo(address, slot, password) && client != null && client.isConnected()) {
+                            APContext.getContext().getSaveManager().loadSaves();
+                            screen = APScreen.charSelect;
+                        }
+                        else
+                        {
+                            APClient.newConnection(APContext.getContext(), Archipelago.address, Archipelago.slotName, Archipelago.password.isEmpty() ? null : Archipelago.password);
+                        }
                         ArchipelagoMainMenuButton.archipelagoPreGameScreen.confirmButton.updateText("Select Character");
                         break;
 //                    case team:

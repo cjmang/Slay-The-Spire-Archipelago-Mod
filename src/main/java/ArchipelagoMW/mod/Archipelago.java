@@ -21,6 +21,7 @@ import org.apache.logging.log4j.Logger;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Objects;
 
 
 @SpireInitializer
@@ -64,10 +65,15 @@ public class Archipelago implements
         logger.info("=========================  Archipelago Multi-World Initialized. =========================");
     }
 
-    public static void setConnectionInfo(String addressField, String slotNameField, String passwordField) {
+    public static boolean setConnectionInfo(String addressField, String slotNameField, String passwordField) {
+        if(Objects.equals(address, addressField) && Objects.equals(slotName, slotNameField) && Objects.equals(password, passwordField))
+        {
+            return false;
+        }
         address = addressField;
         slotName = slotNameField;
         password = passwordField;
+        return true;
     }
 
     @Override
