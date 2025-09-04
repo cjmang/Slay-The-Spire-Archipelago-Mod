@@ -231,6 +231,13 @@ public class APClient extends Client {
             APClient.logger.info("Got Location Scouts");
             APContext.getContext().getLocationTracker().addToScoutedLocations(event.locations);
         }
+
+        @ArchipelagoEventListener
+        public static void invalidPacket(InvalidPacketEvent event)
+        {
+            APClient.logger.warn("Got invalid packet {}", event.getText());
+        }
     }
+
 
 }

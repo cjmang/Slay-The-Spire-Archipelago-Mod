@@ -49,7 +49,7 @@ public class APCampfirePatch {
             LocationTracker locationTracker = ctx.getLocationTracker();
             LocationTracker.CampfireLocations campfireLocs = locationTracker.getCampfireLocations();
             List<Long> remaining = campfireLocs.getLocationsForAct(AbstractDungeon.actNum);
-            ctx.getClient().scoutLocations(new ArrayList<>(remaining), CreateAsHint.BROADCAST_NEW);
+            ctx.getClient().createHints(new ArrayList<>(remaining));
             for(Long rem : remaining) {
                 ___buttons.add(new APCampfireButton(rem, locationTracker.getScoutedItem(rem)));
             }
