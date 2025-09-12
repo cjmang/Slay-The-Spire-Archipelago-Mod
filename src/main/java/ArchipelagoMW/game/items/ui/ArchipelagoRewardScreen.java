@@ -42,9 +42,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 
 public class ArchipelagoRewardScreen  extends CustomScreen {
@@ -207,11 +205,6 @@ public class ArchipelagoRewardScreen  extends CustomScreen {
 
     @SuppressWarnings("unused")
     public void open() {
-//        if(APScreen && AbstractDungeon.previousScreen == Enum.ARCHIPELAGO_REWARD_SCREEN)
-//        {
-//            AbstractDungeon.closeCurrentScreen();
-//            return;
-//        }
         APClient.logger.info("Reward Screen open called: Previous Screen: {}, Internal Previous: {}, CurrentScreen: {}", AbstractDungeon.previousScreen, previousScreen, AbstractDungeon.screen);
         APScreen = true;
         rewardsQueued = 0;
@@ -255,6 +248,7 @@ public class ArchipelagoRewardScreen  extends CustomScreen {
             addReward(new RewardItem(apGold));
             apGold = 0;
         }
+        rewards.sort(rewardSorter);
         condenseGoldRewards();
         APClient.logger.info("Reward Screen open ended: Previous Screen: {}, InternalPrevious: {}, CurrentScreen: {}", AbstractDungeon.previousScreen, previousScreen, AbstractDungeon.screen);
     }
@@ -729,4 +723,8 @@ public class ArchipelagoRewardScreen  extends CustomScreen {
         uiStrings = CardCrawlGame.languagePack.getUIString(Archipelago.getModID() + ":RewardMenu");
         TEXT = uiStrings.TEXT;
     }
+
+    private static final Comparator<RewardItem> rewardSorter = (a, b) -> {
+        return b.type.ordinal() - a.type.ordinal();
+    };
 }
