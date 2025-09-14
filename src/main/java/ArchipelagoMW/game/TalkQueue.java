@@ -2,6 +2,7 @@ package ArchipelagoMW.game;
 
 import ArchipelagoMW.client.APClient;
 import ArchipelagoMW.game.ui.SpeechBubblePatch;
+import ArchipelagoMW.saythespire.SayTheSpire;
 import basemod.ReflectionHacks;
 import com.badlogic.gdx.graphics.Color;
 import com.evacipated.cardcrawl.modthespire.lib.*;
@@ -204,6 +205,7 @@ public class TalkQueue {
             void send(AbstractPlayer player, PrintJSONEvent event)
             {
                 topLevelTalk(player.dialogX - 300F, player.dialogY + yOffset, SPEECH_DURATION, transformMessage(event), true, true);
+                SayTheSpire.sts.output(event.apPrint.getPlainText());
                 lastSent = System.nanoTime();
             }
         }

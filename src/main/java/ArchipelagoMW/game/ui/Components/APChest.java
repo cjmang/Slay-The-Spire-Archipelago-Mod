@@ -2,6 +2,7 @@ package ArchipelagoMW.game.ui.Components;
 
 import ArchipelagoMW.client.APContext;
 import ArchipelagoMW.game.ui.APTextures;
+import ArchipelagoMW.saythespire.SayTheSpire;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.megacrit.cardcrawl.core.CardCrawlGame;
 import com.megacrit.cardcrawl.core.Settings;
@@ -33,6 +34,7 @@ public class APChest extends AbstractChest {
         super.render(sb);
         if (!this.isOpen) {
             TipHelper.renderGenericTip(CHEST_LOC_X - hb.width / 2, CHEST_LOC_Y + hb.height / 2f, item.itemName, item.playerName);
+            SayTheSpire.sts.output(item.itemName + " sent to " + item.playerName);
         }
     }
 
