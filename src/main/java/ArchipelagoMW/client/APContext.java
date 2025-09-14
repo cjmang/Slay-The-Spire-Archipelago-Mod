@@ -4,6 +4,7 @@ import ArchipelagoMW.client.config.SlotData;
 import ArchipelagoMW.client.util.DeathLinkHelper;
 import ArchipelagoMW.game.CharacterManager;
 import ArchipelagoMW.game.ShopManager;
+import ArchipelagoMW.game.items.AscensionManager;
 import ArchipelagoMW.game.items.MiscItemTracker;
 import ArchipelagoMW.game.locations.LocationTracker;
 import ArchipelagoMW.game.save.SaveManager;
@@ -26,6 +27,7 @@ public class APContext {
     private ShopManager shopManager;
     private SaveManager saveManager;
     private DeathLinkHelper deathLink;
+    private AscensionManager ascensionManager;
 
     public SaveManager getSaveManager() {
         return saveManager;
@@ -47,6 +49,7 @@ public class APContext {
         shopManager = new ShopManager(this);
         saveManager = new SaveManager(getContext());
         deathLink = new DeathLinkHelper(0);
+        ascensionManager = new AscensionManager(this);
     }
 
     public ItemManager getItemManager()
@@ -73,6 +76,11 @@ public class APContext {
     public LocationManager getLocationManager()
     {
         return client.getLocationManager();
+    }
+
+    public AscensionManager getAscensionManager()
+    {
+        return ascensionManager;
     }
 
     public DeathLinkHelper getDeathLinkHelper()

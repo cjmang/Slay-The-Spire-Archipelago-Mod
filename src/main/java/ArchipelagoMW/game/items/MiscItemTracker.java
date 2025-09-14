@@ -1,5 +1,6 @@
 package ArchipelagoMW.game.items;
 
+import ArchipelagoMW.client.APClient;
 import ArchipelagoMW.game.CharacterManager;
 
 import java.util.Arrays;
@@ -24,6 +25,7 @@ public class MiscItemTracker {
 
     public void initialize(List<Long> itemIDs)
     {
+        itemCount.clear();
         itemIDs.stream()
                 .filter(charManager::isItemIDForCurrentCharacter)
                 .filter(i -> sanityIds.contains(i%20L))
@@ -94,4 +96,9 @@ public class MiscItemTracker {
         return getCount(APItemID.CARD_REMOVE_SLOT);
     }
 
+    public int getAscensionDownCount()
+    {
+        APClient.logger.info("Have {} ascension downs", getCount(APItemID.ASCENSION_DOWN));
+        return getCount(APItemID.ASCENSION_DOWN);
+    }
 }

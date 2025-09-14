@@ -2,6 +2,7 @@ package ArchipelagoMW.game.start.patches;
 
 import ArchipelagoMW.client.APClient;
 import ArchipelagoMW.client.APContext;
+import ArchipelagoMW.game.items.AscensionManager;
 import ArchipelagoMW.game.victory.patches.VictoryScreenPatch;
 import ArchipelagoMW.mod.Archipelago;
 import ArchipelagoMW.client.config.CharacterConfig;
@@ -17,6 +18,7 @@ import com.evacipated.cardcrawl.modthespire.Loader;
 import com.evacipated.cardcrawl.modthespire.lib.*;
 import com.megacrit.cardcrawl.characters.AbstractPlayer;
 import com.megacrit.cardcrawl.core.Settings;
+import com.megacrit.cardcrawl.dungeons.AbstractDungeon;
 import com.megacrit.cardcrawl.helpers.ImageMaster;
 import com.megacrit.cardcrawl.helpers.ModHelper;
 import com.megacrit.cardcrawl.helpers.SeedHelper;
@@ -200,8 +202,9 @@ public class CharacterSelectScreenPatch {
             ctx.getItemTracker().initialize(ctx.getItemManager().getReceivedItemIDs());
             // updateButtons is where game start happens, more or less
             SeedHelper.setSeed(config.seed);
-            __instance.isAscensionMode = config.ascension > 0;
-            __instance.ascensionLevel = config.ascension;
+            ctx.getAscensionManager().initializeRunStart();
+            __instance.ascensionLevel = AbstractDungeon.ascensionLevel;
+            __instance.isAscensionMode = __instance.ascensionLevel > 0;
             Settings.isFinalActAvailable = config.finalAct;
 
             if (Loader.isModLoaded("downfall")) {

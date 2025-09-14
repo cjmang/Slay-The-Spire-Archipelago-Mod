@@ -102,9 +102,8 @@ public class ConnectionResult {
 
             Settings.isFinalActAvailable = config.finalAct;
             SeedHelper.setSeed(config.seed);
-
-            AbstractDungeon.isAscensionMode = config.ascension > 0;
-            AbstractDungeon.ascensionLevel = config.ascension;
+            ctx.getAscensionManager().initializeRunStart();
+            AbstractDungeon.isAscensionMode = AbstractDungeon.ascensionLevel > 0;
 
             AbstractDungeon.generateSeeds();
             Settings.seedSet = true;

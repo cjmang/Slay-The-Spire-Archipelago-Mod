@@ -14,6 +14,7 @@ import ArchipelagoMW.game.connect.ui.connection.ConnectionPanel;
 import ArchipelagoMW.mod.APSettings;
 import ArchipelagoMW.mod.HintCommand;
 import com.megacrit.cardcrawl.core.CardCrawlGame;
+import com.megacrit.cardcrawl.rewards.RewardItem;
 import io.github.archipelagomw.Client;
 import io.github.archipelagomw.events.*;
 import io.github.archipelagomw.flags.ItemsHandling;
@@ -32,6 +33,7 @@ import java.net.URISyntaxException;
 import java.security.GeneralSecurityException;
 import java.security.KeyStore;
 import java.util.Collection;
+import java.util.List;
 import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Consumer;
@@ -179,6 +181,13 @@ public class APClient extends Client {
                 {
                     APContext.getContext().getItemTracker().addSanityItem(event.getItemID());
                     APItemID type = APItemID.fromLong(event.getItemID() % 20L);
+                    APClient.logger.info("Got item for char: {}", type);
+                    List<RewardItem> items = APContext.getContext().getAscensionManager().checkAndDecrementAscensions();
+                    if(!items.isEmpty())
+                    {
+                        ArchipelagoRewardScreen.rewardsQueued += items.size();
+                        ArchipelagoRewardScreen.rewards.addAll(items);
+                    }
 
                     if(type != null && type.shouldNotify) {
                         // only increase counter, actual items get fetched when you open the reward screen.

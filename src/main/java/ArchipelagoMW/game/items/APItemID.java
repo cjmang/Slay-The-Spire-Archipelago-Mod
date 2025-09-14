@@ -24,6 +24,9 @@ public enum APItemID {
     THIRTY_GOLD(16, true),
     BOSS_GOLD(17, true),
     POTION(18, true),
+    // Marking as sanity cause it's close enough
+    // TODO: change to shouldNotify false
+    ASCENSION_DOWN(19, true, true)
     ;
     public final long value;
     public final boolean isSanity;

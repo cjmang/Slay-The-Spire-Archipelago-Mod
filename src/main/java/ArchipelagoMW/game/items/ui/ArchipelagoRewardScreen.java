@@ -43,9 +43,10 @@ import org.apache.logging.log4j.Logger;
 
 import java.lang.reflect.Field;
 import java.util.*;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 
-public class ArchipelagoRewardScreen  extends CustomScreen {
+public class ArchipelagoRewardScreen extends CustomScreen {
 
     public static class Enum {
         @SpireEnum
@@ -57,7 +58,7 @@ public class ArchipelagoRewardScreen  extends CustomScreen {
 
     public static final String[] TEXT;
 
-    public static ArrayList<RewardItem> rewards = new ArrayList<>();
+    public static List<RewardItem> rewards = Collections.synchronizedList(new ArrayList<>());
     public static int rewardsQueued = 0;
     public ArrayList<AbstractGameEffect> effects = new ArrayList<>();
     public boolean hasTakenAll = false;

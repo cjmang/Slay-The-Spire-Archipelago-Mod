@@ -33,6 +33,7 @@ public class ConfirmPopupPatch {
                 ctx.getCharacterManager().markUnrecognziedCharacters();
                 ctx.getItemTracker().initialize(ctx.getItemManager().getReceivedItemIDs());
                 APContext.getContext().getShopManager().initializeShop();
+                ctx.getAscensionManager().reset();
                 CardCrawlGame.mainMenuScreen.isFadingOut = true;
                 CardCrawlGame.mainMenuScreen.fadeOutMusic();
                 Settings.isDailyRun = false;
@@ -73,8 +74,8 @@ public class ConfirmPopupPatch {
                     Settings.seedSet = false;
                 }
 
-                AbstractDungeon.isAscensionMode = config.ascension > 0;
-                AbstractDungeon.ascensionLevel = config.ascension;
+                ctx.getAscensionManager().initializeRunStart();
+                AbstractDungeon.isAscensionMode = AbstractDungeon.ascensionLevel > 0;
 
                 AbstractDungeon.generateSeeds();
 

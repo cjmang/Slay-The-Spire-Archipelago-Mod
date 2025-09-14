@@ -1,6 +1,7 @@
 package ArchipelagoMW.game.save;
 
 import ArchipelagoMW.client.APContext;
+import ArchipelagoMW.game.items.AscensionManager;
 import ArchipelagoMW.game.locations.LocationTracker;
 import ArchipelagoMW.game.items.patches.RewardItemPatch;
 import ArchipelagoMW.game.items.ui.ArchipelagoRewardScreen;
@@ -31,6 +32,7 @@ public class APSaveable implements CustomSavableRaw {
     @Override
     public JsonElement onSaveRaw() {
         LocationTracker locationTracker = APContext.getContext().getLocationTracker();
+        AscensionManager ascensionManager = APContext.getContext().getAscensionManager();
         Gson gson = new Gson();
         JsonObject save = new JsonObject();
 
@@ -65,6 +67,7 @@ public class APSaveable implements CustomSavableRaw {
         save.add("rewards", gson.toJsonTree(rewards, REWARD_SAVE_LIST_TYPE));
         save.add("rewards_remaining", new JsonPrimitive(ArchipelagoRewardScreen.rewardsQueued));
         save.add("received_index", new JsonPrimitive(ArchipelagoRewardScreen.getReceivedItemsIndex()));
+        save.add("ap_ascension", gson.toJsonTree(ascensionManager.toSaveData()));
 
         LocationTracker.LocationMemento memento = locationTracker.getMemento();
 
@@ -156,6 +159,10 @@ public class APSaveable implements CustomSavableRaw {
         if(save.has("potion_sanity"))
         {
             memento.setPotionIndex(save.get("potion_index").getAsInt());
+        }
+        if(save.has("ap_ascension"))
+        {
+            APContext.getContext().getAscensionManager().initialize(save.get("ap_ascension").getAsJsonObject());
         }
         locationTracker.loadFromSave(
                 memento

@@ -21,6 +21,8 @@ public class CharacterConfig {
     public boolean locked = false;
     @SerializedName("ascension")
     public int ascension;
+    @SerializedName("ascension_down")
+    public int ascensionDown;
     @SerializedName("final_act")
     public boolean finalAct;
     @SerializedName("downfall")
@@ -37,6 +39,7 @@ public class CharacterConfig {
                 ", seed='" + seed + '\'' +
                 ", locked=" + locked +
                 ", ascension=" + ascension +
+                ", ascensionDown=" + ascensionDown +
                 ", finalAct=" + finalAct +
                 ", downfall=" + downfall +
                 '}';
