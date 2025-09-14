@@ -1,5 +1,6 @@
 package ArchipelagoMW.game.items.ui;
 
+import ArchipelagoMW.client.APClient;
 import com.badlogic.gdx.Input;
 import com.evacipated.cardcrawl.modthespire.lib.*;
 import com.megacrit.cardcrawl.helpers.controller.CInputAction;
@@ -53,7 +54,7 @@ public class APInputActionSet {
     private static final String C_APMENU_KEY = "C_AP_MENU";
 
     public static void load() {
-        apmenu  = new InputAction(prefs.getInteger(APMENU_KEY, Input.Keys.Q));
+        apmenu  = new InputAction(prefs.getInteger(APMENU_KEY, Input.Keys.R));
     }
 
     public static void save() {
@@ -73,6 +74,7 @@ public class APInputActionSet {
     public static class APCSave
     {
         public static void Prefix() {
+            APClient.logger.info("Button keycode" + cAPMenu.getKey());
             prefs.putInteger(C_APMENU_KEY, cAPMenu.getKey());
         }
     }

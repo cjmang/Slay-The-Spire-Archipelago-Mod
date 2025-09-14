@@ -12,3 +12,4 @@ plugins {
 
 rootProject.name = "ArchipelagoMW"
 include("client-wrapper")
+include("say-thesp")

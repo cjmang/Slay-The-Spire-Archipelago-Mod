@@ -20,7 +20,6 @@ public class APSettings {
     private static final String CONNECT_SCREEN_ADDRESS_KEY = "ConnectAddress";
     private static final String CONNECT_SCREEN_SLOT_KEY = "ConnectSlot";
     private static final String RECEIVE_ITEM_SOUND = "makeReceiveNoise";
-    private static final String CONTROLLER_AP_OPEN = "controllerAPOpen";
 
 
     public enum FilterType {

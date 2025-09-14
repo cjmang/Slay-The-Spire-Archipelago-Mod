@@ -1,5 +1,6 @@
 package ArchipelagoMW.game.ui.Components;
 
+import ArchipelagoMW.saythespire.SayTheSpire;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
@@ -131,18 +132,27 @@ public class TextBox implements InputProcessor, HitboxListener {
                 if (font.getData().hasGlyph(c))
                     pasteText.append(c);
             }
+            SayTheSpire.sts.output("Pasted " + pasteText);
             text += pasteText;
             return true;
         }
 
-        if (Gdx.input.isKeyPressed(Input.Keys.BACKSPACE) && !text.equals("")) {
+        if (Gdx.input.isKeyPressed(Input.Keys.BACKSPACE) && !text.isEmpty()) {
             text = text.substring(0, text.length() - 1);
+            SayTheSpire.sts.output("backspace");
             return true;
         }
 
         if (Character.isIdentifierIgnorable(character) || Character.isISOControl(character) || !font.getData().hasGlyph(character))
             return false;
         text += input;
+        if(':' == character)
+        {
+            SayTheSpire.sts.output("colon");
+        }
+        else {
+            SayTheSpire.sts.output(input);
+        }
         return true;
     }
 

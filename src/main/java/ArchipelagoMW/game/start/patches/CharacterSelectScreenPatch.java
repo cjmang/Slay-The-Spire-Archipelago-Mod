@@ -20,6 +20,8 @@ import com.megacrit.cardcrawl.core.Settings;
 import com.megacrit.cardcrawl.helpers.ImageMaster;
 import com.megacrit.cardcrawl.helpers.ModHelper;
 import com.megacrit.cardcrawl.helpers.SeedHelper;
+import com.megacrit.cardcrawl.helpers.controller.CInputActionSet;
+import com.megacrit.cardcrawl.helpers.controller.CInputHelper;
 import com.megacrit.cardcrawl.screens.charSelect.CharacterOption;
 import com.megacrit.cardcrawl.screens.charSelect.CharacterSelectScreen;
 import com.megacrit.cardcrawl.screens.options.ConfirmPopup;
@@ -257,4 +259,39 @@ public class CharacterSelectScreenPatch {
             };
         }
     }
+
+    // TODO: BaseMod's issue is it doesn't handle alt left/right
+//    @SpirePatch(clz= CustomCharacterSelectScreen.class, requiredModId = "basemod", method="updateCharSelectController")
+//    public static class FixBaseModCharSelect
+//    {
+//        public SpireReturn<Boolean> Replace(CustomCharacterSelectScreen __instance, )
+//        {
+//            int index = -1;
+//            for(int i = 0; i < __instance.options.size(); i++)
+//            {
+//                CharacterOption o = __instance.options.get(i);
+//                if(o.hb.hovered) {
+//                    index = i;
+//                    break;
+//                }
+//            }
+//            if(index < 0)
+//            {
+//                return SpireReturn.Return(false);
+//            }
+//            int selectIndex = ReflectionHacks.getPrivate(__instance, CustomCharacterSelectScreen.class, "selectIndex");
+//            int optionsPerIndex = ReflectionHacks.getPrivate(__instance, CustomCharacterSelectScreen.class, "optionsPerIndex");
+//            int maxSelectIndex = ReflectionHacks.getPrivate(__instance, CustomCharacterSelectScreen.class, "maxSelectIndex");
+//            boolean startOfPage = index == 0 && selectIndex != 0;
+//            if(startOfPage)
+//            {
+//                if(CInputHelper.isJustPressed(CInputActionSet.left.keycode) || CInputHelper.isJustPressed(CInputActionSet.altLeft.keycode))
+//                {
+//                    ReflectionHacks.
+//                }
+//            }
+//            boolean endOfPage = (index + 1) % optionsPerIndex == 0 && selectIndex != maxSelectIndex;
+//
+//        }
+//    }
 }

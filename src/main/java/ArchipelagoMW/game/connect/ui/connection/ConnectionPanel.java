@@ -3,6 +3,8 @@ package ArchipelagoMW.game.connect.ui.connection;
 import ArchipelagoMW.mod.APSettings;
 import ArchipelagoMW.mod.Archipelago;
 import ArchipelagoMW.game.ui.Components.TextBox;
+import ArchipelagoMW.saythespire.SayTheSpire;
+import ArchipelagoMW.saythespire.UIElement;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
@@ -53,46 +55,50 @@ public class ConnectionPanel {
 
 //    public final ConfirmPopup resumeSave;
 
-    public TextBox addressTextBox;
-    public TextBox slotNameTextBox;
-    public TextBox passwordTextBox;
+    public UIElement<TextBox> addressTextBox;
+    public UIElement<TextBox> slotNameTextBox;
+    public UIElement<TextBox> passwordTextBox;
 
 
     public ConnectionPanel() {
         this.uiColor = new Color(1.0F, 1.0F, 1.0F, 1.0F);// 37
 
-        addressTextBox = new TextBox(OPTION_X + addressOffset, currentY, PANEL_WIDTH * .85f - addressOffset);
-        addressTextBox.setText(APSettings.address);
+        addressTextBox = SayTheSpire.sts.wrapTextBox(new TextBox(OPTION_X + addressOffset, currentY, PANEL_WIDTH * .85f - addressOffset), "address");
+        addressTextBox.getObject().setText(APSettings.address);
         currentY -= stepY;
-        slotNameTextBox = new TextBox(OPTION_X + slotNameOffset, currentY, PANEL_WIDTH * .85f - slotNameOffset);
-        slotNameTextBox.setText(APSettings.slot);
+        slotNameTextBox = SayTheSpire.sts.wrapTextBox(new TextBox(OPTION_X + slotNameOffset, currentY, PANEL_WIDTH * .85f - slotNameOffset), "slot name");
+        slotNameTextBox.getObject().setText(APSettings.slot);
         currentY -= stepY;
-        passwordTextBox = new TextBox(OPTION_X + passwordOffset, currentY, PANEL_WIDTH * .85f - passwordOffset);
-        passwordTextBox.setText(APSettings.password);
+        passwordTextBox = SayTheSpire.sts.wrapTextBox(new TextBox(OPTION_X + passwordOffset, currentY, PANEL_WIDTH * .85f - passwordOffset), "password");
+        passwordTextBox.getObject().setText(APSettings.password);
         currentY -= stepY;
 //        resumeSave = new ConfirmPopup("Resume?", "Archipelago Save Detected would you like to resume?", ConfirmPopupPatch.AP_SAVE_RESUME);
     }
 
     public void update() {
-//        if (!resumeSave.shown) {
         if(Gdx.input.isKeyJustPressed(Input.Keys.TAB)) {
-            if (Gdx.input.getInputProcessor().equals(addressTextBox)) {
-                Gdx.input.setInputProcessor(slotNameTextBox);
-            } else if (Gdx.input.getInputProcessor().equals(slotNameTextBox)) {
-                Gdx.input.setInputProcessor(passwordTextBox);
-            } else if (Gdx.input.getInputProcessor().equals(passwordTextBox)) {
-                Gdx.input.setInputProcessor(addressTextBox);
+            if (Gdx.input.getInputProcessor().equals(addressTextBox.getObject())) {
+                Gdx.input.setInputProcessor(slotNameTextBox.getObject());
+                SayTheSpire.sts.setUI(slotNameTextBox);
+            } else if (Gdx.input.getInputProcessor().equals(slotNameTextBox.getObject())) {
+                Gdx.input.setInputProcessor(passwordTextBox.getObject());
+                SayTheSpire.sts.setUI(passwordTextBox);
+            } else if (Gdx.input.getInputProcessor().equals(passwordTextBox.getObject())) {
+                Gdx.input.setInputProcessor(addressTextBox.getObject());
+                SayTheSpire.sts.setUI(addressTextBox);
+            }
+            else
+            {
+                Gdx.input.setInputProcessor(addressTextBox.getObject());
+                SayTheSpire.sts.setUI(addressTextBox);
             }
         }
-        addressTextBox.update();
-        slotNameTextBox.update();
-        passwordTextBox.update();
-//        }
-//        resumeSave.update();
+        addressTextBox.getObject().update();
+        slotNameTextBox.getObject().update();
+        passwordTextBox.getObject().update();
     }
 
     public void render(SpriteBatch sb) {
-
         //background panel
         sb.setColor(Color.WHITE.cpy());
         sb.draw(ImageMaster.OPTION_CONFIRM,
@@ -123,33 +129,33 @@ public class ConnectionPanel {
         // Address Box Chunk
         FontHelper.renderSmartText(sb, textFont, TEXT[2],
                 OPTION_X,
-                currentY + addressTextBox.height / 2 + FontHelper.getHeight(textFont) / 2,
+                currentY + addressTextBox.getObject().height / 2 + FontHelper.getHeight(textFont) / 2,
                 100000.0F,
                 0.0F,
                 this.uiColor,
                 1f);
-        addressTextBox.render(sb);
+        addressTextBox.getObject().render(sb);
         currentY -= stepY;
 
         // Slot Name Chunk
         FontHelper.renderSmartText(sb, textFont, TEXT[3],
                 OPTION_X,
-                currentY + slotNameTextBox.height / 2 + FontHelper.getHeight(textFont) / 2,
+                currentY + slotNameTextBox.getObject().height / 2 + FontHelper.getHeight(textFont) / 2,
                 100000.0F,
                 0.0F,
                 this.uiColor,
                 1f);
-        slotNameTextBox.render(sb);
+        slotNameTextBox.getObject().render(sb);
         currentY -= stepY;
 
         FontHelper.renderSmartText(sb, textFont, TEXT[6],
                 OPTION_X,
-                currentY + passwordTextBox.height / 2 + FontHelper.getHeight(textFont) / 2,
+                currentY + passwordTextBox.getObject().height / 2 + FontHelper.getHeight(textFont) / 2,
                 100000.0F,
                 0.0F,
                 this.uiColor,
                 1f);
-        passwordTextBox.render(sb);
+        passwordTextBox.getObject().render(sb);
         currentY -= stepY;
 
         FontHelper.renderSmartText(sb,
@@ -161,8 +167,6 @@ public class ConnectionPanel {
                 30,
                 new Color(0.9F, 0.9F, 0.9F, 1.0F), 1f);
 
-
-//        resumeSave.render(sb);
     }
 
     static {

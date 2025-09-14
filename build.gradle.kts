@@ -28,6 +28,7 @@ dependencies {
     shadow(files("${steamPath}/workshop/content/646570/1605060445/ModTheSpire.jar"))
     shadow(files("${steamPath}/workshop/content/646570/1605833019/BaseMod.jar"))
     shadow(files("${steamPath}/workshop/content/646570/1610056683/downfall.jar"))
+    shadow(files("${steamPath}/workshop/content/646570/2239220106/sayTheSpire.jar"))
 }
 
 // Apply a specific Java toolchain to ease working on different environments.

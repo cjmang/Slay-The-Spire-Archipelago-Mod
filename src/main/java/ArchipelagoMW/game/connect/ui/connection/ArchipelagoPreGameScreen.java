@@ -8,6 +8,7 @@ import ArchipelagoMW.mod.Archipelago;
 import ArchipelagoMW.game.start.patches.CharacterSelectScreenPatch;
 import ArchipelagoMW.game.teams.TeamManager;
 import ArchipelagoMW.game.connect.ui.mainMenu.ArchipelagoMainMenuButton;
+import ArchipelagoMW.saythespire.SayTheSpire;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -61,6 +62,7 @@ public class ArchipelagoPreGameScreen {
         // Swap to our screen
         CardCrawlGame.mainMenuScreen.darken();
         CardCrawlGame.mainMenuScreen.screen = Enum.CONNECTION_INFO;
+        SayTheSpire.sts.output("connection panel");
 
         // Set Button text
         backButton.show(CharacterSelectScreen.TEXT[5]);
@@ -81,6 +83,7 @@ public class ArchipelagoPreGameScreen {
     public void toCharSelect() {
         CharacterSelectScreenPatch.lockChars();
         CardCrawlGame.mainMenuScreen.screen = MainMenuScreen.CurScreen.CHAR_SELECT;
+        SayTheSpire.sts.output("character select");
     }
 
     //update when something happens on our screen.
@@ -101,9 +104,9 @@ public class ArchipelagoPreGameScreen {
                 switch (screen) {
                     case connection:
                         ConnectionPanel.connectionResultText = TEXT[5];
-                        String address = APSettings.address = connectionPanel.addressTextBox.getText();
-                        String slot = APSettings.slot = connectionPanel.slotNameTextBox.getText();
-                        String password = APSettings.password = connectionPanel.passwordTextBox.getText();
+                        String address = APSettings.address = connectionPanel.addressTextBox.getObject().getText();
+                        String slot = APSettings.slot = connectionPanel.slotNameTextBox.getObject().getText();
+                        String password = APSettings.password = connectionPanel.passwordTextBox.getObject().getText();
                         APSettings.saveSettings();
                         APClient client = APContext.getContext().getClient();
                         if(!Archipelago.setConnectionInfo(address, slot, password) && client != null && client.isConnected()) {
