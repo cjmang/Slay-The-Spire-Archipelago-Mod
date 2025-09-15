@@ -72,6 +72,7 @@ public class ConnectionResult {
         {
             ctx.getClient().getEventManager().registerListener(new APClient.OnJSONMessage());
         }
+        ctx.getTrapManager().initialize();
 
         ArchipelagoMainMenuButton.archipelagoPreGameScreen.screen = ArchipelagoPreGameScreen.APScreen.charSelect;
     }
@@ -84,6 +85,7 @@ public class ConnectionResult {
             APContext ctx = APContext.getContext();
             CharacterConfig config = ctx.getCharacterManager().getCurrentCharacterConfig();
             ctx.getItemTracker().initialize(APContext.getContext().getItemManager().getReceivedItemIDs());
+            ctx.getTrapManager().initialize();
             CardCrawlGame.chosenCharacter = ctx.getCharacterManager().getCurrentCharacter().chosenClass;
 
             Archipelago.logger.info("character: {}", config.officialName);

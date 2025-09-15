@@ -4,6 +4,7 @@ import ArchipelagoMW.client.APClient;
 import ArchipelagoMW.client.APContext;
 import ArchipelagoMW.game.CharacterManager;
 import ArchipelagoMW.game.items.patches.RewardItemPatch;
+import ArchipelagoMW.saythespire.SayTheSpire;
 import com.google.gson.JsonObject;
 import com.megacrit.cardcrawl.dungeons.AbstractDungeon;
 import com.megacrit.cardcrawl.potions.BloodPotion;
@@ -114,6 +115,7 @@ public class AscensionManager {
             {
                 topPanel.setupAscensionMode();
             }
+            SayTheSpire.sts.output("Ascension was decremented to " + currentAscension);
         }
 
         return ret;

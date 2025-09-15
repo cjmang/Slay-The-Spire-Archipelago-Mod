@@ -476,7 +476,7 @@ public class ArchipelagoRewardScreen extends CustomScreen {
         String location = networkItem.locationName;
         String player = networkItem.playerName;
         RewardItem reward;
-        APItemID itemType = APItemID.fromLong(itemID % 20L);
+        APItemID itemType = APItemID.fromLong(itemID );
         if(itemType == null)
         {
             logger.warn("UNKNOWN ITEM {}", itemID % 20L);

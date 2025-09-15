@@ -28,7 +28,7 @@ public class MiscItemTracker {
         itemCount.clear();
         itemIDs.stream()
                 .filter(charManager::isItemIDForCurrentCharacter)
-                .filter(i -> sanityIds.contains(i%20L))
+                .filter(i -> APItemID.isGeneric(i) || sanityIds.contains(i%20L))
                 .forEach(this::addSanityItem);
     }
 
@@ -41,18 +41,25 @@ public class MiscItemTracker {
         }
     }
 
-    public void addSanityItem(long itemID)
-    {
-        long remainder = itemID % 20L;
-        if(!sanityIds.contains(remainder))
+    public void addSanityItem(long itemID) {
+        long actualId = itemID;
+        if (!APItemID.isGeneric(itemID)) {
+            actualId = itemID % 20L;
+        }
+        if(!sanityIds.contains(actualId))
         {
             return;
         }
-        itemCount.merge(remainder, 1, Integer::sum);
+        itemCount.merge(actualId, 1, Integer::sum);
     }
+
 
     public int getCount(Long itemID)
     {
+        if(APItemID.isGeneric(itemID))
+        {
+            return itemCount.getOrDefault(itemID, 0);
+        }
         return itemCount.getOrDefault(itemID % 20L, 0);
     }
 

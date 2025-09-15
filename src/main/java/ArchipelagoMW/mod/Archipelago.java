@@ -3,6 +3,7 @@ package ArchipelagoMW.mod;
 import ArchipelagoMW.client.APContext;
 import ArchipelagoMW.game.CharacterManager;
 import ArchipelagoMW.game.items.APItemID;
+import ArchipelagoMW.game.items.BattleStartSubscriber;
 import ArchipelagoMW.game.items.MiscItemTracker;
 import ArchipelagoMW.game.save.APSaveable;
 import ArchipelagoMW.game.teams.TeamManager;
@@ -115,7 +116,7 @@ public class Archipelago implements
                     long id = items.get(i);
                     if(charManager.isItemIDForCurrentCharacter(id))
                     {
-                        APItemID type = APItemID.fromLong(id % 20L);
+                        APItemID type = APItemID.fromLong(id );
                         if(null != type && type.shouldNotify) {
                             count++;
                         }
@@ -124,6 +125,7 @@ public class Archipelago implements
                 ArchipelagoRewardScreen.rewardsQueued = count;
             }
         });
+        BaseMod.subscribe(new BattleStartSubscriber());
         logger.info("Done loading badge Image and mod options");
     }
 

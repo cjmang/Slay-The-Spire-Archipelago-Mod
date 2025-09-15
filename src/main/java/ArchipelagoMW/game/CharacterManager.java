@@ -2,6 +2,7 @@ package ArchipelagoMW.game;
 
 import ArchipelagoMW.client.APContext;
 import ArchipelagoMW.client.config.CharacterConfig;
+import ArchipelagoMW.game.items.APItemID;
 import ArchipelagoMW.game.locations.LocationTracker;
 import ArchipelagoMW.game.teams.PlayerManager;
 import ArchipelagoMW.game.teams.TeamManager;
@@ -124,6 +125,10 @@ public class CharacterManager {
         if(currentCharacterConfig == null)
         {
             return false;
+        }
+        if(APItemID.isGeneric(itemID))
+        {
+            return true;
         }
         int offset = currentCharacterConfig.charOffset;
         return itemID > offset * 20L && itemID < (offset + 1) * 20L;

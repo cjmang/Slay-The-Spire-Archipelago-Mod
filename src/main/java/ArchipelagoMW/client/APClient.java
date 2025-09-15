@@ -180,7 +180,7 @@ public class APClient extends Client {
                 if(charManager.isItemIDForCurrentCharacter(event.getItemID()))
                 {
                     APContext.getContext().getItemTracker().addSanityItem(event.getItemID());
-                    APItemID type = APItemID.fromLong(event.getItemID() % 20L);
+                    APItemID type = APItemID.fromLong(event.getItemID());
                     APClient.logger.info("Got item for char: {}", type);
                     List<RewardItem> items = APContext.getContext().getAscensionManager().checkAndDecrementAscensions();
                     if(!items.isEmpty())

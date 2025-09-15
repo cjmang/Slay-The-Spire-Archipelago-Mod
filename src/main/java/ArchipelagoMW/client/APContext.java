@@ -6,6 +6,7 @@ import ArchipelagoMW.game.CharacterManager;
 import ArchipelagoMW.game.ShopManager;
 import ArchipelagoMW.game.items.AscensionManager;
 import ArchipelagoMW.game.items.MiscItemTracker;
+import ArchipelagoMW.game.items.TrapManager;
 import ArchipelagoMW.game.locations.LocationTracker;
 import ArchipelagoMW.game.save.SaveManager;
 import io.github.archipelagomw.ItemManager;
@@ -28,6 +29,7 @@ public class APContext {
     private SaveManager saveManager;
     private DeathLinkHelper deathLink;
     private AscensionManager ascensionManager;
+    private TrapManager trapManager;
 
     public SaveManager getSaveManager() {
         return saveManager;
@@ -50,6 +52,7 @@ public class APContext {
         saveManager = new SaveManager(getContext());
         deathLink = new DeathLinkHelper(0);
         ascensionManager = new AscensionManager(this);
+        trapManager = new TrapManager(this);
     }
 
     public ItemManager getItemManager()
@@ -92,6 +95,11 @@ public class APContext {
     {
         client.getEventManager().unRegisterListener(this.deathLink);
         client.getEventManager().registerListener(this.deathLink = deathLink);
+    }
+
+    public TrapManager getTrapManager()
+    {
+        return trapManager;
     }
 
     public int getTeam()

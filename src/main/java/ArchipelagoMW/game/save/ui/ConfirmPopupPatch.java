@@ -32,6 +32,7 @@ public class ConfirmPopupPatch {
                 APContext ctx = APContext.getContext();
                 ctx.getCharacterManager().markUnrecognziedCharacters();
                 ctx.getItemTracker().initialize(ctx.getItemManager().getReceivedItemIDs());
+                ctx.getTrapManager().initialize();
                 APContext.getContext().getShopManager().initializeShop();
                 ctx.getAscensionManager().reset();
                 CardCrawlGame.mainMenuScreen.isFadingOut = true;
@@ -54,6 +55,7 @@ public class ConfirmPopupPatch {
                 APContext ctx = APContext.getContext();
                 CharacterConfig config = ctx.getCharacterManager().getCurrentCharacterConfig();
                 ctx.getItemTracker().initialize(ctx.getItemManager().getReceivedItemIDs());
+                ctx.getTrapManager().initialize();
 
                 if (Loader.isModLoaded("downfall"))
                     EvilModeCharacterSelect.evilMode = config.downfall;

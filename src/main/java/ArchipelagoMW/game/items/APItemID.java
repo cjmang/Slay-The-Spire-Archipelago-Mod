@@ -1,7 +1,9 @@
 package ArchipelagoMW.game.items;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -25,32 +27,56 @@ public enum APItemID {
     BOSS_GOLD(17, true),
     POTION(18, true),
     // Marking as sanity cause it's close enough
-    // TODO: change to shouldNotify false
-    ASCENSION_DOWN(19, true, true)
-    ;
+    ASCENSION_DOWN(19, true, false),
+
+    DEBUFF_TRAP(50000, true, false, false),
+    STRONG_DEBUFF_TRAP(50001, true, false, false),
+    KILLER_DEBUFF_TRAP(50002, true, false, false),
+    BUFF_TRAP(50003, true, false, false),
+    STRONG_BUFF_TRAP(50004, true, false, false),
+    STATUS_CARD_TRAP(50005, true, false, false),
+    GREMLIN_TRAP(50006, true, false, false);
+
     public final long value;
     public final boolean isSanity;
     public final boolean shouldNotify;
+    public final boolean isCharacterSpecific;
     private static final Map<Long, APItemID> inverseMap = Arrays.stream(APItemID.values())
-                    .collect(Collectors.toMap(id -> id.value, Function.identity()));
+            .collect(Collectors.toMap(id -> id.value, Function.identity()));
+    private static final Set<Long> genericIds = Collections.unmodifiableSet(Arrays.stream(APItemID.values())
+                    .filter(v -> !v.isCharacterSpecific)
+            .map(v -> v.value)
+            .collect(Collectors.toSet()));
 
-    APItemID(long val)
-    {
+    APItemID(long val) {
         this(val, false, true);
     }
-    APItemID(long val, boolean isSanity)
-    {
+
+    APItemID(long val, boolean isSanity) {
         this(val, isSanity, true);
     }
-    APItemID(long val, boolean isSanity, boolean shouldNotify)
-    {
-        this.value = val;
-        this.isSanity = isSanity;
-        this.shouldNotify = shouldNotify;
+
+    APItemID(long val, boolean isSanity, boolean shouldNotify) {
+        this(val, isSanity, shouldNotify, true);
     }
 
-    public static APItemID fromLong(long lookup)
-    {
+    APItemID(long value, boolean isSanity, boolean shouldNotify, boolean isCharacterSpecific) {
+        this.value = value;
+        this.isSanity = isSanity;
+        this.shouldNotify = shouldNotify;
+        this.isCharacterSpecific = isCharacterSpecific;
+    }
+
+    public static APItemID fromLong(long lookup) {
+        if(!isGeneric(lookup))
+        {
+            lookup = lookup % 20;
+        }
         return inverseMap.get(lookup);
+    }
+
+    public static boolean isGeneric(long lookup)
+    {
+        return genericIds.contains(lookup);
     }
 }

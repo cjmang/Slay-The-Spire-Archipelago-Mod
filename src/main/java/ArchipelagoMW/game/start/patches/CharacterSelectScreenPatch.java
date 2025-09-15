@@ -200,6 +200,7 @@ public class CharacterSelectScreenPatch {
             CharacterManager charManager = ctx.getCharacterManager();
             CharacterConfig config = charManager.getCurrentCharacterConfig();
             ctx.getItemTracker().initialize(ctx.getItemManager().getReceivedItemIDs());
+            ctx.getTrapManager().initialize();
             // updateButtons is where game start happens, more or less
             SeedHelper.setSeed(config.seed);
             ctx.getAscensionManager().initializeRunStart();
