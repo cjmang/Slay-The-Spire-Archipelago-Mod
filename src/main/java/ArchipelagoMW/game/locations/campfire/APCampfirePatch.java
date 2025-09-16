@@ -10,6 +10,7 @@ import com.megacrit.cardcrawl.rooms.CampfireUI;
 import com.megacrit.cardcrawl.ui.campfire.AbstractCampfireOption;
 import com.megacrit.cardcrawl.ui.campfire.RestOption;
 import com.megacrit.cardcrawl.ui.campfire.SmithOption;
+import io.github.archipelagomw.flags.NetworkItem;
 import io.github.archipelagomw.network.client.CreateAsHint;
 import javassist.CtBehavior;
 
@@ -49,7 +50,10 @@ public class APCampfirePatch {
             LocationTracker locationTracker = ctx.getLocationTracker();
             LocationTracker.CampfireLocations campfireLocs = locationTracker.getCampfireLocations();
             List<Long> remaining = campfireLocs.getLocationsForAct(AbstractDungeon.actNum);
-            ctx.getClient().createHints(new ArrayList<>(remaining));
+            remaining.removeIf(l -> (locationTracker.getScoutedItem(l).flags & NetworkItem.ADVANCEMENT) > 0);
+            if(!remaining.isEmpty()) {
+                ctx.getClient().createHints(new ArrayList<>(remaining));
+            }
             for(Long rem : remaining) {
                 ___buttons.add(new APCampfireButton(rem, locationTracker.getScoutedItem(rem)));
             }

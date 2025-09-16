@@ -4,6 +4,7 @@ import ArchipelagoMW.client.APClient;
 import ArchipelagoMW.client.APContext;
 import ArchipelagoMW.client.config.CharacterConfig;
 import ArchipelagoMW.game.CharacterManager;
+import ArchipelagoMW.saythespire.SayTheSpire;
 import basemod.ReflectionHacks;
 import com.evacipated.cardcrawl.modthespire.lib.*;
 import com.megacrit.cardcrawl.characters.AbstractPlayer;
@@ -157,6 +158,7 @@ public class VictoryScreenPatch {
                 if ((numCharsGoal == 0 && eventChars.size() >= characterManager.getCharacters().size()) ||
                         (numCharsGoal != 0 && eventChars.size() >= Math.min(numCharsGoal, characterManager.getCharacters().size()))) {
                     client.setGameState(ClientStatus.CLIENT_GOAL);
+                    SayTheSpire.sts.output("Archipelago goal completed", true);
                 }
                 apContext.getLocationTracker().endOfTheRoad();
             }

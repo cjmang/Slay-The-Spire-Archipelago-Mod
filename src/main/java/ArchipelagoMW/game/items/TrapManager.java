@@ -3,6 +3,7 @@ package ArchipelagoMW.game.items;
 import ArchipelagoMW.client.APClient;
 import ArchipelagoMW.client.APContext;
 import ArchipelagoMW.saythespire.SayTheSpire;
+import basemod.ReflectionHacks;
 import com.megacrit.cardcrawl.actions.common.ApplyPowerAction;
 import com.megacrit.cardcrawl.actions.common.MakeTempCardInDrawPileAction;
 import com.megacrit.cardcrawl.actions.common.SpawnMonsterAction;
@@ -72,13 +73,12 @@ public class TrapManager {
     }
 
     public void checkAndApplyTraps(AbstractRoom room) {
-        boolean trapSent = false;
         for (APItemID trapId : trapIds) {
-            trapSent |= checkAndApplyTrap(room, trapId);
-        }
-        if(trapSent)
-        {
-            saveTrapsHandled();
+            if(checkAndApplyTrap(room, trapId))
+            {
+                saveTrapsHandled();
+                break;
+            }
         }
     }
 
@@ -255,7 +255,9 @@ public class TrapManager {
                         AbstractDungeon.actionManager.addToBottom(new ApplyPowerAction(m, m, new ArtifactPower(m, 3), 3));
                     }
                     else {
-                        AbstractDungeon.actionManager.addToBottom(new ApplyPowerAction(m, m, new IntangiblePower(m, 1)));
+                        IntangiblePower power = new IntangiblePower(m, 1);
+                        ReflectionHacks.setPrivate(power, IntangiblePower.class, "justApplied", false);
+                        AbstractDungeon.actionManager.addToBottom(new ApplyPowerAction(m, m, power));
                     }
                 }
                 break;
@@ -266,7 +268,7 @@ public class TrapManager {
                         AbstractDungeon.actionManager.addToBottom(new ApplyPowerAction(m, m, new ThornsPower(m, AbstractDungeon.actNum), AbstractDungeon.actNum));
                     }
                     else {
-                        AbstractDungeon.actionManager.addToBottom(new ApplyPowerAction(m, m, new PlatedArmorPower(m, AbstractDungeon.actNum*5), AbstractDungeon.actNum*5));
+                        AbstractDungeon.actionManager.addToBottom(new ApplyPowerAction(m, m, new PlatedArmorPower(m, AbstractDungeon.actNum*4), AbstractDungeon.actNum*5));
                     }
                 }
                 break;

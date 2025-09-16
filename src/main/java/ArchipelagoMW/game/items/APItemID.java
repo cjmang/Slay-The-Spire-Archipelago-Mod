@@ -35,7 +35,10 @@ public enum APItemID {
     BUFF_TRAP(50003, true, false, false),
     STRONG_BUFF_TRAP(50004, true, false, false),
     STATUS_CARD_TRAP(50005, true, false, false),
-    GREMLIN_TRAP(50006, true, false, false);
+    GREMLIN_TRAP(50006, true, false, false),
+
+    CAW_CAW(100_000, true, true, false)
+    ;
 
     public final long value;
     public final boolean isSanity;
