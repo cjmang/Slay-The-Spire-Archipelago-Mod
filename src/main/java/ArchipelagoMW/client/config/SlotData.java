@@ -9,9 +9,6 @@ import java.util.List;
 public class SlotData {
     public static int EXPECTED_MOD_VERSION = 2;
 
-//    @SerializedName("character")
-//    public List<String> character = new ArrayList<>();
-
     @SerializedName("ascension")
     public int ascension = 0;
 

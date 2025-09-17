@@ -14,6 +14,7 @@ import com.megacrit.cardcrawl.characters.AbstractPlayer;
 import com.megacrit.cardcrawl.dungeons.AbstractDungeon;
 import com.megacrit.cardcrawl.monsters.AbstractMonster;
 import com.megacrit.cardcrawl.monsters.beyond.Nemesis;
+import com.megacrit.cardcrawl.monsters.city.Byrd;
 import com.megacrit.cardcrawl.monsters.city.ShelledParasite;
 import com.megacrit.cardcrawl.monsters.city.SphericGuardian;
 import com.megacrit.cardcrawl.monsters.exordium.*;
@@ -215,7 +216,8 @@ public class TrapManager {
     }
 
     private void applyBuffTrap(AbstractRoom room) {
-        switch (random.nextInt(4)) {
+//        switch (random.nextInt(5)) {
+            switch (4) {
             case 0:
                 for (AbstractMonster m : room.monsters.monsters) {
                     AbstractDungeon.actionManager.addToBottom(new IncreaseMaxHpAction(m, 0.1F, true));
@@ -223,18 +225,30 @@ public class TrapManager {
                 break;
             case 1:
                 for (AbstractMonster m : room.monsters.monsters) {
-                    AbstractDungeon.actionManager.addToBottom(new ApplyPowerAction(m, m, new StrengthPower(m, 1)));
+                    AbstractDungeon.actionManager.addToBottom(new ApplyPowerAction(m, m, new StrengthPower(m, (AbstractDungeon.actNum + 3)/ 3)));
                 }
                 break;
             case 2:
                 for (AbstractMonster m : room.monsters.monsters) {
-                    AbstractDungeon.actionManager.addToBottom(new ApplyPowerAction(m, m, new MetallicizePower(m, 2), 2));
+                    AbstractDungeon.actionManager.addToBottom(new ApplyPowerAction(m, m, new MetallicizePower(m,  AbstractDungeon.actNum), AbstractDungeon.actNum));
                 }
 
                 break;
             case 3:
                 for (AbstractMonster m : room.monsters.monsters) {
-                    AbstractDungeon.actionManager.addToBottom(new ApplyPowerAction(m, m, new RegenerateMonsterPower(m, 2), 2));
+                    AbstractDungeon.actionManager.addToBottom(new ApplyPowerAction(m, m, new RegenerateMonsterPower(m, AbstractDungeon.actNum), AbstractDungeon.actNum));
+                }
+                break;
+            case 4:
+                for (AbstractMonster m : room.monsters.monsters) {
+                    if(Byrd.ID.equals(m.id))
+                    {
+                        AbstractDungeon.actionManager.addToBottom(new ApplyPowerAction(m, m, new MetallicizePower(m,  AbstractDungeon.actNum), AbstractDungeon.actNum));
+                    }
+                    else
+                    {
+                        AbstractDungeon.actionManager.addToBottom(new ApplyPowerAction(m, m, new FlightPower(m, AbstractDungeon.actNum), AbstractDungeon.actNum));
+                    }
                 }
                 break;
         }
