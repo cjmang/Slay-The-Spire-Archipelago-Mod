@@ -16,6 +16,7 @@ import javassist.CtBehavior;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class APCampfirePatch {
 
@@ -50,9 +51,11 @@ public class APCampfirePatch {
             LocationTracker locationTracker = ctx.getLocationTracker();
             LocationTracker.CampfireLocations campfireLocs = locationTracker.getCampfireLocations();
             List<Long> remaining = campfireLocs.getLocationsForAct(AbstractDungeon.actNum);
-            remaining.removeIf(l -> (locationTracker.getScoutedItem(l).flags & NetworkItem.ADVANCEMENT) > 0);
-            if(!remaining.isEmpty()) {
-                ctx.getClient().createHints(new ArrayList<>(remaining));
+            List<Long> sendMe = remaining.stream()
+                    .filter(l -> (locationTracker.getScoutedItem(l).flags & NetworkItem.ADVANCEMENT) > 0)
+                    .collect(Collectors.toList());
+            if(!sendMe.isEmpty()) {
+                ctx.getClient().createHints(sendMe);
             }
             for(Long rem : remaining) {
                 ___buttons.add(new APCampfireButton(rem, locationTracker.getScoutedItem(rem)));
