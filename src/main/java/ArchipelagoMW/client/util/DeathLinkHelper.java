@@ -50,7 +50,7 @@ public class DeathLinkHelper {
     public void onDeathLink(DeathLinkEvent event) {
         APClient.logger.info("Deathlink received: sauce: {}, time: {}", event.source, event.time);
         //ohh hey! look its a death link event.. *hopefully*
-        int damage = (int) (AbstractDungeon.player.maxHealth * damagePercent);
+        int damage = (int) Math.ceil(AbstractDungeon.player.maxHealth * damagePercent);
         update.cause.set(event.cause);
         update.source.set(event.source);
         update.pendingDamage.addAndGet(damage);

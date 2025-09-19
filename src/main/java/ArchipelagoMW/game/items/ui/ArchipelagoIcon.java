@@ -8,6 +8,7 @@ import ArchipelagoMW.game.TalkQueue;
 import ArchipelagoMW.game.ui.APTextures;
 import ArchipelagoMW.mod.Archipelago;
 import ArchipelagoMW.game.locations.LocationTracker;
+import ArchipelagoMW.saythespire.SayTheSpire;
 import basemod.BaseMod;
 import basemod.ReflectionHacks;
 import basemod.TopPanelItem;
@@ -83,11 +84,19 @@ public class ArchipelagoIcon extends TopPanelItem {
 
     }
 
+    private boolean wasConnected = true;
+
     @Override
     public void render(SpriteBatch sb, Color color) {
         if (!ctx.getClient().isConnected()) {
             super.render(sb, Color.RED);
+            if(wasConnected)
+            {
+                wasConnected = false;
+                SayTheSpire.sts.output("Disconnected from server. Try to open the help from afar screen to reconnect", true);
+            }
         } else {
+            wasConnected = true;
             if (!this.isClickable())
                 super.render(sb, Color.GRAY);
             else
@@ -145,6 +154,7 @@ public class ArchipelagoIcon extends TopPanelItem {
         if (!ctx.getClient().isConnected() && !AbstractDungeon.player.isDead) {
             AbstractPlayer player = AbstractDungeon.player;
             TalkQueue.topLevelTalk(player.hb.cX, player.hb.cY, 5.0f, "Attempting to reconnect...", true, false);
+            SayTheSpire.sts.output("Attempting to reconnect", true);
             ctx.getClient().reconnect();
         } else if (AbstractDungeon.screen == ArchipelagoRewardScreen.Enum.ARCHIPELAGO_REWARD_SCREEN) {
             AbstractDungeon.closeCurrentScreen();
