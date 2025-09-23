@@ -1,7 +1,6 @@
 package ArchipelagoMW.client;
 
 import ArchipelagoMW.client.config.CharacterConfig;
-import ArchipelagoMW.client.util.DeathLinkHelper;
 import ArchipelagoMW.game.CharacterManager;
 import ArchipelagoMW.client.config.SlotData;
 import ArchipelagoMW.client.apEvents.ConnectionResult;
@@ -61,6 +60,7 @@ public class APClient extends Client {
         apClient.setName(slotName);
         apClient.setItemsHandlingFlags(ItemsHandling.SEND_ITEMS + ItemsHandling.SEND_OWN_ITEMS + ItemsHandling.SEND_STARTING_INVENTORY);
 
+        logger.info("Attempting to login with address '{}', slotName '{}' password '{}'", address, slotName, password);
         apClient.getEventManager().registerListener(new ConnectionResult());
         apClient.getEventManager().registerListener(EventHandlers.class);
         apClient.getEventManager().registerListener(apClient.dataStorageWrapper);
@@ -127,12 +127,12 @@ public class APClient extends Client {
 
     @Override
     public void onError(Exception e) {
-        ConnectionPanel.connectionResultText = "Server Error NL " + e.getMessage();
+        ConnectionPanel.setConnectionResultText("Server Error NL " + e.getMessage());
     }
 
     @Override
     public void onClose(String message, int i) {
-        ConnectionPanel.connectionResultText = "Connection Closed NL " + message;
+        ConnectionPanel.setConnectionResultText("Connection Closed NL " + message);
     }
 
     public void asyncDSGet(Collection<String> keys, Consumer<RetrievedEvent> lambda)

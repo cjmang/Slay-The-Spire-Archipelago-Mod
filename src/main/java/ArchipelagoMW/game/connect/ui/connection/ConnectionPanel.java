@@ -5,15 +5,18 @@ import ArchipelagoMW.mod.Archipelago;
 import ArchipelagoMW.game.ui.Components.TextBox;
 import ArchipelagoMW.saythespire.SayTheSpire;
 import ArchipelagoMW.saythespire.UIElement;
+import basemod.BaseMod;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.evacipated.cardcrawl.modthespire.Loader;
 import com.megacrit.cardcrawl.core.CardCrawlGame;
 import com.megacrit.cardcrawl.core.Settings;
 import com.megacrit.cardcrawl.helpers.FontHelper;
 import com.megacrit.cardcrawl.helpers.ImageMaster;
+import com.megacrit.cardcrawl.helpers.input.InputHelper;
 import com.megacrit.cardcrawl.localization.UIStrings;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -27,7 +30,7 @@ public class ConnectionPanel {
     private final Color uiColor;
 
 
-    public static String connectionResultText = "";
+    private static String connectionResultText = "";
 
     // Position
     public float x = Settings.WIDTH / 6f;
@@ -75,6 +78,18 @@ public class ConnectionPanel {
 //        resumeSave = new ConfirmPopup("Resume?", "Archipelago Save Detected would you like to resume?", ConfirmPopupPatch.AP_SAVE_RESUME);
     }
 
+    public static String getConnectionResultText() {
+        return connectionResultText;
+    }
+
+    public static void setConnectionResultText(String msg) {
+        ConnectionPanel.connectionResultText = msg;
+        if(msg != null && !msg.isEmpty())
+        {
+            SayTheSpire.sts.output(msg);
+        }
+    }
+
     public void update() {
         if(Gdx.input.isKeyJustPressed(Input.Keys.TAB)) {
             if (Gdx.input.getInputProcessor().equals(addressTextBox.getObject())) {
@@ -89,6 +104,10 @@ public class ConnectionPanel {
             }
             else
             {
+                if(Loader.isModLoaded("Say_the_Spire"))
+                {
+                    InputHelper.justClickedLeft = false;
+                }
                 Gdx.input.setInputProcessor(addressTextBox.getObject());
                 SayTheSpire.sts.setUI(addressTextBox);
             }
@@ -160,7 +179,7 @@ public class ConnectionPanel {
 
         FontHelper.renderSmartText(sb,
                 FontHelper.tipBodyFont,
-                connectionResultText,
+                getConnectionResultText(),
                 OPTION_X,
                 currentY,
                 PANEL_WIDTH,

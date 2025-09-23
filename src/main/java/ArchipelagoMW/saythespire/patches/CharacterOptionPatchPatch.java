@@ -7,7 +7,7 @@ import com.megacrit.cardcrawl.screens.charSelect.CharacterOption;
 import sayTheSpire.ui.elements.CharacterButtonElement;
 
 
-public class CharacterOptionPatch {
+public class CharacterOptionPatchPatch {
 
     @SpirePatch2(cls="CharacterOptionPatch", requiredModId = "Say_the_Spire", method="Prefix", paramtypez = CharacterOption.class)
     public static class APOptionPatch

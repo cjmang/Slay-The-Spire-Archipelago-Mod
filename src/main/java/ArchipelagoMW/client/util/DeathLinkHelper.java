@@ -9,7 +9,6 @@ import com.evacipated.cardcrawl.modthespire.Loader;
 import com.evacipated.cardcrawl.modthespire.lib.*;
 import com.megacrit.cardcrawl.actions.AbstractGameAction;
 import com.megacrit.cardcrawl.characters.AbstractPlayer;
-import com.megacrit.cardcrawl.core.CardCrawlGame;
 import com.megacrit.cardcrawl.dungeons.AbstractDungeon;
 import com.megacrit.cardcrawl.monsters.AbstractMonster;
 import com.megacrit.cardcrawl.monsters.MonsterGroup;
@@ -17,7 +16,6 @@ import com.megacrit.cardcrawl.rooms.AbstractRoom;
 import com.megacrit.cardcrawl.screens.DeathScreen;
 import com.megacrit.cardcrawl.screens.GameOverScreen;
 import com.megacrit.cardcrawl.screens.options.ConfirmPopup;
-import com.megacrit.cardcrawl.vfx.SpeechBubble;
 import com.megacrit.cardcrawl.vfx.combat.FlashAtkImgEffect;
 import io.github.archipelagomw.events.ArchipelagoEventListener;
 import io.github.archipelagomw.events.DeathLinkEvent;
@@ -36,13 +34,20 @@ import java.util.concurrent.atomic.AtomicReference;
 public class DeathLinkHelper {
 
     public float damagePercent = 0f;
-    public AtomicBoolean sendDeath = new AtomicBoolean(true);
+    private final AtomicBoolean sendDeath = new AtomicBoolean(true);
+    private final boolean initializedWithDeath;
 
     public DeathLinkHelper(int deathLink) {
         damagePercent = deathLink / 100f;
         if(damagePercent <= 0 )
         {
+            damagePercent = 0f;
+            initializedWithDeath = false;
             sendDeath.set(false);
+        }
+        else
+        {
+            initializedWithDeath = true;
         }
     }
 
@@ -54,6 +59,14 @@ public class DeathLinkHelper {
         update.cause.set(event.cause);
         update.source.set(event.source);
         update.pendingDamage.addAndGet(damage);
+    }
+
+    public boolean shouldSendDeath() {
+        return sendDeath.get();
+    }
+
+    public void setSendDeath(boolean sendDeath) {
+        this.sendDeath.set(sendDeath && initializedWithDeath);
     }
 
     @SpirePatch(clz = AbstractDungeon.class, method = "update")
@@ -139,12 +152,12 @@ public class DeathLinkHelper {
                 APClient.logger.info("Player died from deathlink.");
                 AbstractDungeon.player.currentHealth = 0;
                 AbstractDungeon.player.isDead = true;
-                deathLink.sendDeath.set(false);
+                deathLink.setSendDeath(false);
                 AbstractDungeon.deathScreen = new DeathScreen(null);
                 ReflectionHacks.setPrivate(AbstractDungeon.deathScreen, DeathScreen.class, "deathText", causeStr);
                 AbstractDungeon.screen = AbstractDungeon.CurrentScreen.DEATH;
             } else {
-                deathLink.sendDeath.set(true);
+                deathLink.setSendDeath(true);
             }
         }
     }
@@ -153,7 +166,7 @@ public class DeathLinkHelper {
     public static class abandon {
         @SpireInsertPatch(locator = Locator.class)
         public static void Insert() {
-            APContext.getContext().getDeathLinkHelper().sendDeath.set(false);
+            APContext.getContext().getDeathLinkHelper().setSendDeath(false);
         }
 
         private static class Locator extends SpireInsertLocator {
@@ -171,8 +184,9 @@ public class DeathLinkHelper {
         public static void Postfix(DeathScreen __instance) {
             TeamManager.leaveTeam();
             DeathLinkHelper deathLinkHelper = APContext.getContext().getDeathLinkHelper();;
-            if (GameOverScreen.isVictory || !deathLinkHelper.sendDeath.get() || deathLinkHelper.damagePercent <= 0) {
+            if (GameOverScreen.isVictory || !deathLinkHelper.shouldSendDeath() || deathLinkHelper.damagePercent <= 0) {
                 //APClient.apClient.disconnect();
+                deathLinkHelper.setSendDeath(true);
                 return;
             }
             APClient.logger.info("Player is on deathscreen");

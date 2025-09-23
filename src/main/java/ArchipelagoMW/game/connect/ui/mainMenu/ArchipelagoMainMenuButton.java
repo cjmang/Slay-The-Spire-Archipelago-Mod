@@ -50,7 +50,7 @@ public class ArchipelagoMainMenuButton {
 
     public static void openConnectionInfo() {
         logger.info("Opening Connection Window");
-        ConnectionPanel.connectionResultText = "";
+        ConnectionPanel.setConnectionResultText("");
         archipelagoPreGameScreen = new ArchipelagoPreGameScreen();
         archipelagoPreGameScreen.open();
     }

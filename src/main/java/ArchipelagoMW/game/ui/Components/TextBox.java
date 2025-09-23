@@ -1,5 +1,6 @@
 package ArchipelagoMW.game.ui.Components;
 
+import ArchipelagoMW.client.APClient;
 import ArchipelagoMW.saythespire.SayTheSpire;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;

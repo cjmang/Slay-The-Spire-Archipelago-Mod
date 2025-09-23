@@ -40,6 +40,7 @@ public class ArchipelagoPreGameScreen {
 
     public GridSelectConfirmButton confirmButton = new GridSelectConfirmButton(TEXT[4]);
     public MenuCancelButton backButton = new MenuCancelButton();
+    private boolean justOpened = false;
 
     public final ConnectionPanel connectionPanel;
     public final APTeamsPanel teamPanel;
@@ -53,12 +54,12 @@ public class ArchipelagoPreGameScreen {
     public ArchipelagoPreGameScreen() {
         connectionPanel = new ConnectionPanel();
         teamPanel = new APTeamsPanel();
-        teamPanel.setPos(450 * Settings.scale,800 * Settings.scale);
+        teamPanel.setPos(450 * Settings.scale, 800 * Settings.scale);
 
     }
 
     public void open() {
-
+        justOpened = true;
         // Swap to our screen
         CardCrawlGame.mainMenuScreen.darken();
         CardCrawlGame.mainMenuScreen.screen = Enum.CONNECTION_INFO;
@@ -89,42 +90,40 @@ public class ArchipelagoPreGameScreen {
     //update when something happens on our screen.
     public void update() {
 
-            backButton.update();
-            if (backButton.hb.clicked || InputHelper.pressedEscape) {
-                backButton.hb.clicked = false;
-                InputHelper.pressedEscape = false;
-                backToMenu();
-                TeamManager.leaveTeam();
-            }
+        backButton.update();
+        if (backButton.hb.clicked || InputHelper.pressedEscape) {
+            backButton.hb.clicked = false;
+            InputHelper.pressedEscape = false;
+            backToMenu();
+            TeamManager.leaveTeam();
+        }
 
-            confirmButton.update();
-            if (confirmButton.hb.clicked || Gdx.input.isKeyJustPressed(Input.Keys.ENTER)) {
-                Gdx.input.setInputProcessor(new ScrollInputProcessor());
-                confirmButton.hb.clicked = false;
-                switch (screen) {
-                    case connection:
-                        ConnectionPanel.connectionResultText = TEXT[5];
-                        String address = APSettings.address = connectionPanel.addressTextBox.getObject().getText();
-                        String slot = APSettings.slot = connectionPanel.slotNameTextBox.getObject().getText();
-                        String password = APSettings.password = connectionPanel.passwordTextBox.getObject().getText();
-                        APSettings.saveSettings();
-                        APClient client = APContext.getContext().getClient();
-                        if(!Archipelago.setConnectionInfo(address, slot, password) && client != null && client.isConnected()) {
-                            ArchipelagoRewardScreen.rewardsQueued = 0;
-                            APContext.getContext().getSaveManager().loadSaves();
-                            screen = APScreen.charSelect;
-                        }
-                        else
-                        {
-                            APClient.newConnection(APContext.getContext(), Archipelago.address, Archipelago.slotName, Archipelago.password.isEmpty() ? null : Archipelago.password);
-                        }
-                        ArchipelagoMainMenuButton.archipelagoPreGameScreen.confirmButton.updateText("Select Character");
-                        break;
+        confirmButton.update();
+        if (confirmButton.hb.clicked || (Gdx.input.isKeyJustPressed(Input.Keys.ENTER) && !justOpened)) {
+            Gdx.input.setInputProcessor(new ScrollInputProcessor());
+            confirmButton.hb.clicked = false;
+            switch (screen) {
+                case connection:
+                    ConnectionPanel.setConnectionResultText(TEXT[5]);
+                    String address = APSettings.address = connectionPanel.addressTextBox.getObject().getText();
+                    String slot = APSettings.slot = connectionPanel.slotNameTextBox.getObject().getText();
+                    String password = APSettings.password = connectionPanel.passwordTextBox.getObject().getText();
+                    APSettings.saveSettings();
+                    APClient client = APContext.getContext().getClient();
+                    if (!Archipelago.setConnectionInfo(address, slot, password) && client != null && client.isConnected()) {
+                        ArchipelagoRewardScreen.rewardsQueued = 0;
+                        APContext.getContext().getSaveManager().loadSaves();
+                        screen = APScreen.charSelect;
+                    } else {
+                        APClient.newConnection(APContext.getContext(), Archipelago.address, Archipelago.slotName, Archipelago.password.isEmpty() ? null : Archipelago.password);
+                    }
+                    ArchipelagoMainMenuButton.archipelagoPreGameScreen.confirmButton.updateText("Select Character");
+                    break;
 //                    case team:
 //                        ConnectionResult.start();
 //                        TeamManager.lockTeam();
 //                        break;
-                }
+            }
         }
 
         //pass the update to our address panel.
@@ -140,6 +139,7 @@ public class ArchipelagoPreGameScreen {
                 toCharSelect();
                 break;
         }
+        justOpened = false;
     }
 
     //this will be called to render our screen
@@ -158,8 +158,8 @@ public class ArchipelagoPreGameScreen {
 //                break;
         }
 
-            this.backButton.render(sb);
-            this.confirmButton.render(sb);
+        this.backButton.render(sb);
+        this.confirmButton.render(sb);
     }
 
     static {

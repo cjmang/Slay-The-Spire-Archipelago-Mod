@@ -10,6 +10,7 @@ import ArchipelagoMW.game.connect.ui.connection.ConnectionPanel;
 import ArchipelagoMW.game.connect.ui.mainMenu.ArchipelagoMainMenuButton;
 import ArchipelagoMW.mod.Archipelago;
 import ArchipelagoMW.client.util.DeathLinkHelper;
+import ArchipelagoMW.saythespire.SayTheSpire;
 import com.evacipated.cardcrawl.modthespire.Loader;
 import com.megacrit.cardcrawl.core.CardCrawlGame;
 import com.megacrit.cardcrawl.core.Settings;
@@ -45,20 +46,23 @@ public class ConnectionResult {
             default:
                 msg = "Unknown Error: " + event.getResult().name();
         }
-        ConnectionPanel.connectionResultText = msg;
+        ConnectionPanel.setConnectionResultText(msg);
 
-        if (event.getResult() != io.github.archipelagomw.network.ConnectionResult.Success)
-            return;
 
-        if (CardCrawlGame.mode != CardCrawlGame.GameMode.CHAR_SELECT)
+        if (event.getResult() != io.github.archipelagomw.network.ConnectionResult.Success) {
             return;
+        }
+
+        if (CardCrawlGame.mode != CardCrawlGame.GameMode.CHAR_SELECT) {
+            return;
+        }
 
         SlotData slotData = event.getSlotData(SlotData.class);
         APClient.logger.info("deathlink: {}", slotData.deathLink);
         if(slotData.modVersion != SlotData.EXPECTED_MOD_VERSION)
         {
-            ConnectionPanel.connectionResultText = "Mod is not compatible with generated world; generated world version: " +
-                    slotData.modVersion + " expected version " + SlotData.EXPECTED_MOD_VERSION;
+            ConnectionPanel.setConnectionResultText("Mod is not compatible with generated world; generated world version: " +
+                    slotData.modVersion + " expected version " + SlotData.EXPECTED_MOD_VERSION);
             return;
         }
         APContext ctx = APContext.getContext();
