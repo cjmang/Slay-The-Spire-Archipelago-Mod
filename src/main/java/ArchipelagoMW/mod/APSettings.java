@@ -20,6 +20,7 @@ public class APSettings {
     private static final String CONNECT_SCREEN_ADDRESS_KEY = "ConnectAddress";
     private static final String CONNECT_SCREEN_SLOT_KEY = "ConnectSlot";
     private static final String RECEIVE_ITEM_SOUND = "makeReceiveNoise";
+    private static final String NO_COLOR_WORDS = "noColorWords";
 
 
     public enum FilterType {
@@ -32,12 +33,14 @@ public class APSettings {
     private static ModToggleButton teamToggle;
     private static ModToggleButton recentToggle;
     private static ModToggleButton allToggle;
+    private static ModToggleButton colorToggle;
 
     public static void loadSettings() {
         defaultSettings.setProperty(PLAYER_FILTER_KEY, "RECENT");
         defaultSettings.setProperty(CONNECT_SCREEN_ADDRESS_KEY, "Archipelago.gg");
         defaultSettings.setProperty(CONNECT_SCREEN_SLOT_KEY, "");
         defaultSettings.setProperty(RECEIVE_ITEM_SOUND, "true");
+        defaultSettings.setProperty(NO_COLOR_WORDS, "false");
 
         try {
             config = new SpireConfig(Archipelago.getModID(), "archipelagoConfig", defaultSettings);
@@ -53,6 +56,11 @@ public class APSettings {
     public static boolean isSoundEnabled()
     {
         return config.getBool(RECEIVE_ITEM_SOUND);
+    }
+
+    public static boolean hideColorWords()
+    {
+        return config.getBool(NO_COLOR_WORDS);
     }
 
     public static void initialize() {
@@ -94,6 +102,13 @@ public class APSettings {
         });
         settingsPanel.addUIElement(soundToggle);
         settingsPanel.addUIElement(soundLabel);
+        configYpos -= configStep;
+
+        colorToggle = new ModToggleButton(configXPos, configYpos - 5f, APSettings.config.getBool(NO_COLOR_WORDS), true, settingsPanel, APSettings::toggleColor);
+        ModLabel colorLabel = new ModLabel("Disable AP Color Words", configXPos + 50f, configYpos, settingsPanel, (label) -> {
+        });
+        settingsPanel.addUIElement(colorToggle);
+        settingsPanel.addUIElement(colorLabel);
         configYpos -= configStep*2;
 
 
@@ -150,6 +165,11 @@ public class APSettings {
 
     private static void toggleSound(ModToggleButton toggle) {
         config.setBool(RECEIVE_ITEM_SOUND, !config.getBool(RECEIVE_ITEM_SOUND));
+        APSettings.saveSettings();
+    }
+
+    private static void toggleColor(ModToggleButton toggle) {
+        config.setBool(NO_COLOR_WORDS, !config.getBool(NO_COLOR_WORDS));
         APSettings.saveSettings();
     }
 

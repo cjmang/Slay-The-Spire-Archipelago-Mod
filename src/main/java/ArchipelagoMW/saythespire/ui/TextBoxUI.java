@@ -29,6 +29,11 @@ public class TextBoxUI extends sayTheSpire.ui.elements.UIElement implements UIEl
         return label;
     }
 
+    @Override
+    public String getStatusString() {
+        return " current value is " + textBox.getText();
+    }
+
     public TextBox getObject()
     {
         return textBox;

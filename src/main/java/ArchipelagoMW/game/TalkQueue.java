@@ -2,6 +2,7 @@ package ArchipelagoMW.game;
 
 import ArchipelagoMW.client.APClient;
 import ArchipelagoMW.game.ui.SpeechBubblePatch;
+import ArchipelagoMW.mod.APSettings;
 import ArchipelagoMW.saythespire.SayTheSpire;
 import basemod.ReflectionHacks;
 import com.badlogic.gdx.graphics.Color;
@@ -12,7 +13,6 @@ import com.megacrit.cardcrawl.dungeons.AbstractDungeon;
 import com.megacrit.cardcrawl.ui.DialogWord;
 import com.megacrit.cardcrawl.ui.SpeechWord;
 import com.megacrit.cardcrawl.vfx.SpeechBubble;
-import com.megacrit.cardcrawl.vfx.SpeechTextEffect;
 import io.github.archipelagomw.Print.APPrintColor;
 import io.github.archipelagomw.Print.APPrintPart;
 import io.github.archipelagomw.events.PrintJSONEvent;
@@ -148,6 +148,10 @@ public class TalkQueue {
 
         public static void perWord(StringBuilder sb, String text, String prefix, String wrapper)
         {
+            if(APSettings.hideColorWords() && !"#p".equals(prefix))
+            {
+                prefix = "";
+            }
             for(String word : text.split("\\s+"))
             {
                 sb.append(prefix)
