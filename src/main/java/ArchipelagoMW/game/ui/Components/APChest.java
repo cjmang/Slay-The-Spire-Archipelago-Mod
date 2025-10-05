@@ -23,6 +23,7 @@ public class APChest extends AbstractChest {
         this.hb.move(CHEST_LOC_X, CHEST_LOC_Y - 100.0F * Settings.scale);
         this.item = APContext.getContext().getLocationTracker().sendBossRelic(AbstractDungeon.actNum);
         AbstractDungeon.overlayMenu.proceedButton.setLabel(TEXT[0]);
+        SayTheSpire.sts.output(item.itemName + " sent to " + item.playerName);
     }
 
     public void open(boolean bossChest) {
@@ -30,11 +31,20 @@ public class APChest extends AbstractChest {
     }
 
     @Override
+    public void update()
+    {
+        super.update();
+        if(hb.justHovered)
+        {
+            SayTheSpire.sts.output(item.itemName + " sent to " + item.playerName);
+        }
+    }
+
+    @Override
     public void render(SpriteBatch sb) {
         super.render(sb);
         if (!this.isOpen) {
             TipHelper.renderGenericTip(CHEST_LOC_X - hb.width / 2, CHEST_LOC_Y + hb.height / 2f, item.itemName, item.playerName);
-            SayTheSpire.sts.output(item.itemName + " sent to " + item.playerName);
         }
     }
 
