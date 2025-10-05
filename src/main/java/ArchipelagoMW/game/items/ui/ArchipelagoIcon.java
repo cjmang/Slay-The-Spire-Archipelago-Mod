@@ -5,6 +5,7 @@ import ArchipelagoMW.client.APContext;
 import ArchipelagoMW.client.config.SlotData;
 import ArchipelagoMW.game.ShopManager;
 import ArchipelagoMW.game.TalkQueue;
+import ArchipelagoMW.game.items.patches.TransitionFixPatch;
 import ArchipelagoMW.game.ui.APTextures;
 import ArchipelagoMW.mod.Archipelago;
 import ArchipelagoMW.game.locations.LocationTracker;
@@ -148,7 +149,7 @@ public class ArchipelagoIcon extends TopPanelItem {
     @Override
     protected void onClick() {
         //disable button if we are dead, we should not be able to reconnect.
-        if(AbstractDungeon.player.isDead)
+        if(AbstractDungeon.player.isDead || TransitionFixPatch.isTransitioning)
             return;
         // if we are disconnected, and we click the ap button try new connection.
         if (!ctx.getClient().isConnected() && !AbstractDungeon.player.isDead) {

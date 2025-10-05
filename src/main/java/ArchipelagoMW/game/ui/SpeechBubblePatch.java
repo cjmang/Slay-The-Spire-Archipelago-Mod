@@ -36,13 +36,15 @@ public class SpeechBubblePatch {
         @SpirePostfixPatch()
         public static void topLevelEffect(SpeechBubble __instance, float x, float y, float duration, String msg, boolean isPLayer)
         {
-            AbstractDungeon.topLevelEffectsQueue.add(
-                    new SpeechTextEffect(x + 170f * Settings.scale,
-                            y + 124f * Settings.scale,
-                            duration,
-                            msg,
-                            DialogWord.AppearEffect.BUMP_IN
-                    ));
+            if(skipLowLevelText) {
+                AbstractDungeon.topLevelEffectsQueue.add(
+                        new SpeechTextEffect(x + 170f * Settings.scale,
+                                y + 124f * Settings.scale,
+                                duration,
+                                msg,
+                                DialogWord.AppearEffect.BUMP_IN
+                        ));
+            }
         }
     }
 }
