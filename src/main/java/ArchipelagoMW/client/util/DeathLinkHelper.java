@@ -12,6 +12,8 @@ import com.megacrit.cardcrawl.characters.AbstractPlayer;
 import com.megacrit.cardcrawl.dungeons.AbstractDungeon;
 import com.megacrit.cardcrawl.monsters.AbstractMonster;
 import com.megacrit.cardcrawl.monsters.MonsterGroup;
+import com.megacrit.cardcrawl.potions.AbstractPotion;
+import com.megacrit.cardcrawl.relics.LizardTail;
 import com.megacrit.cardcrawl.rooms.AbstractRoom;
 import com.megacrit.cardcrawl.screens.DeathScreen;
 import com.megacrit.cardcrawl.screens.GameOverScreen;
@@ -151,6 +153,10 @@ public class DeathLinkHelper {
             if (AbstractDungeon.player.currentHealth <= 0 && !AbstractDungeon.player.isDead) {
                 APClient.logger.info("Player died from deathlink.");
                 AbstractDungeon.player.currentHealth = 0;
+                if(isDeathPrevented(AbstractDungeon.player))
+                {
+                    return;
+                }
                 AbstractDungeon.player.isDead = true;
                 deathLink.setSendDeath(false);
                 AbstractDungeon.deathScreen = new DeathScreen(null);
@@ -160,7 +166,38 @@ public class DeathLinkHelper {
                 deathLink.setSendDeath(true);
             }
         }
+
+        private static boolean isDeathPrevented(AbstractPlayer player)
+        {
+            if(player.hasRelic("Mark of the Bloom"))
+            {
+                return false;
+            }
+            if(player.hasPotion("FairyPotion"))
+            {
+                for (AbstractPotion p : player.potions) {
+                    if (p.ID.equals("FairyPotion")) {
+                        p.flash();
+                        player.currentHealth = 0;
+                        p.use(player);
+                        AbstractDungeon.topPanel.destroyPotion(p.slot);
+                        return true;
+                    }
+                }
+            }
+            if(player.hasRelic("Lizard Tail"))
+            {
+                if (((LizardTail)player.getRelic("Lizard Tail")).counter == -1) {
+                    player.currentHealth = 0;
+                    player.getRelic("Lizard Tail").onTrigger();
+                    return true;
+                }
+            }
+            return false;
+        }
     }
+
+
 
     @SpirePatch(clz = ConfirmPopup.class, method = "yesButtonEffect")
     public static class abandon {

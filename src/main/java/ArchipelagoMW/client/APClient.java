@@ -132,6 +132,7 @@ public class APClient extends Client {
 
     @Override
     public void onClose(String message, int i) {
+        APClient.logger.info("onClose: {} code: {}", message, i);
         ConnectionPanel.setConnectionResultText("Connection Closed NL " + message);
     }
 
