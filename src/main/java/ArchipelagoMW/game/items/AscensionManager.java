@@ -94,7 +94,8 @@ public class AscensionManager {
                     AbstractDungeon.player.masterDeck.removeCard("AscendersBane");
                     break;
                 case 13:
-                    item = new RewardItem(50);
+                    item = new RewardItem(50, true);
+                    item.type = RewardItem.RewardType.GOLD;
                     ret.add(item);
                     break;
                 case 14:

@@ -160,6 +160,7 @@ public class DeathLinkHelper {
                 AbstractDungeon.player.isDead = true;
                 deathLink.setSendDeath(false);
                 AbstractDungeon.deathScreen = new DeathScreen(null);
+                causeStr = "Failed to climb the spire!";
                 ReflectionHacks.setPrivate(AbstractDungeon.deathScreen, DeathScreen.class, "deathText", causeStr);
                 AbstractDungeon.screen = AbstractDungeon.CurrentScreen.DEATH;
             } else {
