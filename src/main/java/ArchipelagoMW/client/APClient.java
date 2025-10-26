@@ -18,6 +18,7 @@ import io.github.archipelagomw.Client;
 import io.github.archipelagomw.events.*;
 import io.github.archipelagomw.flags.ItemsHandling;
 import io.github.archipelagomw.network.client.SetPacket;
+import io.github.archipelagomw.network.server.RoomInfoPacket;
 import org.apache.hc.core5.net.URIBuilder;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -247,6 +248,7 @@ public class APClient extends Client {
         {
             APClient.logger.warn("Got invalid packet {}", event.getText());
         }
+
     }
 
 

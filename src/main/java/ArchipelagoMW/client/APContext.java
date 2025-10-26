@@ -9,8 +9,12 @@ import ArchipelagoMW.game.items.MiscItemTracker;
 import ArchipelagoMW.game.items.TrapManager;
 import ArchipelagoMW.game.locations.LocationTracker;
 import ArchipelagoMW.game.save.SaveManager;
+import ArchipelagoMW.mod.APSettings;
 import io.github.archipelagomw.ItemManager;
 import io.github.archipelagomw.LocationManager;
+import io.github.archipelagomw.network.server.RoomInfoPacket;
+
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class APContext {
 
@@ -116,4 +120,17 @@ public class APContext {
     {
         return client.getSlotData();
     }
+
+    public boolean shouldReleaseChar()
+    {
+        if(!APSettings.followRoomRelease())
+        {
+            return true;
+        }
+        RoomInfoPacket roomInfo = APContext.getContext().getClient().getRoomInfo();
+
+        int permBits = roomInfo.permissions.getOrDefault("release", 0x0);
+        return (permBits & 7) > 0;
+    }
+
 }

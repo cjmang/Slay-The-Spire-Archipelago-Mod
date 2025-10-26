@@ -104,6 +104,7 @@ public class VictoryScreenPatch {
 //    }
 
     public static void victoryForCurrentCharacter() {
+
         CharacterManager characterManager = APContext.getContext().getCharacterManager();
         AbstractPlayer character = characterManager.getCurrentCharacter();
 
@@ -160,7 +161,11 @@ public class VictoryScreenPatch {
                     client.setGameState(ClientStatus.CLIENT_GOAL);
                     SayTheSpire.sts.output("Archipelago goal completed", true);
                 }
-                apContext.getLocationTracker().endOfTheRoad();
+
+                if(APContext.getContext().shouldReleaseChar())
+                {
+                    apContext.getLocationTracker().endOfTheRoad();
+                }
             }
             catch (ExecutionException | InterruptedException ex)
             {

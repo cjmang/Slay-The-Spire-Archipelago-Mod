@@ -82,7 +82,10 @@ public class CharacterSelectScreenPatch {
                 unlockedChars.put(name, true);
             }
         });
-        Archipelago.logger.info("Character Options {}", options.stream().map(o -> o.c.chosenClass.name()).collect(Collectors.toList()));
+//        charSelectScreen.options.removeIf(o -> !charManager.getCharacters().containsKey(o.c.chosenClass.name()));
+//        ReflectionHacks.setPrivate(charSelectScreen, CustomCharacterSelectScreen.class, "allOptions", new ArrayList<>(charSelectScreen.options));
+        Archipelago.logger.info("Character Options {}", charSelectScreen.options.stream().map(o -> o.c.chosenClass.name()).collect(Collectors.toList()));
+//        Archipelago.logger.info("Character Manager chars {}", charManager.getCharacters().keySet().stream().collect(Collectors.toList()));
         for(Map.Entry<String, Boolean> entry : unlockedChars.entrySet())
         {
             Archipelago.logger.info("Character {} is unlocked: {}", entry.getKey(), entry.getValue());
