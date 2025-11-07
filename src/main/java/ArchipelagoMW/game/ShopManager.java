@@ -112,42 +112,37 @@ public class ShopManager {
     private <T> void addAPItem(List<T> slots, int emptySlots, Utils.TriFunction<Long, NetworkItem,Integer, T> createFunc)
     {
         ArrayList<Long> scoutMe = new ArrayList<>();
-        if(emptySlots == 0 && shopContext.hasMore())
+        int max = slots.size() + emptySlots;
+        int emptiesFilled = 0;
+        for(int i = 0; i < max && shopContext.hasMore(); i++)
         {
-            int max = slots.size();
-            for(int i = 0; i < max && shopContext.hasMore(); i++) {
-                slots.remove(0);
-                Long locationId = shopContext.getNextLocation();
-                if(locationId == null)
-                {
-                    continue;
-                }
-                NetworkItem item = locationTracker.getScoutedItemOrDefault(locationId);
-                if((item.flags & io.github.archipelagomw.flags.NetworkItem.ADVANCEMENT) > 0)
-                {
-                    scoutMe.add(locationId);
-                }
-                slots.add(createFunc.apply(locationId, item, i));
-            }
-        }
-        else
-        {
-            // 3
-            int currentSize = slots.size();
-            // i < 2
-            for(int i = 0; i < emptySlots; i++)
+            int insertAt;
+            boolean replace = false;
+            if(emptySlots > emptiesFilled)
             {
-                Long locationId = shopContext.getNextLocation();
-                if(locationId == null)
-                {
-                    continue;
-                }
-                NetworkItem item = locationTracker.getScoutedItemOrDefault(locationId);
-                if((item.flags & io.github.archipelagomw.flags.NetworkItem.ADVANCEMENT) > 0)
-                {
-                    scoutMe.add(locationId);
-                }
-                slots.add(createFunc.apply(locationId, item, currentSize + i));
+                emptiesFilled++;
+                insertAt = 0;
+            }
+            else
+            {
+                insertAt = i;
+                replace = true;
+            }
+            Long locationId = shopContext.getNextLocation();
+            if(locationId == null)
+            {
+                continue;
+            }
+            NetworkItem item = locationTracker.getScoutedItemOrDefault(locationId);
+            if((item.flags & io.github.archipelagomw.flags.NetworkItem.ADVANCEMENT) > 0)
+            {
+                scoutMe.add(locationId);
+            }
+            if(replace) {
+                slots.set(insertAt, createFunc.apply(locationId, item, i /*addIndex*/));
+            }
+            else {
+                slots.add(insertAt, createFunc.apply(locationId, item, i /*addIndex*/));
             }
         }
         ctx.getClient().createHints(scoutMe);
