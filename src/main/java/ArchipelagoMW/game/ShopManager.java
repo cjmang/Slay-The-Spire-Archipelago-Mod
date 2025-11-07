@@ -139,10 +139,10 @@ public class ShopManager {
                 scoutMe.add(locationId);
             }
             if(replace) {
-                slots.set(insertAt, createFunc.apply(locationId, item, i /*addIndex*/));
+                slots.set(insertAt, createFunc.apply(locationId, item, i));
             }
             else {
-                slots.add(insertAt, createFunc.apply(locationId, item, i /*addIndex*/));
+                slots.add(insertAt, createFunc.apply(locationId, item, i));
             }
         }
         ctx.getClient().createHints(scoutMe);
