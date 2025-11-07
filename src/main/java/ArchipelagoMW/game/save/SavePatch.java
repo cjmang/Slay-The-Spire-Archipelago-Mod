@@ -30,7 +30,7 @@ public class SavePatch {
         @SpireInsertPatch(locator = Locator.class, localvars = {"data", "save"})
         public static SpireReturn<Void> Insert(String data, SaveFile save) {
             // hopefully Save data?
-            if (save.current_room.equals(TreasureRoomBoss.class.getName()) && TeamManager.myTeam == null && AbstractDungeon.actNum != 3) {
+            if (save.current_room.equals(TreasureRoomBoss.class.getName()) && TeamManager.myTeam == null && AbstractDungeon.actNum < 3) {
 
                 String character = APContext.getContext().getCharacterManager().getCurrentCharacter().chosenClass.name();
                 APClient.logger.info("Attempting to save character {}", character);
