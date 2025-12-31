@@ -26,6 +26,15 @@ import java.util.concurrent.TimeUnit;
 public class TalkQueue {
     private static final float SPEECH_DURATION = 7.0f;
 
+    public static void playerTalk(String msg)
+    {
+        AbstractPlayer player = AbstractDungeon.player;
+        SpeechBubblePatch.skipLowLevelText = true;
+        SpeechBubble bubble = new SpeechBubble(player.dialogX, player.dialogY, 3.0f, msg, true);
+        AbstractDungeon.topLevelEffects.add(bubble);
+        SpeechBubblePatch.skipLowLevelText = false;
+    }
+
     public static void topLevelTalk(float x, float y, float duration, String msg, boolean isPlayer, boolean faceRight)
     {
         SpeechBubblePatch.skipLowLevelText = true;

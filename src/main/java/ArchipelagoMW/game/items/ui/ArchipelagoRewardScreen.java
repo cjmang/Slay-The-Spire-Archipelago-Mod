@@ -30,6 +30,7 @@ import com.megacrit.cardcrawl.localization.UIStrings;
 import com.megacrit.cardcrawl.potions.AbstractPotion;
 import com.megacrit.cardcrawl.random.Random;
 import com.megacrit.cardcrawl.relics.AbstractRelic;
+import com.megacrit.cardcrawl.relics.BottledFlame;
 import com.megacrit.cardcrawl.rewards.RewardItem;
 import com.megacrit.cardcrawl.rooms.*;
 import com.megacrit.cardcrawl.screens.mainMenu.ScrollBar;
@@ -524,7 +525,8 @@ public class ArchipelagoRewardScreen extends CustomScreen {
                 addReward(reward);
                 break;
             case RELIC:
-                AbstractRelic relic = AbstractDungeon.returnRandomRelic(getRandomRelicTier());
+//                AbstractRelic relic = AbstractDungeon.returnRandomRelic(getRandomRelicTier());
+                AbstractRelic relic = new BottledFlame();
                 reward = new RewardItem(relic);
                 reward.text = player + " NL " + location;
                 RewardItemPatch.CustomFields.apReward.set(reward, true);
