@@ -10,12 +10,15 @@ import io.github.archipelagomw.LocationManager;
 import io.github.archipelagomw.parts.NetworkItem;
 import javassist.CtBehavior;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Set;
+import java.util.*;
 
 public class CombatRewardScreenPatch {
+    private static Set<String> RELIC_BLACKLIST = new HashSet<>(Arrays.asList(
+            "Red Mask",
+            "Necronomicon",
+            "Enchiridion",
+            "Nilry's Codex"
+    ));
 
     private static final void replaceRewards(CombatRewardScreen __instance, ArrayList<RewardItem> ___rewards)
     {
@@ -34,7 +37,9 @@ public class CombatRewardScreenPatch {
                     item = locationTracker.sendCardDraw(reward);
                     break;
                 case RELIC:
-                    item = locationTracker.sendRelic();
+                    if(!RELIC_BLACKLIST.contains(reward.relic.name)) {
+                        item = locationTracker.sendRelic();
+                    }
                     break;
                 case GOLD:
                     if(goldSanity)

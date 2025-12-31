@@ -32,30 +32,4 @@ public class BottlePatches {
             return SpireReturn.Continue();
         }
     }
-//    private static AbstractRoom.RoomPhase phase;
-//    private static boolean updated = false;
-
-//    @SpirePatch(clz= BottledFlame.class, method="onEquip")
-//    public static class BottledFlameEquip{
-//
-//        @SpirePostfixPatch
-//        public static void Prefix(BottledFlame __instance) {
-//            phase = AbstractDungeon.getCurrRoom().phase;
-//            updated = false;
-//        }
-//    }
-//
-//    @SpirePatch(clz= BottledFlame.class, method="update")
-//    public static class BottledFlameUpdate {
-//
-//        @SpireInsertPatch(rloc=74-64)
-//        public static void insert(BottledFlame __instance) {
-//
-//            if(AbstractDungeon.previousScreen == ArchipelagoRewardScreen.Enum.ARCHIPELAGO_REWARD_SCREEN && !updated)
-//            {
-//                AbstractDungeon.getCurrRoom().phase = phase;
-//            }
-//            updated = true;
-//        }
-//    }
 }
