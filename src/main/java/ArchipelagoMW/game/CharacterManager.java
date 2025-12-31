@@ -117,7 +117,9 @@ public class CharacterManager {
         config.downfall = other.downfall;
         config.finalAct = other.finalAct;
         config.seed = "";
+        config.locked = false;
         characters.put(config.officialName,config);
+        availableAPChars.add(config.officialName);
     }
 
     public boolean isItemIDForCurrentCharacter(long itemID)
