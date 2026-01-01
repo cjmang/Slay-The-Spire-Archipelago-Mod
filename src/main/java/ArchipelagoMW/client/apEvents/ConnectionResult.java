@@ -61,7 +61,7 @@ public class ConnectionResult {
 
         SlotData slotData = event.getSlotData(SlotData.class);
         APClient.logger.info("deathlink: {}", slotData.deathLink);
-        if (SlotData.EXPECTED_MOD_VERSIONS.contains(slotData.modVersion)) {
+        if (!SlotData.EXPECTED_MOD_VERSIONS.contains(slotData.modVersion)) {
             ConnectionPanel.setConnectionResultText("Mod is not compatible with generated world. Generated world version: " +
                     slotData.modVersion + ". Expected version one of " + SlotData.EXPECTED_MOD_VERSIONS.stream().map(Object::toString).collect(Collectors.joining(" or ")));
             return;

@@ -133,6 +133,19 @@ public class CharacterSelectScreenPatch {
                 }
             }
         }
+        ((ArrayList<CharacterOption>)ReflectionHacks.getPrivate(charSelectScreen, CustomCharacterSelectScreen.class, "allOptions")).sort((a,b) -> {
+           if(a.locked == b.locked)
+           {
+               return 0;
+           }
+           if(!a.locked)
+           {
+               return -1;
+           }
+           return 1;
+        });
+        ReflectionHacks.privateMethod(CustomCharacterSelectScreen.class, "setCurrentOptions", boolean.class)
+                .invoke(charSelectScreen, false);
     }
 
 
