@@ -1,6 +1,7 @@
 package ArchipelagoMW.game.locations.campfire;
 
 import ArchipelagoMW.client.APContext;
+import ArchipelagoMW.game.items.APItemID;
 import ArchipelagoMW.game.ui.APTextures;
 import com.megacrit.cardcrawl.dungeons.AbstractDungeon;
 import com.megacrit.cardcrawl.ui.campfire.AbstractCampfireOption;
@@ -63,7 +64,12 @@ public class APCampfireButton  extends AbstractCampfireOption {
 
     @Override
     public void useOption() {
-        APContext.getContext().getLocationTracker().sendCampfireCheck(locationId);
+        if((locationId % 200L) == 95L) {
+            APContext.getContext().getLocationTracker().sendRubyKey();
+        }
+        else {
+            APContext.getContext().getLocationTracker().sendCampfireCheck(locationId);
+        }
         AbstractDungeon.effectList.add(new APCampfireEffect());
     }
 }

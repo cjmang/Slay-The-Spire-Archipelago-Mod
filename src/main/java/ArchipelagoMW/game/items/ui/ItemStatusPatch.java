@@ -29,7 +29,6 @@ public class ItemStatusPatch {
         @SpirePostfixPatch
         public static void Postfix(CharacterOption __instance)
         {
-            APClient.logger.info("We're here I swear");
             if(!__instance.hb.hovered || __instance.locked || CharacterSelectScreenPatch.CompletedChar.completed.get(__instance))
             {
                 return;

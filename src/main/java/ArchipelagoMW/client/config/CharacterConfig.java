@@ -27,6 +27,8 @@ public class CharacterConfig {
     public boolean finalAct;
     @SerializedName("downfall")
     public boolean downfall;
+    @SerializedName("key_sanity")
+    public boolean keySanity = false;
 
     @Override
     public String toString() {

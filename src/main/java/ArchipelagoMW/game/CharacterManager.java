@@ -169,7 +169,7 @@ public class CharacterManager {
         ArchipelagoRewardScreen.apReward= false;
         ArchipelagoRewardScreen.APScreen= false;
         ctx.getShopManager().initializeShop();
-        locationTracker.scoutAllLocations(ctx.getSlotData());
+        locationTracker.scoutAllLocations(ctx.getSlotData(), currentCharacterConfig);
         locationTracker.scoutShop(APContext.getContext().getShopManager().getTotalSlots());
         TeamManager.initialLoad();
         PlayerManager.initialLoad();

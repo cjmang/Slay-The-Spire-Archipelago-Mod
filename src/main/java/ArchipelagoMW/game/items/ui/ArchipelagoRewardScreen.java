@@ -31,6 +31,7 @@ import com.megacrit.cardcrawl.potions.AbstractPotion;
 import com.megacrit.cardcrawl.random.Random;
 import com.megacrit.cardcrawl.relics.AbstractRelic;
 import com.megacrit.cardcrawl.relics.BottledFlame;
+import com.megacrit.cardcrawl.relics.SpiritPoop;
 import com.megacrit.cardcrawl.rewards.RewardItem;
 import com.megacrit.cardcrawl.rooms.*;
 import com.megacrit.cardcrawl.screens.mainMenu.ScrollBar;
@@ -38,6 +39,7 @@ import com.megacrit.cardcrawl.screens.mainMenu.ScrollBarListener;
 import com.megacrit.cardcrawl.screens.stats.StatsScreen;
 import com.megacrit.cardcrawl.vfx.AbstractGameEffect;
 import com.megacrit.cardcrawl.vfx.RewardGlowEffect;
+import downfall.patches.ui.map.EmeraldElite;
 import io.github.archipelagomw.parts.NetworkItem;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -564,6 +566,37 @@ public class ArchipelagoRewardScreen extends CustomScreen {
                 AbstractPotion potion = AbstractDungeon.returnRandomPotion();
                 reward = new RewardItem(potion);
                 reward.text = player + " NL " + location;
+                addReward(reward);
+                break;
+            case EMERALD_KEY:
+                reward = new RewardItem(1);
+                reward.goldAmt = 0;
+                reward.type = RewardItem.RewardType.EMERALD_KEY;
+                reward.img = ImageMaster.loadImage("images/relics/emerald_key.png");
+                reward.outlineImg = ImageMaster.loadImage("images/relics/outline/emerald_key.png");
+                reward.text = RewardItem.TEXT[6];
+                addReward(reward);
+                break;
+            case SAPPHIRE_KEY:
+                RewardItem fake = new RewardItem(1);
+                fake.goldAmt = 0;
+                fake.relic = new SpiritPoop();
+                reward = new RewardItem(1);
+                reward.goldAmt = 0;
+                reward.type = RewardItem.RewardType.SAPPHIRE_KEY;
+                reward.img = ImageMaster.loadImage("images/relics/sapphire_key.png");
+                reward.outlineImg = ImageMaster.loadImage("images/relics/outline/sapphire_key.png");
+                reward.text = RewardItem.TEXT[6];
+                reward.relicLink = fake;
+                addReward(reward);
+                break;
+            case RUBY_KEY:
+                reward = new RewardItem(1);
+                reward.goldAmt = 0;
+                reward.type = RewardItemPatch.RewardType.RUBY_KEY;
+                reward.img = ImageMaster.loadImage("images/relics/ruby_key.png");
+                reward.outlineImg = ImageMaster.loadImage("images/relics/outline/ruby_key.png");
+                reward.text = "Ruby Key";
                 addReward(reward);
                 break;
             default:

@@ -3,6 +3,7 @@ package ArchipelagoMW.game.locations;
 import ArchipelagoMW.client.APContext;
 import ArchipelagoMW.client.config.CharacterConfig;
 import ArchipelagoMW.client.config.SlotData;
+import ArchipelagoMW.game.CharacterManager;
 import ArchipelagoMW.mod.Archipelago;
 import ArchipelagoMW.client.APClient;
 import basemod.ReflectionHacks;
@@ -103,7 +104,8 @@ public class LocationTracker {
         if(modVersion == 2) {
             goldLocations.initialize(57L, 18L, charOffset);
             eliteGoldLocations.initialize(76L, 7L, charOffset);
-        } else if (modVersion > 3)
+        }
+        else if (modVersion >= 3)
         {
             goldLocations.initialize(57L, 25L, charOffset);
             eliteGoldLocations.initialize(0L, 0L, charOffset);
@@ -130,6 +132,49 @@ public class LocationTracker {
             APContext.getContext().getClient().checkLocation(163L + (200L * currentOffset));
         }
     }
+
+    public NetworkItem sendSapphireKey()
+    {
+        long locationId = 94L + (200L * currentOffset);
+        NetworkItem item = scoutedLocations.get(locationId);
+        APContext.getContext().getClient().checkLocation(locationId);
+        if(item == null)
+        {
+            item = new NetworkItem();
+            item.itemName = "Sapphire Key";
+            item.playerName = "";
+        }
+        return item;
+    }
+
+    public NetworkItem sendRubyKey()
+    {
+        long locationId = 95L + (200L * currentOffset);
+        NetworkItem item = scoutedLocations.get(locationId);
+        APContext.getContext().getClient().checkLocation(locationId);
+        if(item == null)
+        {
+            item = new NetworkItem();
+            item.itemName = "Ruby Key";
+            item.playerName = "";
+        }
+        return item;
+    }
+
+    public NetworkItem sendEmeraldKey()
+    {
+        long locationId = 96L + (200L * currentOffset);
+        NetworkItem item = scoutedLocations.get(locationId);
+        APContext.getContext().getClient().checkLocation(locationId);
+        if(item == null)
+        {
+            item = new NetworkItem();
+            item.itemName = "Emerald Key";
+            item.playerName = "";
+        }
+        return item;
+    }
+
 
     public NetworkItem sendGoldReward()
     {
@@ -377,7 +422,7 @@ public class LocationTracker {
         apContext.getSaveManager().saveString(apContext.getCharacterManager().getCurrentCharacter().chosenClass.name(), "");
     }
 
-    public void scoutAllLocations(SlotData data) {
+    public void scoutAllLocations(SlotData data, CharacterConfig config) {
         ArrayList<Long> locations = new ArrayList<Long>();
         locations.addAll(getCardDrawLocations().locations);
         locations.addAll(getRelicLocations().locations);
@@ -398,6 +443,12 @@ public class LocationTracker {
         if(data.potionSanity != 0)
         {
             locations.addAll(potionLocations.locations);
+        }
+        if(config.finalAct && config.keySanity)
+        {
+            locations.add(94L + (200L * config.charOffset));
+            locations.add(95L + (200L * config.charOffset));
+            locations.add(96L + (200L * config.charOffset));
         }
         logger.info("Scouting locations: {}", locations);
         APContext.getContext().getClient().scoutLocations(locations);

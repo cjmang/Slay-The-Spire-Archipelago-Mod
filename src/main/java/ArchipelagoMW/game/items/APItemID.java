@@ -30,6 +30,9 @@ public enum APItemID {
     POTION(18, true),
     // Marking as sanity cause it's close enough
     ASCENSION_DOWN(19, true, false),
+    SAPPHIRE_KEY(20, true ),
+    RUBY_KEY(21, true ),
+    EMERALD_KEY(22, true ),
 
     DEBUFF_TRAP(50000, true, false, false),
     STRONG_DEBUFF_TRAP(50001, true, false, false),

@@ -2,6 +2,7 @@ package ArchipelagoMW.game.items.patches;
 
 import ArchipelagoMW.game.ui.APTextures;
 import ArchipelagoMW.game.items.ui.ArchipelagoRewardScreen;
+import basemod.ReflectionHacks;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.evacipated.cardcrawl.modthespire.lib.*;
@@ -12,6 +13,7 @@ import com.megacrit.cardcrawl.helpers.FontHelper;
 import com.megacrit.cardcrawl.helpers.ImageMaster;
 import com.megacrit.cardcrawl.relics.AbstractRelic;
 import com.megacrit.cardcrawl.rewards.RewardItem;
+import com.megacrit.cardcrawl.vfx.ObtainKeyEffect;
 import javassist.CannotCompileException;
 import javassist.expr.ExprEditor;
 import javassist.expr.MethodCall;
@@ -29,6 +31,8 @@ public class RewardItemPatch {
         public static RewardItem.RewardType BOSS_RELIC;
         @SpireEnum
         public static RewardItem.RewardType ARCHIPELAGO_LOCATION;
+        @SpireEnum
+        public static RewardItem.RewardType RUBY_KEY;
     }
 
     @SpirePatch(clz = RewardItem.class, method = SpirePatch.CLASS)
@@ -88,6 +92,14 @@ public class RewardItemPatch {
                 ArchipelagoRewardScreen.rewards.remove(__instance);
                 return SpireReturn.Return(true);
             }
+            if(__instance.type == RewardType.RUBY_KEY)
+            {
+                logger.info("Giving Ruby key");
+                AbstractDungeon.topLevelEffects.add(new ObtainKeyEffect(ObtainKeyEffect.KeyColor.RED));
+                __instance.img.dispose();
+                __instance.outlineImg.dispose();
+                return SpireReturn.Return(true);
+            }
             return SpireReturn.Continue();
         }
     }
@@ -103,5 +115,24 @@ public class RewardItemPatch {
             }
         }
 
+    }
+
+    @SpirePatch(clz = RewardItem.class, method="render", paramtypez = SpriteBatch.class)
+    public static class RenderPatch
+    {
+        @SpirePostfixPatch
+        public static void Postfix(RewardItem __instance, SpriteBatch __sb)
+        {
+            if(__instance.type == RewardType.RUBY_KEY)
+            {
+                try {
+                    ReflectionHacks.getCachedMethod(RewardItem.class, "renderKey", SpriteBatch.class).invoke(__instance, __sb);
+                }
+                catch(ReflectiveOperationException ex)
+                {
+                    // bleh
+                }
+            }
+        }
     }
 }
