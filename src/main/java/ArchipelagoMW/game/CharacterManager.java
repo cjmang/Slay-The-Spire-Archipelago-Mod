@@ -133,7 +133,12 @@ public class CharacterManager {
 
     public boolean isItemIDForCurrentCharacter(long itemID)
     {
-        if(currentCharacterConfig == null)
+        return isItemIDForCharacter(itemID, currentCharacterConfig);
+    }
+
+    public boolean isItemIDForCharacter(long itemID, CharacterConfig config)
+    {
+        if(config == null)
         {
             return false;
         }
@@ -141,7 +146,7 @@ public class CharacterManager {
         {
             return true;
         }
-        int offset = currentCharacterConfig.charOffset;
+        int offset = config.charOffset;
         return itemID > offset * getItemWindow() && itemID < (offset + 1) * getItemWindow();
     }
 
