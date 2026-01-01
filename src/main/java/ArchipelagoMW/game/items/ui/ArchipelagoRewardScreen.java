@@ -525,8 +525,7 @@ public class ArchipelagoRewardScreen extends CustomScreen {
                 addReward(reward);
                 break;
             case RELIC:
-//                AbstractRelic relic = AbstractDungeon.returnRandomRelic(getRandomRelicTier());
-                AbstractRelic relic = new BottledFlame();
+                AbstractRelic relic = AbstractDungeon.returnRandomRelic(getRandomRelicTier());
                 reward = new RewardItem(relic);
                 reward.text = player + " NL " + location;
                 RewardItemPatch.CustomFields.apReward.set(reward, true);

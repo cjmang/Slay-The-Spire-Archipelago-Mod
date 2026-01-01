@@ -34,6 +34,7 @@ public class LocationTracker {
     private final CampfireLocations campfireLocations = new CampfireLocations();
     private final LocationContainerMap shopLocations = new LocationContainerMap();
     private int floorIndex = 0;
+    private int modVersion;
 
     private final Map<Long, NetworkItem> scoutedLocations = new HashMap<>();
 
@@ -84,7 +85,7 @@ public class LocationTracker {
                 .setPotionIndex(potionLocations.index);
     }
 
-    public void initialize(long charOffset, List<Long> extras)
+    public void initialize(long charOffset, int modVersion, List<Long> extras)
     {
         currentOffset = charOffset;
         extraOffsets.clear();
@@ -92,14 +93,21 @@ public class LocationTracker {
         reset();
         logger.info("Intializing LocationTracker with {} and extras {}", charOffset, extraOffsets);
 
+        this.modVersion = modVersion;
         getCardDrawLocations().initialize(101L, CARD_DRAW_NUM, charOffset);
         getCampfireLocations().initialize(121L, 6L, charOffset);
         getCampfireLocations().loadFromNetwork();
         getRareDrawLocations().initialize(131L, 2L, charOffset);
         getRelicLocations().initialize(141L, 10L, charOffset);
         getBossRelicLocations().initialize(161L, 2L, charOffset);
-        goldLocations.initialize(57L, 18L, charOffset);
-        eliteGoldLocations.initialize(76L, 7L, charOffset);
+        if(modVersion == 2) {
+            goldLocations.initialize(57L, 18L, charOffset);
+            eliteGoldLocations.initialize(76L, 7L, charOffset);
+        } else if (modVersion > 3)
+        {
+            goldLocations.initialize(57L, 25L, charOffset);
+            eliteGoldLocations.initialize(0L, 0L, charOffset);
+        }
         bossGoldLocations.initialize(83L, 2L, charOffset);
         potionLocations.initialize(85L, 9L, charOffset);
     }
@@ -134,7 +142,7 @@ public class LocationTracker {
         int index = -1;
         String fallbackName = "MissingNo";
         if(currRoom instanceof MonsterRoom) {
-            if(currRoom instanceof MonsterRoomElite)
+            if(currRoom instanceof MonsterRoomElite && modVersion == 2)
             {
 
                 if(eliteGoldLocations.isExhausted())

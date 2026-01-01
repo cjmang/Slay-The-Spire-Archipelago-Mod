@@ -155,7 +155,7 @@ public class CharacterManager {
                 .filter(c -> currentCharacterConfig.officialName.equalsIgnoreCase(c.chosenClass.name()))
                 .findFirst()
                 .get();
-        locationTracker.initialize(config.charOffset, unrecognizedCharacters.stream()
+        locationTracker.initialize(config.charOffset, ctx.getSlotData().modVersion, unrecognizedCharacters.stream()
                 .map(c -> (long) c.charOffset)
                 .collect(Collectors.toList()));
         ArchipelagoRewardScreen.rewards.clear();
