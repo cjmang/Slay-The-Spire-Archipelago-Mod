@@ -10,7 +10,6 @@ import ArchipelagoMW.game.connect.ui.connection.ConnectionPanel;
 import ArchipelagoMW.game.connect.ui.mainMenu.ArchipelagoMainMenuButton;
 import ArchipelagoMW.mod.Archipelago;
 import ArchipelagoMW.client.util.DeathLinkHelper;
-import ArchipelagoMW.saythespire.SayTheSpire;
 import com.evacipated.cardcrawl.modthespire.Loader;
 import com.megacrit.cardcrawl.core.CardCrawlGame;
 import com.megacrit.cardcrawl.core.Settings;
@@ -67,16 +66,7 @@ public class ConnectionResult {
             return;
         }
         APContext ctx = APContext.getContext();
-        switch (slotData.modVersion) {
-            case 2:
-                ctx.getCharacterManager().setItemWindow(20L);
-                break;
-            case 3:
-                // fall through
-            default:
-                ctx.getCharacterManager().setItemWindow(100L);
-                break;
-        }
+        ctx.getCharacterManager().setItemWindow(slotData.itemWindow);
         ctx.getClient().setSlotData(slotData);
         Archipelago.logger.info(slotData.characters.toString());
         ctx.getCharacterManager().initialize(slotData.characters);

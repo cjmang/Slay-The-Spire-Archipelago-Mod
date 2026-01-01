@@ -39,7 +39,8 @@ public enum APItemID {
     STATUS_CARD_TRAP(50005, true, false, false),
     GREMLIN_TRAP(50006, true, false, false),
 
-    CAW_CAW(100_000, true, true, false)
+    CAW_CAW(100_000, true, true, false),
+    COMBAT_BUFF(100_001, true, false, false),
     ;
 
     public final long value;

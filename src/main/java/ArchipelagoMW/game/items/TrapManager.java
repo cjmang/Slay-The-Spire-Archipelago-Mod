@@ -5,6 +5,7 @@ import ArchipelagoMW.client.APContext;
 import ArchipelagoMW.saythespire.SayTheSpire;
 import basemod.ReflectionHacks;
 import com.megacrit.cardcrawl.actions.common.ApplyPowerAction;
+import com.megacrit.cardcrawl.actions.common.GainBlockAction;
 import com.megacrit.cardcrawl.actions.common.MakeTempCardInDrawPileAction;
 import com.megacrit.cardcrawl.actions.common.SpawnMonsterAction;
 import com.megacrit.cardcrawl.actions.unique.IncreaseMaxHpAction;
@@ -18,8 +19,9 @@ import com.megacrit.cardcrawl.monsters.city.Byrd;
 import com.megacrit.cardcrawl.monsters.city.ShelledParasite;
 import com.megacrit.cardcrawl.monsters.city.SphericGuardian;
 import com.megacrit.cardcrawl.monsters.exordium.*;
+import com.megacrit.cardcrawl.potions.RegenPotion;
 import com.megacrit.cardcrawl.powers.*;
-import com.megacrit.cardcrawl.powers.watcher.EnergyDownPower;
+import com.megacrit.cardcrawl.powers.watcher.*;
 import com.megacrit.cardcrawl.rooms.AbstractRoom;
 import io.github.archipelagomw.network.client.SetPacket;
 
@@ -39,7 +41,9 @@ public class TrapManager {
             APItemID.KILLER_DEBUFF_TRAP,
             APItemID.BUFF_TRAP,
             APItemID.STRONG_BUFF_TRAP,
-            APItemID.STATUS_CARD_TRAP
+            APItemID.STATUS_CARD_TRAP,
+            // Yeah this isn't a trap, but the logic is basically the same
+            APItemID.COMBAT_BUFF
     );
 
     public TrapManager(APContext ctx) {
@@ -141,6 +145,10 @@ public class TrapManager {
             case STATUS_CARD_TRAP:
                 SayTheSpire.sts.output("Adding status cards to the deck from a trap");
                 applyStatusTrap();
+                break;
+            case COMBAT_BUFF:
+                SayTheSpire.sts.output("Applying player combat buff");
+                applyCombatBuff();
                 break;
         }
         return true;
@@ -353,4 +361,53 @@ public class TrapManager {
         AbstractDungeon.actionManager.addToTop(new SpawnMonsterAction(gremlin, false));
     }
 
+    private void applyCombatBuff() {
+        AbstractPlayer p = AbstractDungeon.player;
+        switch (4) {
+            case 0:
+                AbstractDungeon.actionManager.addToBottom(new ApplyPowerAction(p, p, new StrengthPower(p, 1),1));
+                AbstractDungeon.actionManager.addToBottom(new ApplyPowerAction(p, p, new LoseStrengthPower(p, 1),1));
+                break;
+            case 1:
+                AbstractDungeon.actionManager.addToBottom(new ApplyPowerAction(p, p, new DexterityPower(p, 1),1));
+                AbstractDungeon.actionManager.addToBottom(new ApplyPowerAction(p, p, new LoseDexterityPower(p, 1),1));
+                break;
+            case 2:
+                AbstractDungeon.actionManager.addToBottom(new ApplyPowerAction(p,p, new NextTurnBlockPower(p, 4), 4));
+                break;
+            case 3:
+                AbstractDungeon.actionManager.addToBottom(new ApplyPowerAction(p, p, new FlightPower(p, 1), 1));
+                break;
+            case 4:
+                AbstractDungeon.actionManager.addToBottom(new ApplyPowerAction(p, p, new ThornsPower(p, 1), 1));
+                break;
+            case 5:
+                AbstractDungeon.actionManager.addToBottom(new ApplyPowerAction(p, p, new RegenPower(p, 2), 2));
+                break;
+            case 6:
+                AbstractDungeon.actionManager.addToBottom(new ApplyPowerAction(p, p, new DrawCardNextTurnPower(p, 1), 1));
+                break;
+            case 7:
+                AbstractDungeon.actionManager.addToBottom(new ApplyPowerAction(p, p, new VigorPower(p, 4), 4));
+                break;
+            case 8:
+                AbstractDungeon.actionManager.addToBottom(new ApplyPowerAction(p, p, new FlameBarrierPower(p, 2), 2));
+                break;
+            case 9:
+                AbstractDungeon.actionManager.addToBottom(new ApplyPowerAction(p, p, new RagePower(p, 1), 1));
+                break;
+            case 10:
+                AbstractDungeon.actionManager.addToBottom(new ApplyPowerAction(p, p, new WaveOfTheHandPower(p, 1), 1));
+                break;
+            case 11:
+                AbstractDungeon.actionManager.addToBottom(new ApplyPowerAction(p, p, new BlurPower(p, 1), 1));
+                break;
+            case 12:
+                AbstractDungeon.actionManager.addToBottom(new ApplyPowerAction(p, p, new OmegaPower(p, 1), 1));
+                break;
+            case 13:
+                AbstractDungeon.actionManager.addToBottom(new ApplyPowerAction(p, p, new PlatedArmorPower(p, 2), 2));
+                break;
+        }
+    }
 }

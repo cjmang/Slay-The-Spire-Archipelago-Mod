@@ -50,6 +50,9 @@ public class SlotData {
     @SerializedName("num_chars_goal")
     public int numCharsGoal = 0;
 
+    @SerializedName("item_window")
+    public long itemWindow = 20L;
+
     @SerializedName("shop_sanity_options")
     public ShopSanityConfig shopSanityConfig = new ShopSanityConfig();
 
