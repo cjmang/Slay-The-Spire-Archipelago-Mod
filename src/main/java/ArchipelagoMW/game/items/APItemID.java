@@ -1,5 +1,7 @@
 package ArchipelagoMW.game.items;
 
+import ArchipelagoMW.client.APContext;
+
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Map;
@@ -73,7 +75,7 @@ public enum APItemID {
     public static APItemID fromLong(long lookup) {
         if(!isGeneric(lookup))
         {
-            lookup = lookup % 20;
+            lookup = lookup % APContext.getContext().getCharacterManager().getItemWindow();
         }
         return inverseMap.get(lookup);
     }

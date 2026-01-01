@@ -3,11 +3,10 @@ package ArchipelagoMW.client.config;
 
 import io.cjmang.google.gson.annotations.SerializedName;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 public class SlotData {
-    public static int EXPECTED_MOD_VERSION = 2;
+    public static final Set<Integer> EXPECTED_MOD_VERSIONS = new HashSet<>(Arrays.asList(2,3));
 
     @SerializedName("ascension")
     public int ascension = 0;

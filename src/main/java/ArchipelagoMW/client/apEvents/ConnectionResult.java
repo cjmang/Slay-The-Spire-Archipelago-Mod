@@ -21,6 +21,8 @@ import downfall.patches.EvilModeCharacterSelect;
 import io.github.archipelagomw.events.ArchipelagoEventListener;
 import io.github.archipelagomw.events.ConnectionResultEvent;
 
+import java.util.stream.Collectors;
+
 public class ConnectionResult {
 
     @ArchipelagoEventListener
@@ -59,21 +61,29 @@ public class ConnectionResult {
 
         SlotData slotData = event.getSlotData(SlotData.class);
         APClient.logger.info("deathlink: {}", slotData.deathLink);
-        if(slotData.modVersion != SlotData.EXPECTED_MOD_VERSION)
-        {
-            ConnectionPanel.setConnectionResultText("Mod is not compatible with generated world; generated world version: " +
-                    slotData.modVersion + " expected version " + SlotData.EXPECTED_MOD_VERSION);
+        if (SlotData.EXPECTED_MOD_VERSIONS.contains(slotData.modVersion)) {
+            ConnectionPanel.setConnectionResultText("Mod is not compatible with generated world. Generated world version: " +
+                    slotData.modVersion + ". Expected version one of " + SlotData.EXPECTED_MOD_VERSIONS.stream().map(Object::toString).collect(Collectors.joining(" or ")));
             return;
         }
         APContext ctx = APContext.getContext();
+        switch (slotData.modVersion) {
+            case 2:
+                ctx.getCharacterManager().setItemWindow(20L);
+                break;
+            case 3:
+                // fall through
+            default:
+                ctx.getCharacterManager().setItemWindow(100L);
+                break;
+        }
         ctx.getClient().setSlotData(slotData);
         Archipelago.logger.info(slotData.characters.toString());
         ctx.getCharacterManager().initialize(slotData.characters);
         ctx.setDeathLinkHelper(new DeathLinkHelper(slotData.deathLink));
         Archipelago.logger.info("slot data parsed");
         ctx.getSaveManager().loadSaves();
-        if(slotData.chattyMC != 0)
-        {
+        if (slotData.chattyMC != 0) {
             ctx.getClient().getEventManager().registerListener(new APClient.OnJSONMessage());
         }
         ctx.getTrapManager().initialize();

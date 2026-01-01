@@ -28,13 +28,13 @@ public class MiscItemTracker {
         itemCount.clear();
         itemIDs.stream()
                 .filter(charManager::isItemIDForCurrentCharacter)
-                .filter(i -> APItemID.isGeneric(i) || sanityIds.contains(i%20L))
+                .filter(i -> APItemID.isGeneric(i) || sanityIds.contains(i% charManager.getItemWindow()))
                 .forEach(this::addSanityItem);
     }
 
     public void maybeAddDraw(long itemID)
     {
-        long remainder = itemID % 20L;
+        long remainder = itemID % charManager.getItemWindow();
         if(remainder == APItemID.CARD_DRAW.value)
         {
             itemCount.merge(remainder, 1, Integer::sum);
@@ -44,7 +44,7 @@ public class MiscItemTracker {
     public void addSanityItem(long itemID) {
         long actualId = itemID;
         if (!APItemID.isGeneric(itemID)) {
-            actualId = itemID % 20L;
+            actualId = itemID % charManager.getItemWindow();
         }
         if(!sanityIds.contains(actualId))
         {
@@ -60,7 +60,7 @@ public class MiscItemTracker {
         {
             return itemCount.getOrDefault(itemID, 0);
         }
-        return itemCount.getOrDefault(itemID % 20L, 0);
+        return itemCount.getOrDefault(itemID % charManager.getItemWindow(), 0);
     }
 
     public int getCount(APItemID itemID)

@@ -72,7 +72,7 @@ public class CharacterSelectScreenPatch {
         charManager.markUnrecognziedCharacters();
         charManager.getCharacters().values().forEach(c -> {
             unlockedChars.put(c.officialName, !c.locked);
-            unlockItemIds.put(14L + (20L * c.charOffset), c.officialName);
+            unlockItemIds.put(14L + (charManager.getItemWindow() * c.charOffset), c.officialName);
         });
 
         ctx.getItemManager().getReceivedItemIDs().forEach(id -> {

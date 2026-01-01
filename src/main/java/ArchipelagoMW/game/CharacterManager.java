@@ -29,6 +29,15 @@ public class CharacterManager {
     private final List<CharacterConfig> unrecognizedCharacters = new CopyOnWriteArrayList<>();
     private final LocationTracker locationTracker;
     private final APContext ctx;
+    private volatile long itemWindow = 20L;
+
+    public long getItemWindow() {
+        return itemWindow;
+    }
+
+    public void setItemWindow(long itemWindow) {
+        this.itemWindow = itemWindow;
+    }
 
     public CharacterManager(APContext ctx)
     {
@@ -133,8 +142,9 @@ public class CharacterManager {
             return true;
         }
         int offset = currentCharacterConfig.charOffset;
-        return itemID > offset * 20L && itemID < (offset + 1) * 20L;
+        return itemID > offset * getItemWindow() && itemID < (offset + 1) * getItemWindow();
     }
+
 
     private void selectCharacter(CharacterConfig config)
     {

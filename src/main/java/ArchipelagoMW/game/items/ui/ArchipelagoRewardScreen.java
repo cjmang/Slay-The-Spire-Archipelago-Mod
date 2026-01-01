@@ -480,7 +480,7 @@ public class ArchipelagoRewardScreen extends CustomScreen {
         APItemID itemType = APItemID.fromLong(itemID );
         if(itemType == null)
         {
-            logger.warn("UNKNOWN ITEM {}", itemID % 20L);
+            logger.warn("UNKNOWN ITEM {}", itemID % ctx.getCharacterManager().getItemWindow());
             return;
         }
         switch(itemType)
