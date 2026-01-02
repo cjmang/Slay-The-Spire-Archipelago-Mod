@@ -224,8 +224,7 @@ public class TrapManager {
     }
 
     private void applyBuffTrap(AbstractRoom room) {
-//        switch (random.nextInt(5)) {
-            switch (4) {
+        switch (random.nextInt(5)) {
             case 0:
                 for (AbstractMonster m : room.monsters.monsters) {
                     AbstractDungeon.actionManager.addToBottom(new IncreaseMaxHpAction(m, 0.1F, true));
