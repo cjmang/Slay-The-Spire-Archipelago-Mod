@@ -1,5 +1,6 @@
 package ArchipelagoMW.game.save;
 
+import ArchipelagoMW.client.APClient;
 import ArchipelagoMW.client.APContext;
 import ArchipelagoMW.game.items.AscensionManager;
 import ArchipelagoMW.game.locations.LocationTracker;
@@ -12,9 +13,11 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import com.google.gson.reflect.TypeToken;
 import com.megacrit.cardcrawl.helpers.CardLibrary;
+import com.megacrit.cardcrawl.helpers.ImageMaster;
 import com.megacrit.cardcrawl.helpers.PotionHelper;
 import com.megacrit.cardcrawl.helpers.RelicLibrary;
 import com.megacrit.cardcrawl.relics.AbstractRelic;
+import com.megacrit.cardcrawl.relics.SpiritPoop;
 import com.megacrit.cardcrawl.rewards.RewardItem;
 import com.megacrit.cardcrawl.rewards.RewardSave;
 import org.apache.logging.log4j.LogManager;
@@ -43,9 +46,16 @@ public class APSaveable implements CustomSavableRaw {
                 rewards.add(new APRewardSave(RewardItemPatch.CustomFields.bossRelics.get(rewardItem), rewardItem.type.toString()));
                 continue;
             }
+            if(rewardItem.type == RewardItemPatch.RewardType.RUBY_KEY)
+            {
+                rewards.add(new APRewardSave(RewardItemPatch.RewardType.RUBY_KEY.name(), rewardItem.type.toString()));
+                continue;
+            }
             switch (rewardItem.type) {
                 case SAPPHIRE_KEY:
                 case EMERALD_KEY:
+                    rewards.add(new APRewardSave(rewardItem.type.name(), rewardItem.type.toString()));
+                    break;
                 case CARD:
                     rewards.add(new APRewardSave(rewardItem.type.toString(), rewardItem.cards));
                     break;
@@ -134,6 +144,41 @@ public class APSaveable implements CustomSavableRaw {
                     reward.relicIds.stream().map(r -> RelicLibrary.getRelic(r).makeCopy()).forEach(bossRelics::add);
                     RewardItemPatch.CustomFields.bossRelics.set(item, bossRelics);
                     RewardItemPatch.CustomFields.apReward.set(item, true);
+                    rewards.add(item);
+                    break;
+                }
+                case "RUBY_KEY":
+                {
+                    RewardItem item = new RewardItem(0, true);
+                    item.goldAmt = 0;
+                    item.type = RewardItemPatch.RewardType.RUBY_KEY;
+                    item.text = "Ruby Key";
+                    item.img = ImageMaster.loadImage("images/relics/ruby_key.png");
+                    item.outlineImg = ImageMaster.loadImage("images/relics/outline/ruby_key.png");
+                    rewards.add(item);
+                    break;
+                }
+                case "EMERALD_KEY":
+                {
+                    RewardItem item = new RewardItem(0, true);
+                    item.goldAmt = 0;
+                    item.type = RewardItem.RewardType.EMERALD_KEY;
+                    item.text = "Emerald Key";
+                    item.img = ImageMaster.loadImage("images/relics/emerald_key.png");
+                    item.outlineImg = ImageMaster.loadImage("images/relics/outline/emerald_key.png");
+                    rewards.add(item);
+                    break;
+                }
+                case "SAPPHIRE_KEY":
+                {
+                    RewardItem item = new RewardItem(0, true);
+                    item.goldAmt = 0;
+                    item.type = RewardItem.RewardType.SAPPHIRE_KEY;
+                    item.text = "Sapphire Key";
+                    item.img = ImageMaster.loadImage("images/relics/sapphire_key.png");
+                    item.outlineImg = ImageMaster.loadImage("images/relics/outline/sapphire_key.png");
+                    SpiritPoop poop = new SpiritPoop();
+                    item.relicLink = new RewardItem(poop);
                     rewards.add(item);
                     break;
                 }

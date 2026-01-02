@@ -97,6 +97,11 @@ public class ItemStatusPatch {
                                 case ASCENSION_DOWN:
                                     countMap.compute("Ascension Down", (a,b) -> b == null ? 1: b+1);
                                     break;
+                                case RUBY_KEY:
+                                case EMERALD_KEY:
+                                case SAPPHIRE_KEY:
+                                    countMap.compute("Keys", (a,b) -> b == null ? 1 : b+1);
+                                    break;
                             }
                 });
                 for(Map.Entry<String, Integer> entry: countMap.entrySet())
