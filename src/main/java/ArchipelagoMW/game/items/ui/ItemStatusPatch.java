@@ -1,20 +1,19 @@
 package ArchipelagoMW.game.items.ui;
 
-import ArchipelagoMW.client.APClient;
 import ArchipelagoMW.client.APContext;
 import ArchipelagoMW.client.config.CharacterConfig;
 import ArchipelagoMW.game.CharacterManager;
 import ArchipelagoMW.game.items.APItemID;
 import ArchipelagoMW.game.start.patches.CharacterSelectScreenPatch;
-import com.evacipated.cardcrawl.modthespire.lib.SpirePatch;
-import com.evacipated.cardcrawl.modthespire.lib.SpirePostfixPatch;
+import com.evacipated.cardcrawl.modthespire.lib.*;
 import com.megacrit.cardcrawl.core.Settings;
 import com.megacrit.cardcrawl.helpers.TipHelper;
 import com.megacrit.cardcrawl.helpers.input.InputHelper;
 import com.megacrit.cardcrawl.screens.charSelect.CharacterOption;
 import io.github.archipelagomw.ItemManager;
+import javassist.CtBehavior;
 
-import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -22,9 +21,56 @@ public class ItemStatusPatch {
     private static CharacterOption option;
     private static String text = "";
 
+    @SpirePatch(cls="downfall.patches.EvilModeCharacterOption", method="Prefix", requiredModId = "downfall", paramtypez = CharacterOption.class)
+    public static class EvilOptionPatchPatch
+    {
+        @SpireInsertPatch(locator= EvilOptionPatchPatch.Locator.class)
+        public static void insert(CharacterOption __instance)
+        {
+            CharacterManager charManager = APContext.getContext().getCharacterManager();
+            if(__instance.hb.hovered && __instance.locked && charManager.getAvailableAPChars().contains(__instance.c.chosenClass.name()))
+            {
+                TipHelper.renderGenericTip(InputHelper.mX + 70.F* Settings.scale,
+                        InputHelper.mY - 10.0F * Settings.scale, "Locked",
+                        "Locked until you are sent an unlock item in the Multiworld.");
+            }
+        }
+        private static class Locator extends SpireInsertLocator {
+
+            @Override
+            public int[] Locate(CtBehavior ctBehavior) throws Exception {
+                Matcher matcher = new Matcher.FieldAccessMatcher(CharacterOption.class, "locked");
+                return LineFinder.findInOrder(ctBehavior, new ArrayList<>(), matcher);
+            }
+        }
+    }
+
     @SpirePatch(clz= CharacterOption.class, method="updateHitbox")
     public static class HitboxPatch
     {
+
+        @SpireInsertPatch(locator=Locator.class)
+        public static void insert(CharacterOption __instance)
+        {
+            CharacterManager charManager = APContext.getContext().getCharacterManager();
+            if(__instance.hb.hovered && __instance.locked && charManager.getAvailableAPChars().contains(__instance.c.chosenClass.name()))
+            {
+                TipHelper.renderGenericTip(InputHelper.mX + 70.F* Settings.scale,
+                        InputHelper.mY - 10.0F * Settings.scale, "Locked",
+                        "Locked until you are sent an unlock item in the Multiworld.");
+            }
+
+        }
+
+
+        private static class Locator extends SpireInsertLocator {
+
+            @Override
+            public int[] Locate(CtBehavior ctBehavior) throws Exception {
+                Matcher matcher = new Matcher.FieldAccessMatcher(CharacterOption.class, "locked");
+                return LineFinder.findInOrder(ctBehavior, new ArrayList<>(), matcher);
+            }
+        }
 
         @SpirePostfixPatch
         public static void Postfix(CharacterOption __instance)
