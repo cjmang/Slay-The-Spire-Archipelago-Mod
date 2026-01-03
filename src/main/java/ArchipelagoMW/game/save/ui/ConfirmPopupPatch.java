@@ -40,6 +40,10 @@ public class ConfirmPopupPatch {
                 Settings.isDailyRun = false;
                 Settings.isTrial = false;
                 ModHelper.setModsFalse();
+                APClient client = APContext.getContext().getClient();
+                if (client.getSlotData().deathLink > 0) {
+                    client.setDeathLinkEnabled(true);
+                }
                 if (CardCrawlGame.steelSeries.isEnabled) {
                     CardCrawlGame.steelSeries.event_character_chosen(CardCrawlGame.chosenCharacter);
                 }

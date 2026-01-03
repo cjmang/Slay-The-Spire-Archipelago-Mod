@@ -221,7 +221,7 @@ public class DeathLinkHelper {
     public static class death {
         public static void Postfix(DeathScreen __instance) {
             TeamManager.leaveTeam();
-            DeathLinkHelper deathLinkHelper = APContext.getContext().getDeathLinkHelper();;
+            DeathLinkHelper deathLinkHelper = APContext.getContext().getDeathLinkHelper();
             if (GameOverScreen.isVictory || !deathLinkHelper.shouldSendDeath() || deathLinkHelper.damagePercent <= 0) {
                 //APClient.apClient.disconnect();
                 deathLinkHelper.setSendDeath(true);
