@@ -61,7 +61,7 @@ public class ShopScreenPatch {
             shopManager.mangleCards(coloredCards, __instance);
         }
 
-        @SpirePostfixPatch
+        @SpireInsertPatch(locator=InitPotionsLocator.class)
         public static void interceptColorlessCards(ShopScreen __instance, ArrayList<AbstractCard> coloredCards, ArrayList<AbstractCard> colorlessCards, OnSaleTag ___saleTag)
         {
             // Mangling neutral cards here because of downfall
@@ -95,6 +95,15 @@ public class ShopScreenPatch {
                 }
             }
 
+        }
+
+        public static class InitPotionsLocator extends SpireInsertLocator {
+
+            @Override
+            public int[] Locate(CtBehavior ctBehavior) throws Exception {
+                Matcher matcher = new Matcher.MethodCallMatcher(ShopScreen.class, "initPotions");
+                return LineFinder.findInOrder(ctBehavior, matcher);
+            }
         }
 
 
