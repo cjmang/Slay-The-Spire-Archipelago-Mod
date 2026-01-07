@@ -35,6 +35,7 @@ import java.security.KeyStore;
 import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.Future;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Consumer;
 
@@ -47,6 +48,8 @@ public class APClient extends Client {
 
     private DataStorageWrapper dataStorageWrapper;
     private final RecieveItemHandler recieveItemHandler = new RecieveItemHandler();
+
+    private final AtomicBoolean connectionSucceeded = new AtomicBoolean(false);
 
     public static void newConnection(APContext context, String address, String slotName, String password) {
         APClient apClient = context.getClient();
@@ -155,6 +158,16 @@ public class APClient extends Client {
     public void asyncDSSet(SetPacket packet, Consumer<SetReplyEvent> lambda)
     {
         dataStorageWrapper.asyncDSSet(packet, lambda);
+    }
+
+    public boolean connectionSucceeded()
+    {
+        return connectionSucceeded.get();
+    }
+
+    public void setConnectionSucceded(boolean b)
+    {
+        connectionSucceeded.set(b);
     }
 
     @Override

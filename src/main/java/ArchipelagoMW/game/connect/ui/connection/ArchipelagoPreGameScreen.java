@@ -110,7 +110,7 @@ public class ArchipelagoPreGameScreen {
                     String password = APSettings.password = connectionPanel.passwordTextBox.getObject().getText();
                     APSettings.saveSettings();
                     APClient client = APContext.getContext().getClient();
-                    if (!Archipelago.setConnectionInfo(address, slot, password) && client != null && client.isConnected()) {
+                    if (!Archipelago.setConnectionInfo(address, slot, password) && client != null && client.isConnected() && client.connectionSucceeded()) {
                         ArchipelagoRewardScreen.rewardsQueued = 0;
                         APContext.getContext().getSaveManager().loadSaves();
                         screen = APScreen.charSelect;

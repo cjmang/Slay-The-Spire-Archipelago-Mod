@@ -49,7 +49,7 @@ public class ConnectionResult {
         }
         ConnectionPanel.setConnectionResultText(msg);
 
-
+        APContext.getContext().getClient().setConnectionSucceded(event.getResult() == io.github.archipelagomw.network.ConnectionResult.Success);
         if (event.getResult() != io.github.archipelagomw.network.ConnectionResult.Success) {
             return;
         }
