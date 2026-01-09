@@ -334,7 +334,10 @@ public class LocationTracker {
         } catch (IndexOutOfBoundsException e) {
             logger.info("Index out of bounds! Tried to access bossRelicLocation position {}", act - 1);
             logger.info("while the length is {}", getBossRelicLocations().locations.size());
-            return null;
+            NetworkItem networkItem = new NetworkItem();
+            networkItem.itemName = "Boss Relic " + act;
+            networkItem.playerName = "Check wasn't sent, you may need to cheat send the location.";
+            return networkItem;
         }
         if(act > bossRelicLocations.index)
         {
