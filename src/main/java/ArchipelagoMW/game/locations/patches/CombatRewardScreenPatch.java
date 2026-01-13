@@ -7,6 +7,7 @@ import ArchipelagoMW.game.items.patches.RewardItemPatch;
 import com.evacipated.cardcrawl.modthespire.lib.*;
 import com.megacrit.cardcrawl.dungeons.AbstractDungeon;
 import com.megacrit.cardcrawl.rewards.RewardItem;
+import com.megacrit.cardcrawl.rooms.MonsterRoomElite;
 import com.megacrit.cardcrawl.rooms.TreasureRoom;
 import com.megacrit.cardcrawl.screens.CombatRewardScreen;
 import io.github.archipelagomw.LocationManager;
@@ -63,11 +64,6 @@ public class CombatRewardScreenPatch {
                     }
                     break;
                 case EMERALD_KEY:
-                    if(charConfig.finalAct && charConfig.keySanity)
-                    {
-                        item = locationTracker.sendEmeraldKey();
-                    }
-                    break;
                 case SAPPHIRE_KEY:
                     if(charConfig.finalAct && charConfig.keySanity)
                     {
@@ -88,9 +84,14 @@ public class CombatRewardScreenPatch {
                 }
             }
         }
-        if(charConfig.finalAct && charConfig.keySanity && AbstractDungeon.getCurrRoom() instanceof TreasureRoom) {
-            NetworkItem item = locationTracker.sendSapphireKey();
-            if(!checkedLocations.contains(item.locationID)) {
+        if(charConfig.finalAct && charConfig.keySanity) {
+            NetworkItem item = null;
+            if(AbstractDungeon.getCurrRoom() instanceof TreasureRoom) {
+                item = locationTracker.sendSapphireKey();
+            } else if (AbstractDungeon.getCurrMapNode().hasEmeraldKey) {
+                item = locationTracker.sendEmeraldKey();
+            }
+            if (null != item && !checkedLocations.contains(item.locationID)) {
                 RewardItem replacementReward = new RewardItem(1);
                 replacementReward.goldAmt = 0;
                 replacementReward.text = item.itemName + " NL " + item.playerName;
