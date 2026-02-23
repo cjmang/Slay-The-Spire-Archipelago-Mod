@@ -231,8 +231,15 @@ public class APClient extends Client {
                     case ItemSend:
                     case ItemCheat:
                     case Goal:
-                    case Hint:
                         TalkQueue.AbstractDungeonPatch.talkQueue.add(event);
+                        break;
+                    case Hint:
+                        if(!event.apPrint.found)
+                        {
+                            TalkQueue.AbstractDungeonPatch.talkQueue.add(event);
+                        }
+                        break;
+
                 }
             }
         }
