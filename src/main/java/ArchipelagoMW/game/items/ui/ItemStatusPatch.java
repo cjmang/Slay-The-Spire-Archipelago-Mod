@@ -103,7 +103,7 @@ public class ItemStatusPatch {
                 powerTips.add(new PowerTip("Items Received", itemText));
             }
             if(!locationText.isEmpty()) {
-                powerTips.add(new PowerTip("LocationsChecked", locationText));
+                powerTips.add(new PowerTip("Locations Checked", locationText));
             }
 
             TipHelper.queuePowerTips(InputHelper.mX + 70.0F * Settings.xScale, InputHelper.mY + 150.0F * Settings.scale, powerTips);
