@@ -24,7 +24,8 @@ public class CombatRewardScreenPatch {
             "Red Mask",
             "Necronomicon",
             "Enchiridion",
-            "Nilry's Codex"
+            "Nilry's Codex",
+            "Odd Mushroom"
     ));
 
     private static final void replaceRewards(CombatRewardScreen __instance, ArrayList<RewardItem> ___rewards)
