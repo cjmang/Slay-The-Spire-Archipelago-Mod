@@ -131,11 +131,31 @@ public class ArchipelagoIcon extends TopPanelItem {
                         .append("TAB Shop Slots: #b").append(shop.getFoundChecks());
             }
 
+            if(slotData.goldSanity != 0)
+            {
+                body.append(" NL ")
+                        .append("TAB Gold Rewards Obtained: #b")
+                        .append(locationTracker.getGoldLocations().getIndex());
+
+                body.append(" NL ")
+                        .append("TAB Boss Gold Rewards Obtained: #b")
+                        .append(locationTracker.getBossGoldLocations().getIndex());
+            }
+
+            if(slotData.potionSanity != 0)
+            {
+                body.append(" NL ")
+                        .append("TAB Potion Rewards Obtained: #b")
+                        .append(locationTracker.getPotionLocations().getIndex());
+            }
+
             if(slotData.includeFloorChecks != 0)
             {
                 body.append(" NL ")
                         .append("TAB Floors Reached: #b").append(locationTracker.getFloorIndex());
             }
+
+
 
             TipHelper.renderGenericTip(tipX, tipY,
                     "Archipelago Rewards (" + APInputActionSet.apmenu.getKeyString() + ")",

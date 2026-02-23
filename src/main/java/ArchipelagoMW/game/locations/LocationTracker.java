@@ -508,6 +508,18 @@ public class LocationTracker {
         return campfireLocations;
     }
 
+    public LocationContainer getGoldLocations() {
+        return goldLocations;
+    }
+
+    public LocationContainer getBossGoldLocations() {
+        return bossGoldLocations;
+    }
+
+    public LocationContainer getPotionLocations() {
+        return goldLocations;
+    }
+
     public static class LocationContainer {
         private final List<Long> locations = new ArrayList<>();
         private int index = 0;
