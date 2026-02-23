@@ -517,7 +517,7 @@ public class LocationTracker {
     }
 
     public LocationContainer getPotionLocations() {
-        return goldLocations;
+        return potionLocations;
     }
 
     public static class LocationContainer {
@@ -547,6 +547,11 @@ public class LocationTracker {
         private Long getNext()
         {
             return locations.get(index++);
+        }
+
+        public List<Long> getLocations()
+        {
+            return new ArrayList<>(locations);
         }
     }
 

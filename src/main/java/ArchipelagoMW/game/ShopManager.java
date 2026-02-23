@@ -1,6 +1,7 @@
 package ArchipelagoMW.game;
 
 import ArchipelagoMW.client.APContext;
+import ArchipelagoMW.client.config.CharacterConfig;
 import ArchipelagoMW.client.config.ShopSanityConfig;
 import ArchipelagoMW.client.config.SlotData;
 import ArchipelagoMW.client.util.Utils;
@@ -49,6 +50,14 @@ public class ShopManager {
     }
 
     public void initializeShop()
+    {
+        SlotData slotData = APContext.getContext().getSlotData();
+        this.sanityEnabled = slotData.shopSanity != 0;
+        this.config = slotData.shopSanityConfig;
+        shopContext = new ShopContext(locationManager, AbstractDungeon.actNum, characterManager);
+    }
+
+    public void initializeShop(CharacterConfig config)
     {
         SlotData slotData = APContext.getContext().getSlotData();
         this.sanityEnabled = slotData.shopSanity != 0;
@@ -290,6 +299,11 @@ public class ShopManager {
         return (int)price;
     }
 
+    public static List<Long> getShopIdsForChar(CharacterConfig config)
+    {
+        return ShopContext.getShopIdsForChar(config);
+    }
+
     private static class ShopContext
     {
         private static final Map<Integer, List<Long>> shopLocationsByAct = new HashMap<>();
@@ -305,6 +319,7 @@ public class ShopManager {
         private final List<Integer> extraOffsets;
         private final List<Long> missingLocations = new ArrayList<>();
         private final List<Long> foundChecks = new ArrayList<>();
+
 
         ShopContext(LocationManager locationManager, int act, CharacterManager charManager)
         {
@@ -327,6 +342,14 @@ public class ShopManager {
 
             extraOffsets = charManager.getUnrecognizedCharacters().stream()
                     .map(c -> c.charOffset)
+                    .collect(Collectors.toList());
+        }
+
+        public static List<Long> getShopIdsForChar(CharacterConfig config)
+        {
+            return shopLocationsByAct.values().stream()
+                    .flatMap(List::stream)
+                    .map(id -> id + (200L * config.charOffset))
                     .collect(Collectors.toList());
         }
 
