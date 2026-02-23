@@ -106,7 +106,7 @@ public class ItemStatusPatch {
                 powerTips.add(new PowerTip("Locations Checked", locationText));
             }
 
-            TipHelper.queuePowerTips(InputHelper.mX + 70.0F * Settings.xScale, InputHelper.mY + 150.0F * Settings.scale, powerTips);
+            TipHelper.queuePowerTips(InputHelper.mX + 70.0F * Settings.xScale, InputHelper.mY + 200.0F * Settings.scale, powerTips);
         }
 
         private static void buildItemText(CharacterConfig config, ItemManager itemManager, CharacterManager charManager)
