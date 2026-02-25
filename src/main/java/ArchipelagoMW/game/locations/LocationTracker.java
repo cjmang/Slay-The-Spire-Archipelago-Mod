@@ -421,6 +421,9 @@ public class LocationTracker {
         {
             allLocations.add(i + (200L * currentOffset));
         }
+        apContext.getLocationManager().getMissingLocations().stream()
+                        .filter(apContext.getCharacterManager()::isLocationIDForCurrentCharacter)
+                                .forEach(allLocations::add);
         apContext.getLocationManager().checkLocations(allLocations);
         apContext.getSaveManager().saveString(apContext.getCharacterManager().getCurrentCharacter().chosenClass.name(), "");
     }

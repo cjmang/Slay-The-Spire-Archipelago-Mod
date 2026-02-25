@@ -136,6 +136,8 @@ public class CharacterManager {
         return isItemIDForCharacter(itemID, currentCharacterConfig);
     }
 
+
+
     public boolean isItemIDForCharacter(long itemID, CharacterConfig config)
     {
         if(config == null)
@@ -150,6 +152,20 @@ public class CharacterManager {
         return itemID > offset * getItemWindow() && itemID < (offset + 1) * getItemWindow();
     }
 
+    public boolean isLocationIDForCurrentCharacter(long locationId)
+    {
+        return isLocationIDForCurrentCharacter(locationId, currentCharacterConfig);
+    }
+
+    public boolean isLocationIDForCurrentCharacter(long locationId, CharacterConfig config)
+    {
+        if(config == null)
+        {
+            return false;
+        }
+        int offset = config.charOffset;
+        return locationId > offset * 200L && locationId <  (offset +1) * 200L;
+    }
 
     private void selectCharacter(CharacterConfig config)
     {
