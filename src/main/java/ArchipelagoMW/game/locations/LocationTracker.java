@@ -388,7 +388,7 @@ public class LocationTracker {
         APContext apContext = APContext.getContext();
         CharacterConfig currentCharacter = apContext.getCharacterManager().getCurrentCharacterConfig();
         SlotData slotData = apContext.getSlotData();
-        List<Long> allLocations = new ArrayList<>() ;
+        Set<Long> allLocations = new HashSet<>() ;
         allLocations.addAll(getCardDrawLocations().locations);
         allLocations.addAll(getRareDrawLocations().locations);
         allLocations.addAll(getRelicLocations().locations);
