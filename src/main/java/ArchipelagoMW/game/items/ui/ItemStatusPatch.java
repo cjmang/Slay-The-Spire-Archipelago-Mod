@@ -106,7 +106,7 @@ public class ItemStatusPatch {
                 powerTips.add(new PowerTip("Locations Checked", locationText));
             }
 
-            TipHelper.queuePowerTips(InputHelper.mX + 70.0F * Settings.xScale, InputHelper.mY + 200.0F * Settings.scale, powerTips);
+            TipHelper.queuePowerTips(InputHelper.mX + 70.0F * Settings.xScale, InputHelper.mY + 400.0F * Settings.scale, powerTips);
         }
 
         private static void buildItemText(CharacterConfig config, ItemManager itemManager, CharacterManager charManager)
@@ -189,36 +189,47 @@ public class ItemStatusPatch {
             Map<String, Integer> countMap = new LinkedHashMap<>();
 
             locationTracker.initialize(config.charOffset, slotData.modVersion, Collections.emptyList());
+            Map<String, Integer> totals = new HashMap<>();
             Set<Long> checkedLocations = locationManager.getCheckedLocations();
             setCount(checkedLocations, locationTracker.getCardDrawLocations().getLocations(), countMap, "Card Rewards Checked");
+            totals.put("Card Rewards Checked", locationTracker.getCardDrawLocations().getLocations().size());
             setCount(checkedLocations, locationTracker.getRelicLocations().getLocations(), countMap, "Relics Checked");
+            totals.put("Relics Checked", locationTracker.getRelicLocations().getLocations().size());
             setCount(checkedLocations, locationTracker.getBossRelicLocations().getLocations(), countMap, "Bosses Checked");
+            totals.put("Bosses Checked", locationTracker.getBossRelicLocations().getLocations().size());
             if(slotData.includeFloorChecks != 0)
             {
                 int count = 0;
+                int totalCount = 0;
                 for(long id = 1 + (200L * config.charOffset); id <= 56L + (200L * config.charOffset); id++)
                 {
                     if(checkedLocations.contains(id))
                     {
                         count++;
                     }
+                    totalCount++;
                 }
                 countMap.put("Floors checked", count);
+                totals.put("Floors checked", totalCount);
             }
             if(slotData.shopSanity != 0)
             {
                 setCount(checkedLocations, ShopManager.getShopIdsForChar(config), countMap, "Shop Slots Checked");
+                totals.put("Shop Slots Checked", ShopManager.getShopIdsForChar(config).size());
             }
             if(slotData.campfireSanity != 0)
             {
                 countMap.put("Campfires Checked", locationTracker.getCampfireLocations().getNumberChecked());
+                totals.put("Campfires Checked", 6);
             }
             if(slotData.goldSanity != 0) {
                 setCount(checkedLocations, locationTracker.getGoldLocations().getLocations(), countMap, "Gold Drops Checked");
+                totals.put("Gold Drops Checked", locationTracker.getGoldLocations().getLocations().size());
             }
             if(slotData.potionSanity != 0)
             {
                 setCount(checkedLocations, locationTracker.getPotionLocations().getLocations(), countMap, "Potions Checked");
+                totals.put("Potions Checked", locationTracker.getPotionLocations().getLocations().size());
             }
             if(config.keySanity)
             {
@@ -236,11 +247,14 @@ public class ItemStatusPatch {
                     count++;
                 }
                 countMap.put("Keys Checked", count);
+                totals.put("Keys Checked", 3);
             }
             StringBuilder sb = new StringBuilder();
             for(Map.Entry<String, Integer> entry: countMap.entrySet())
             {
                 sb.append(entry.getValue())
+                        .append('/')
+                        .append(totals.get(entry.getKey()))
                         .append(" ")
                         .append(entry.getKey())
                         .append(" NL ");
