@@ -537,6 +537,11 @@ public class LocationTracker {
             }
         }
 
+        public int getTotal()
+        {
+            return locations.size();
+        }
+
         public int getIndex()
         {
             return index;
@@ -579,6 +584,11 @@ public class LocationTracker {
             {
                 locations.computeIfPresent(checked, (__, ___) -> true);
             }
+        }
+
+        public int getTotal()
+        {
+            return locations.size();
         }
 
         public int getNumberChecked()

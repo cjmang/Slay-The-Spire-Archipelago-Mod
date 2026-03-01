@@ -2,6 +2,7 @@ package ArchipelagoMW.game.items.ui;
 
 import ArchipelagoMW.client.APClient;
 import ArchipelagoMW.client.APContext;
+import ArchipelagoMW.client.config.CharacterConfig;
 import ArchipelagoMW.client.config.SlotData;
 import ArchipelagoMW.game.ShopManager;
 import ArchipelagoMW.game.TalkQueue;
@@ -31,6 +32,8 @@ import com.megacrit.cardcrawl.vfx.SpeechBubble;
 import io.github.archipelagomw.parts.NetworkItem;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
+import java.util.Set;
 
 public class ArchipelagoIcon extends TopPanelItem {
 
@@ -109,44 +112,70 @@ public class ArchipelagoIcon extends TopPanelItem {
         float tipY = ReflectionHacks.getPrivateStatic(TopPanel.class, "TIP_Y");
         if (this.hitbox.hovered) {
             LocationTracker locationTracker = APContext.getContext().getLocationTracker();
-
+            CharacterConfig config = APContext.getContext().getCharacterManager().getCurrentCharacterConfig();
             SlotData slotData = ctx.getSlotData();
             StringBuilder body = new StringBuilder("View unclaimed rewards that have been sent by Archipelago. NL NL ")
                     .append("#yChecked #yLocations: NL ")
-                    .append("TAB Card Draw: #b").append(locationTracker.getCardDrawLocations().getIndex()).append(" NL ")
-                    .append("TAB Rare Card Draw: #b").append(locationTracker.getRareDrawLocations().getIndex()).append(" NL ")
-                    .append("TAB Relic: #b").append(locationTracker.getRelicLocations().getIndex()).append(" NL ")
-                    .append("TAB Boss Relic: #b").append(locationTracker.getBossRelicLocations().getIndex());
+                    .append("TAB Card Draw: #b")
+                    .append(locationTracker.getCardDrawLocations().getIndex())
+                    .append('/')
+                    .append(locationTracker.getCardDrawLocations().getTotal())
+//                    .append(" NL ")
+//                    .append("TAB Rare Card Draw: #b")
+//                    .append(locationTracker.getRareDrawLocations().getIndex())
+//                    .append('/')
+//                    .append(locationTracker.getRareDrawLocations().getTotal())
+                    .append(" NL ")
+                    .append("TAB Relic: #b")
+                    .append(locationTracker.getRelicLocations().getIndex())
+                    .append('/')
+                    .append(locationTracker.getRelicLocations().getTotal())
+                    .append(" NL ")
+                    .append("TAB Bosses : #b")
+                    .append(locationTracker.getBossRelicLocations().getIndex())
+                    .append('/')
+                    .append(locationTracker.getBossRelicLocations().getTotal())
+                    ;
 
             if(slotData.campfireSanity != 0)
             {
                 body.append(" NL ")
-                        .append("TAB Campfires: #b").append(locationTracker.getCampfireLocations().getNumberChecked());
+                        .append("TAB Campfires: #b").append(locationTracker.getCampfireLocations().getNumberChecked())
+                        .append("/6");
             }
 
             if(slotData.shopSanity != 0)
             {
                 ShopManager shop = ctx.getShopManager();
                 body.append(" NL ")
-                        .append("TAB Shop Slots: #b").append(shop.getFoundChecks());
+                        .append("TAB Shop Slots: #b").append(shop.getFoundChecks())
+                        .append('/')
+                        .append(shop.getTotalSlots());
             }
 
             if(slotData.goldSanity != 0)
             {
                 body.append(" NL ")
-                        .append("TAB Gold Rewards Obtained: #b")
-                        .append(locationTracker.getGoldLocations().getIndex());
+                        .append("TAB Gold Rewards: #b")
+                        .append(locationTracker.getGoldLocations().getIndex())
+                        .append('/')
+                        .append(locationTracker.getGoldLocations().getTotal())
+                ;
 
-                body.append(" NL ")
-                        .append("TAB Boss Gold Rewards Obtained: #b")
-                        .append(locationTracker.getBossGoldLocations().getIndex());
+//                body.append(" NL ")
+//                        .append("TAB Boss Gold Rewards: #b")
+//                        .append(locationTracker.getBossGoldLocations().getIndex())
+//                        .append('/')
+//                        .append(locationTracker.getBossGoldLocations().getTotal());
             }
 
             if(slotData.potionSanity != 0)
             {
                 body.append(" NL ")
-                        .append("TAB Potion Rewards Obtained: #b")
-                        .append(locationTracker.getPotionLocations().getIndex());
+                        .append("TAB Potion Rewards: #b")
+                        .append(locationTracker.getPotionLocations().getIndex())
+                        .append('/')
+                        .append(locationTracker.getPotionLocations().getTotal());
             }
 
             if(slotData.includeFloorChecks != 0)
@@ -155,11 +184,32 @@ public class ArchipelagoIcon extends TopPanelItem {
                         .append("TAB Floors Reached: #b").append(locationTracker.getFloorIndex());
             }
 
+            if(config.keySanity)
+            {
+                int count = 0;
+                Set<Long> checkedLocations = APContext.getContext().getLocationManager().getCheckedLocations();
+                if(checkedLocations.contains(94L + (200L * config.charOffset)))
+                {
+                    count++;
+                }
+                if(checkedLocations.contains(95L + (200L * config.charOffset)))
+                {
+                    count++;
+                }
+                if(checkedLocations.contains(96L + (200L * config.charOffset)))
+                {
+                    count++;
+                }
 
+                body.append(" NL ")
+                        .append("TAB Keys: #b")
+                        .append(count)
+                        .append("/3");
+            }
 
             TipHelper.renderGenericTip(tipX, tipY,
                     "Archipelago Rewards (" + APInputActionSet.apmenu.getKeyString() + ")",
-                        body.toString()
+                    body.toString()
             );
         }
 

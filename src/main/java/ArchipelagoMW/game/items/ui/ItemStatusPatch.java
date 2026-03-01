@@ -191,12 +191,12 @@ public class ItemStatusPatch {
             locationTracker.initialize(config.charOffset, slotData.modVersion, Collections.emptyList());
             Map<String, Integer> totals = new HashMap<>();
             Set<Long> checkedLocations = locationManager.getCheckedLocations();
-            setCount(checkedLocations, locationTracker.getCardDrawLocations().getLocations(), countMap, "Card Rewards Checked");
-            totals.put("Card Rewards Checked", locationTracker.getCardDrawLocations().getLocations().size());
-            setCount(checkedLocations, locationTracker.getRelicLocations().getLocations(), countMap, "Relics Checked");
-            totals.put("Relics Checked", locationTracker.getRelicLocations().getLocations().size());
-            setCount(checkedLocations, locationTracker.getBossRelicLocations().getLocations(), countMap, "Bosses Checked");
-            totals.put("Bosses Checked", locationTracker.getBossRelicLocations().getLocations().size());
+            setCount(checkedLocations, locationTracker.getBossRelicLocations().getLocations(), countMap, "Bosses");
+            totals.put("Bosses", locationTracker.getBossRelicLocations().getTotal());
+            setCount(checkedLocations, locationTracker.getCardDrawLocations().getLocations(), countMap, "Card Rewards");
+            totals.put("Card Rewards", locationTracker.getCardDrawLocations().getTotal());
+            setCount(checkedLocations, locationTracker.getRelicLocations().getLocations(), countMap, "Relics");
+            totals.put("Relics", locationTracker.getRelicLocations().getTotal());
             if(slotData.includeFloorChecks != 0)
             {
                 int count = 0;
@@ -209,27 +209,35 @@ public class ItemStatusPatch {
                     }
                     totalCount++;
                 }
+                if(!config.finalAct)
+                {
+                    totalCount -= 4;
+                }
+                if(config.ascension != 20 || config.ascensionDown != 0)
+                {
+                    totalCount--;
+                }
                 countMap.put("Floors checked", count);
                 totals.put("Floors checked", totalCount);
             }
             if(slotData.shopSanity != 0)
             {
-                setCount(checkedLocations, ShopManager.getShopIdsForChar(config), countMap, "Shop Slots Checked");
-                totals.put("Shop Slots Checked", ShopManager.getShopIdsForChar(config).size());
+                setCount(checkedLocations, ShopManager.getShopIdsForChar(config), countMap, "Shop Slots");
+                totals.put("Shop Slots", ShopManager.getShopIdsForChar(config).size());
             }
             if(slotData.campfireSanity != 0)
             {
-                countMap.put("Campfires Checked", locationTracker.getCampfireLocations().getNumberChecked());
-                totals.put("Campfires Checked", 6);
+                countMap.put("Campfires", locationTracker.getCampfireLocations().getNumberChecked());
+                totals.put("Campfires", locationTracker.getCampfireLocations().getTotal());
             }
             if(slotData.goldSanity != 0) {
-                setCount(checkedLocations, locationTracker.getGoldLocations().getLocations(), countMap, "Gold Drops Checked");
-                totals.put("Gold Drops Checked", locationTracker.getGoldLocations().getLocations().size());
+                setCount(checkedLocations, locationTracker.getGoldLocations().getLocations(), countMap, "Gold Drops");
+                totals.put("Gold Drops", locationTracker.getGoldLocations().getTotal());
             }
             if(slotData.potionSanity != 0)
             {
-                setCount(checkedLocations, locationTracker.getPotionLocations().getLocations(), countMap, "Potions Checked");
-                totals.put("Potions Checked", locationTracker.getPotionLocations().getLocations().size());
+                setCount(checkedLocations, locationTracker.getPotionLocations().getLocations(), countMap, "Potions");
+                totals.put("Potions", locationTracker.getPotionLocations().getTotal());
             }
             if(config.keySanity)
             {
@@ -246,8 +254,8 @@ public class ItemStatusPatch {
                 {
                     count++;
                 }
-                countMap.put("Keys Checked", count);
-                totals.put("Keys Checked", 3);
+                countMap.put("Keys", count);
+                totals.put("Keys", 3);
             }
             StringBuilder sb = new StringBuilder();
             for(Map.Entry<String, Integer> entry: countMap.entrySet())
