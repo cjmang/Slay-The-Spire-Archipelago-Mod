@@ -4,6 +4,7 @@ import ArchipelagoMW.client.APClient;
 import ArchipelagoMW.client.APContext;
 import ArchipelagoMW.client.config.CharacterConfig;
 import ArchipelagoMW.client.util.DeathLinkHelper;
+import ArchipelagoMW.game.CharacterManager;
 import com.evacipated.cardcrawl.modthespire.Loader;
 import com.evacipated.cardcrawl.modthespire.lib.SpireEnum;
 import com.evacipated.cardcrawl.modthespire.lib.SpirePatch;
@@ -30,7 +31,9 @@ public class ConfirmPopupPatch {
             if (___type == AP_SAVE_RESUME) {
                 CardCrawlGame.loadingSave = true;
                 APContext ctx = APContext.getContext();
-                ctx.getCharacterManager().markUnrecognziedCharacters();
+                CharacterManager manager = ctx.getCharacterManager();
+                manager.markUnrecognziedCharacters();
+                manager.selectCharacter(manager.getCurrentCharacter().chosenClass.name());
                 ctx.getItemTracker().initialize(ctx.getItemManager().getReceivedItemIDs());
                 ctx.getTrapManager().initialize();
                 APContext.getContext().getShopManager().initializeShop();
