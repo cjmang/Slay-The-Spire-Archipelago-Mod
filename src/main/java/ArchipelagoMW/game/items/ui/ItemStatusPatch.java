@@ -24,6 +24,8 @@ public class ItemStatusPatch {
     private static CharacterOption option;
     private static String itemText = "";
     private static String locationText = "";
+    private static final LocationTracker locationTracker = new LocationTracker();
+
 
     @SpirePatch(cls="downfall.patches.EvilModeCharacterOption", method="Prefix", requiredModId = "downfall", paramtypez = CharacterOption.class)
     public static class EvilOptionPatchPatch
@@ -95,7 +97,7 @@ public class ItemStatusPatch {
 
             if(option != __instance) {
                 buildItemText(config, itemManager, charManager);
-                buildLocationText(config, locationManager, ctx.getLocationTracker(), ctx.getShopManager(), charManager, ctx.getSlotData());
+                buildLocationText(config, locationManager, ctx.getShopManager(), charManager, ctx.getSlotData());
             }
             option = __instance;
             ArrayList<PowerTip> powerTips = new ArrayList<>();
@@ -112,7 +114,7 @@ public class ItemStatusPatch {
         private static void buildItemText(CharacterConfig config, ItemManager itemManager, CharacterManager charManager)
         {
             StringBuilder sb = new StringBuilder();
-            Map<String, Integer> countMap = new LinkedHashMap<>();
+            Map<String, Integer> countMap = new TreeMap<>();
             countMap.put("Boss Relics", 0);
             countMap.put("Relics", 0);
             countMap.put("Card Rewards", 0);
@@ -184,7 +186,7 @@ public class ItemStatusPatch {
             itemText = sb.toString();
         }
 
-        private static void buildLocationText(CharacterConfig config, LocationManager locationManager, LocationTracker locationTracker, ShopManager shopManager, CharacterManager charManager,SlotData slotData)
+        private static void buildLocationText(CharacterConfig config, LocationManager locationManager, ShopManager shopManager, CharacterManager charManager,SlotData slotData)
         {
             Map<String, Integer> countMap = new LinkedHashMap<>();
 

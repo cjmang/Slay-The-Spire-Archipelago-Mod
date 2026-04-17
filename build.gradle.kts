@@ -6,7 +6,7 @@ plugins {
 }
 
 description = "Archipelago Multi-World Integration into Slay the Spire"
-version = "2.3.6"
+version = "2.3.7"
 
 defaultTasks = mutableListOf("deployLocal")
 
@@ -38,6 +38,10 @@ java {
     }
 }
 
+tasks.shadowJar {
+    archiveFileName.set("${archiveBaseName.get()}.jar")
+}
+
 tasks.processResources {
     filesMatching("ModTheSpire.json") {
         expand(project.properties)
@@ -47,7 +51,7 @@ tasks.processResources {
 tasks.register<Copy>("deployLocal") {
     project.version = project.version.toString() + "-dev"
     val mwJar = fileTree(project.layout.buildDirectory.dir("libs")).filter { f: File ->
-        f.name.matches(Regex("ArchipelagoMW-${Pattern.quote(project.version.toString())}-all\\.jar"))
+        f.name.matches(Regex(Pattern.quote("ArchipelagoMW.jar")))
     }
     from(mwJar)
     into("${steamPath}/common/SlayTheSpire/mods/")

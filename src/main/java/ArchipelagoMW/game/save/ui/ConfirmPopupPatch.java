@@ -31,9 +31,7 @@ public class ConfirmPopupPatch {
             if (___type == AP_SAVE_RESUME) {
                 CardCrawlGame.loadingSave = true;
                 APContext ctx = APContext.getContext();
-                CharacterManager manager = ctx.getCharacterManager();
-                manager.markUnrecognziedCharacters();
-                manager.selectCharacter(manager.getCurrentCharacter().chosenClass.name());
+                ctx.getCharacterManager().markUnrecognziedCharacters();
                 ctx.getItemTracker().initialize(ctx.getItemManager().getReceivedItemIDs());
                 ctx.getTrapManager().initialize();
                 APContext.getContext().getShopManager().initializeShop();

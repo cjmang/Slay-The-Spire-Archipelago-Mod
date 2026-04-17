@@ -1,5 +1,6 @@
 package ArchipelagoMW.game.locations.campfire;
 
+import ArchipelagoMW.client.APClient;
 import ArchipelagoMW.client.APContext;
 import ArchipelagoMW.client.config.CharacterConfig;
 import ArchipelagoMW.game.items.MiscItemTracker;
@@ -64,6 +65,7 @@ public class APCampfirePatch {
             if(campireSanity) {
                 LocationTracker.CampfireLocations campfireLocs = locationTracker.getCampfireLocations();
                 remaining = campfireLocs.getLocationsForAct(AbstractDungeon.actNum);
+                APClient.logger.info("Remaining campfire locations {}", remaining);
                 sendMe = remaining.stream()
                         .filter(l -> (locationTracker.getScoutedItem(l).flags & io.github.archipelagomw.flags.NetworkItem.ADVANCEMENT) > 0)
                         .collect(Collectors.toList());
