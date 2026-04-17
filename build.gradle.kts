@@ -60,7 +60,7 @@ tasks.register<Copy>("deployLocal") {
 
 tasks.register<Copy>("workshopUpload") {
     val mwJar = fileTree(project.layout.buildDirectory.dir("libs")).filter { f: File ->
-        f.name.matches(Regex("ArchipelagoMW-${Pattern.quote(project.version.toString())}-all\\.jar"))
+        f.name.matches(Regex("ArchipelagoMW\\.jar"))
     }
     val configJson = fileTree(project.layout.projectDirectory.file("workshop.json"))
     val workshopImage = fileTree(project.layout.buildDirectory.dir("resources")).filter { f: File  ->
