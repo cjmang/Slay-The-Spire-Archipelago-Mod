@@ -8,6 +8,7 @@ import ArchipelagoMW.mod.Archipelago;
 import ArchipelagoMW.client.config.CharacterConfig;
 import ArchipelagoMW.game.CharacterManager;
 import ArchipelagoMW.game.save.ui.ConfirmPopupPatch;
+import ArchipelagoMW.game.start.ui.CharacterGoalPanel;
 import ArchipelagoMW.client.util.DeathLinkHelper;
 import basemod.CustomCharacterSelectScreen;
 import basemod.ReflectionHacks;
@@ -26,6 +27,7 @@ import com.megacrit.cardcrawl.helpers.controller.CInputActionSet;
 import com.megacrit.cardcrawl.helpers.controller.CInputHelper;
 import com.megacrit.cardcrawl.screens.charSelect.CharacterOption;
 import com.megacrit.cardcrawl.screens.charSelect.CharacterSelectScreen;
+import com.megacrit.cardcrawl.screens.mainMenu.MainMenuScreen;
 import com.megacrit.cardcrawl.screens.options.ConfirmPopup;
 import io.github.archipelagomw.events.RetrievedEvent;
 import downfall.downfallMod;
@@ -47,6 +49,8 @@ public class CharacterSelectScreenPatch {
     private static ArrayList<CharacterOption> options;
     private static final Map<String, Texture> originalImage = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
 
+    public static final CharacterGoalPanel goalPanel = new CharacterGoalPanel();
+
     public static void lockChars() {
         APContext ctx = APContext.getContext();
         APClient client = ctx.getClient();
@@ -65,6 +69,7 @@ public class CharacterSelectScreenPatch {
         }
         Map<String, Boolean> goaledCharacters = tmpChars;
         logger.log(Level.INFO, "Completed characters: {0}", goaledCharacters);
+        goalPanel.setWonCharacters(goaledCharacters);
         CharacterManager charManager = ctx.getCharacterManager();
         charSelectScreen.options = new ArrayList<>(options);
         Map<String, Boolean> unlockedChars = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
@@ -171,6 +176,7 @@ public class CharacterSelectScreenPatch {
         @SpirePostfixPatch
         public static void updateResumeSave(CharacterSelectScreen __instance) {
             resumeSave.update();
+            goalPanel.update();
         }
     }
 
@@ -179,6 +185,7 @@ public class CharacterSelectScreenPatch {
         @SpirePostfixPatch
         public static void renderConfirm(CharacterSelectScreen __instance, SpriteBatch sb) {
             resumeSave.render(sb);
+            goalPanel.render(sb);
         }
     }
 
